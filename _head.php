@@ -22,7 +22,11 @@
                 <div class="container-right1">
                     <ul>
                         <li class="right">
-                            <i class="ico ico-user"></i>
+                            <form action="/user/login.php" method="GET" style="display: inline;">
+                                <button type="submit" style="border: none; background: none; cursor: pointer;">
+                                    <i class="ico ico-user"></i>
+                                </button>
+                            </form>
                         </li>
                         <li class="right">
                             <i class="ico ico-shopping"></i>
@@ -60,52 +64,3 @@
     </header>
 
     <main>
-        <h1>home page</h1>
-        <h2>sr shi sb</h2>
-        <h6>2</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
-        <h6>1</h6>
