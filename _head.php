@@ -59,6 +59,7 @@
 
     <main>
         <h1>home page</h1>
+        <h2>sr shi sb</h2>
         <h6>2</h6>
         <h6>1</h6>
         <h6>1</h6>
