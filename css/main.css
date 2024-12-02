@@ -4,8 +4,8 @@ header {
 
 .header-container {
     display: flex;
-    margin-left: 150px;
-    margin-right: 150px;
+    margin-left: 12%;
+    margin-right: 12%;
     overflow: hidden;
 }
 
@@ -22,13 +22,15 @@ img {
     height: 70px;
 }
 
+.container-right {
+    width: 100%;
+}
+
 .container-right1 {
-    width: 800px;
     height: 50px;
 }
 
 .container-right2 {
-    width: 800px;
     height: 50px;
 }
 
