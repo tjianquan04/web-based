@@ -66,3 +66,4 @@
     </header>
 
     <h1>home</h1>
+    <a href ="/register.php">register</a>
