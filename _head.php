@@ -46,10 +46,6 @@
                                 Sports
                                 <i class="ico ico-chevron-down"></i>
                             </li>
-                            <li class="left">
-                                Equipment
-                                <i class="ico ico-chevron-down"></i>
-                            </li>
                         </ul>
                     </nav>
                     <span class="nav-search-box">
