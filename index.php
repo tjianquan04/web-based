@@ -6,7 +6,7 @@ $_title = 'Home';
 include '_head.php';
 ?>
 
-<p> JIANQUAN </p>
+<p> zz </p>
 
 <?php
 include '_foot.php';
