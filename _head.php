@@ -47,7 +47,7 @@
                                 <i class="ico ico-chevron-down"></i>
                             </li>
                             <li class="left">
-                                Equipment
+                                Equipmentttt
                                 <i class="ico ico-chevron-down"></i>
                             </li>
                         </ul>
