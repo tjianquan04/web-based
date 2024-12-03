@@ -1,5 +1,5 @@
 header {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(230, 230, 230);
 }
 
 .header-container {
@@ -24,14 +24,17 @@ img {
 
 .container-right {
     width: 100%;
+    overflow: hidden;
 }
 
 .container-right1 {
     height: 50px;
+    overflow: hidden;
 }
 
 .container-right2 {
     height: 50px;
+    overflow: hidden;
 }
 
 ul {
@@ -43,7 +46,8 @@ ul {
     margin: 0px;
     float: right;
     display: flex;
-    margin-left: 30px;
+    margin-left: 15px;
+    margin-right: 15px;
     padding-top: 15px;
 }
 
@@ -55,6 +59,50 @@ ul {
     padding-top: 15px;
 }
 
+.nav-search-box {
+    margin: 0px;
+    float: right;
+    padding-top: 15px;
+}
+
+.search-form {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    font-size: 12px;
+    line-height: 20px;
+    box-sizing: border-box;
+    width: 214px;
+    height: 25px;
+    padding: 0 35px 0 15px;
+    border-radius: 20px;
+    background-color: #e4e2e2;
+    border: 1px solid rgb(102, 102, 102);
+}
+
+.search-btn {
+    z-index: 2;
+    font-size: 13px;
+    position: absolute;
+    top: 25px;
+    height: 45px;
+    right: 10px;
+    display: block;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    transform: translateY(-50%);
+}
 
 footer * {
     box-sizing: border-box;
