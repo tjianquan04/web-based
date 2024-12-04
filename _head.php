@@ -20,7 +20,9 @@
                 <div class="container-right1">
                     <ul>
                         <li class="right">
-                            <i class="ico ico-user"></i>
+                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer;">
+                                <i class="ico ico-user"></i>
+                            </a>
                         </li>
                         <li class="right">
                             <i class="ico ico-shopping"></i>
