@@ -69,3 +69,4 @@
 
     <h1>home</h1>
     <a href ="/register.php">register</a>
+    <a href ="/memberManagement.php">member</a>

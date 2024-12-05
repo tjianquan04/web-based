@@ -5,7 +5,9 @@
 // ============================================================================
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ============================================================================
 // General Page Functions
@@ -165,7 +167,6 @@ function html_text($key, $placeholder = '', $data = [], $attr = '') {
 // Generate password input field
 function html_password($key, $placeholder = '', $data = [], $attr = '') {
     html_input('password', $key, $placeholder, $data, $attr);
-    echo "<input type='checkbox' id='show-password' onclick='togglePasswordVisibility()'> Show Password<br>";
 }
 
 // Generate email input field
@@ -173,6 +174,10 @@ function html_email($key, $placeholder = '', $data = [], $attr = '') {
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
+// Generate search input field
+function html_search($key,$placeholder = 'Search by name, email, contact', $data = [], $attr = '') {
+    html_input('search', $key, $placeholder, $data, $attr);
+}
 
 // ============================================================================
 // Error Handlings

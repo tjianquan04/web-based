@@ -1,0 +1,98 @@
+/* Register Form CSS*/
+
+body {
+    background: url('/image/badminton_bg2.jpeg') no-repeat center center fixed; 
+    background-size: cover; 
+    margin: 0; 
+    font-family: Arial, sans-serif; 
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; 
+    padding: 20px;
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.9); 
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    padding: 20px;
+    width: 100%;
+    margin: 2em auto;
+}
+
+.form-section .form-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+}
+
+.form-section .link-container {
+    display: flex;
+    justify-content:right;
+    font-size: 14px;
+    margin: 15px 10px 10px 10px;
+    gap: 5px;
+}
+
+.form-section .link-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-section .link-container a:hover {
+    text-decoration: underline;
+}
+
+.form-section form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.form-section form .form-control {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0 20px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.form-section form .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-section form button {
+    width: 50%;
+    padding: 10px;
+    font-size: 1.1em;
+    margin-top: 10px;
+    background: #f5b041;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-section form button:hover {
+    background: #e67e22;
+}
+
+.form-section .error-message {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
