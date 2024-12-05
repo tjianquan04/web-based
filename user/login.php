@@ -1,14 +1,14 @@
+<link rel="stylesheet" href="/css/flash_msg.css">
+<link rel="stylesheet" href="/css/login.css">
 <?php
 require '../_base.php';
 
 
 //start the session
-session_start();
 
 $_title = 'Login | Boost.do';
 
 include '../_head.php';
-
 
 //login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,18 +19,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter both email and password.';
     } else {
         $user = validateUser($email, $password);
-
         if ($user) {
             // Set session data if login is successful
-            $_SESSION['user'] = $user->username;  // Store the username or other relevant data
-            redirect('../index.php');  // Redirect to the homepage or a protected page
+            $_SESSION['user'] = $user->username; // Store the username or other relevant data
+            temp('info', 'Successful login'); 
+            redirect('../index.php');
+              // Redirect to the homepage or a protected page
         } else {
             $error = 'Invalid email or password.';  // If credentials are invalid
         }
     }
 }
+
 ?>
-<link rel="stylesheet" href="/css/login.css">
+
 <!-- Background image element -->
 <div class="login-background"></div>
 
@@ -48,12 +50,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="" method="POST">
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" placeholder="E.g. abc@gmail.com" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <a href="forgot_pw.php" class="forgot-password">Forgot Password?</a> <!-- Link goes here -->
-                <input type="password" id="password" name="password" required>
+                <a href="forgot_pw.php" class="forgot-password">Forgot Password?</a>
+                <input type="password" id="password" name="password" placeholder="Enter your password"required>
+            </div>
+            <!-- Remember me checkbox -->
+            <div class="form-group">
+                <label for="remember-me" class="remember-me-label">
+                    <input type="checkbox" id="remember-me" name="remember-me">
+                    Remember me
+                </label>
             </div>
             <div>
                 <button type="submit">Login</button>
@@ -61,8 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </form>
     </div>
-</main>
 
+    
 
 <?php
+
+
+
 include '../_foot.php';

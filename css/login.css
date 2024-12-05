@@ -12,7 +12,7 @@ body {
 
 /* Background image for the body */
 .login-background {
-    background-image: url('../image/badminton_bg.jpg'); /* Path to your background image */
+    background-image: url('../image/badminton.png'); /* Path to your background image */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,7 +26,7 @@ body {
 
 /* Login form container */
 .login-container {
-    background: rgba(255, 255, 255, 0.97);/* Semi-transparent white background */
+    background: rgba(255, 255, 255, 0.95);/* Semi-transparent white background */
     padding: 50px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -34,23 +34,16 @@ body {
     width: 100%;
     text-align: left;
     margin: auto;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     flex-grow: 1; /* Allow the login container to take up available space */
     z-index: 1; /* Ensure the form is above the background image */
-}
-
-/* Form styling */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
 }
 
 /* Input fields and buttons */
 input[type="email"],
 input[type="password"],
 button {
-    width: 95%;
+    width: 100%;
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 4px;
@@ -58,13 +51,10 @@ button {
     margin-top: 10px;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
 
 /* Password Group (to align password field and forgot password link) */
 .forgot-password {
-    font-size: 14px;
+    font-size: 13px;
     color: #154171;
     text-decoration: none;
     margin-left: 220px;  /* Space between password input and link */
@@ -74,6 +64,14 @@ button {
     text-decoration: underline;
 }
 
+.form-group input[type="checkbox"] {
+    margin-bottom: 30px; /* Space between checkbox and label text */
+}
+
+.remember-me-label {
+    font-size: 13px;
+}
+
 /* Button styling */
 button {
     background-color: #4CAF50;
@@ -81,7 +79,7 @@ button {
     border: none;
     cursor: pointer;
     width: 100%;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 button:hover {

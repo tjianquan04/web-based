@@ -46,6 +46,17 @@ function redirect($url = null) {
     exit();
 }
 
+function temp($key, $value = null) {
+    if ($value !== null) {
+        $_SESSION["temp_$key"] = $value;
+    }
+    else {
+        $value = $_SESSION["temp_$key"] ?? null;
+        unset($_SESSION["temp_$key"]);
+        return $value;
+    }
+}
+
 //check user exist in the database
 function validateUser($email, $password)
 {
@@ -69,6 +80,31 @@ function validateUser($email, $password)
         return false;
     }
 }
+
+function validateAdmin($admin_id, $password)
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare a statement to fetch the admin by admin_id
+        $stm = $_db->prepare("SELECT * FROM `admin` WHERE admin_id = ?");
+        $stm->execute([$admin_id]);
+        $admin = $stm->fetch(); // Fetch the admin record
+        var_dump($admin);
+        // Check if admin exists and password matches
+        if ($admin && password_verify($password, $admin->password)) {
+            // Return the admin object with role information if credentials are valid
+            return $admin;
+        } else {
+            return false; // Return false if credentials are invalid
+        }
+    } catch (PDOException $e) {
+        // Log the error or handle it
+        error_log("Database error: " . $e->getMessage());
+        return false;
+    }
+}
+
 
 function getNextUserId() {
     global $_db;

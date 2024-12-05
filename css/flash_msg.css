@@ -1,0 +1,63 @@
+/* Flash Message ----------------------------------------------------------- */
+#info {
+    position: fixed;
+    color: #fff;
+    background: #4CAF50; /* Green background for success */
+    border: 1px solid #388E3C; /* Darker green border */
+    border-radius: 50px; /* Rounded corners */
+    padding: 15px 30px; /* Increased padding for better spacing */
+    left: 50%;
+    transform: translateX(-50%);  /* Center the message *
+    top: -100px;  /* Start position */
+    opacity: 0;   /* Initially hidden */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Soft shadow for a floating effect */
+    font-size: 16px; /* Medium-sized text */
+    font-family: 'Arial', sans-serif; /* Clean font */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+}
+
+#info .message-text {
+    margin-right: 20px; /* Space between the message and the icon */
+}
+
+#info i {
+    font-size: 20px; /* Icon size */
+    margin-right: 10px; /* Space between the icon and the message */
+}
+
+#info:not(:empty) {
+    animation: fadeInOut 5s forwards; /* Animation to show and hide the message */
+}
+
+/* Animation to slide in the message from the top */
+@keyframes fadeInOut {
+    0% {
+        top: -100px;
+        opacity: 0;
+    }
+    10% {
+        top: 100px;
+        opacity: 1;
+    }
+    90% {
+        top: 100px;
+        opacity: 1;
+    }
+    100% {
+        top: -100px;
+        opacity: 0;
+    }
+}
+
+/* Success icon style */
+#info.success {
+    background-color: #4CAF50; /* Green background for success */
+    border-color: #388E3C; /* Darker green border */
+}
+
+#info.success i {
+    color: white; /* White icon color */
+}
