@@ -122,6 +122,44 @@ function getAllAdmins()
     }
 }
 
+function addAdmin($admin_name, $adminEmail, $adminPassword)
+{
+    global $_db;
+
+    // Check if the admin email already exists
+    $stm = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
+    $stm->execute([$adminEmail]);
+    
+    // If email already exists, return false
+    if ($stm->rowCount() > 0) {
+        return false; // Email already exists
+    }
+
+    // Hash the password
+    $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
+    // Default values for other fields
+    $admin_id = generateNextAdminId();
+    $role = 'Admin';  // Set default role as 'admin'
+    $phone_number = '-';  // Similarly, handle phone number if needed
+    $status = 'Active';
+    
+    try {
+        // Prepare SQL query to insert new admin
+        $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+        // Execute the statement with the form data
+        $result = $stmt->execute([$admin_id, $admin_name, $hashedPassword, $role, $adminEmail, $phone_number, $status]);
+        return $result;
+
+    } catch (PDOException $e) {
+        // Handle the error if something goes wrong with the query
+        echo "Database error: " . $e->getMessage();
+        return false;
+    }
+}
+
 
 function getNextUserId() {
     global $_db;
@@ -133,6 +171,35 @@ function getNextUserId() {
     // Return the next user_id (max_id + 1)
     return $row->max_id + 1;
 }
+
+function generateNextAdminId()
+{
+    global $_db;
+
+    try {
+        // Fetch the latest admin_id from the database
+        $stm = $_db->query("SELECT admin_id FROM admin ORDER BY admin_id DESC LIMIT 1");
+        $latestAdmin = $stm->fetch(PDO::FETCH_ASSOC);
+
+        if ($latestAdmin) {
+            // Extract the numeric part of the admin_id
+            preg_match('/(\d+)$/', $latestAdmin['admin_id'], $matches);
+            $nextId = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        } else {
+            // If no admin exists, start from 1
+            $nextId = 1;
+        }
+        
+        // Generate the next admin ID
+        return "admin" . $nextId;
+    } catch (PDOException $e) {
+        // Handle database errors
+        error_log("Error generating next admin ID: " . $e->getMessage());
+        return false; // Indicate failure
+    }
+}
+
+
 
 // Is unique?
 function is_unique($value, $table, $field) {

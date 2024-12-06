@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             temp('info', 'Successful login');
 
             // Redirect to admin homepage
-            redirect('admin_homepage.php');
+            redirect('admin_dashboard.php');
             exit();
         } else {
             $error = 'Invalid username or password.'; // Invalid credentials
@@ -75,3 +75,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+<?php

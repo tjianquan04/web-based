@@ -1,10 +1,10 @@
 <?php
 require '../_base.php';
 // Check if admin is logged in
-if (!isset($_SESSION['admin'])) {
-    header('Location: admin.php');
-    exit();
-}
+//if (!isset($_SESSION['admin'])) {
+//    header('Location: admin.php');
+//    exit();
+//}
 
 // Get admin role
 $admin_role = $_SESSION['role'];
@@ -20,6 +20,7 @@ $admin_role = $_SESSION['role'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
+<div id="info"><?= temp('info') ?></div>
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
@@ -47,7 +48,7 @@ $admin_role = $_SESSION['role'];
         <li><a href="#">Manage Users</a></li>
     </ul>
 
-    <?php if ($admin_role === 'superadmin'): ?>
+    <?php if ($admin_role === 'Superadmin'): ?>
         <a href="javascript:void(0)" onclick="toggleMenu('admin-menu')"><i class="fas fa-users-cog"></i> Admin Management</a>
         <ul id="admin-menu" class="submenu">
             <li><a href="admin_management.php">Manage Admins</a></li>

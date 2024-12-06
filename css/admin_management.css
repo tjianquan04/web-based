@@ -71,14 +71,17 @@ table a {
 
 .btn-view {
     background-color: #007bff;
+    border: 1px solid #ccc; 
 }
 
 .btn-edit {
     background-color: #ffc107;
+    border: 1px solid #ccc; 
 }
 
 .btn-delete {
     background-color: #dc3545;
+    border: 1px solid #ccc; 
 }
 
 /* Button hover effect */
@@ -92,6 +95,148 @@ table a {
 
 .btn-delete:hover {
     background-color: #c82333;
+}
+
+.btn i {
+    margin-right: 8px; /* Adjust this value to add space between the icon and the text */
+}
+
+/* Add button */
+
+.btn-add {
+    background-color: #2cad4a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.btn-add:hover{
+    background-color: #21a01f;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4); /* Black with opacity */
+}
+
+/* Modal Content Styling */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+}
+
+/* Close Button Styling */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form Styling */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+label i{
+    margin-left: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="password"]:focus,
+input[type="text"]:focus,
+input[type="email"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Buttons Styling */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-submit,
+.btn-clear {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+.btn-clear {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-clear:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+    }
 }
 
 /* Responsive design for smaller screens */
