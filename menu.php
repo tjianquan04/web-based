@@ -1,39 +1,15 @@
 <?php
 require '_base.php';
-//-----------------------------------------------------------------------------
-// Capture the query parameters
-$category = req('category_name');  // For main category
-$category_id = req('category_id');  // For subcategory by ID
-$name = req('name'); // For searching purpose
 
-// Capture the sort and dir parameters (default to name ascending if not provided)
-$sort = req('sort', 'description');  // Default sort by 'description' (name)
-$dir = req('dir', 'asc');  // Default direction is 'asc'
+// Capture query parameters
+$category = req('category_name');  // Main category
+$category_id = req('category_id'); // Subcategory
+$name = req('name');               // Search keyword
+$sort = req('sort', 'description'); // Sorting field
+$dir = req('dir', 'asc');           // Sorting direction
 
-// Initialize an empty products array
-$product = [];
-
-// Check if a category is selected (main category or subcategory)
-if ($category) {
-    // Fetch products or subcategories based on the category name
-    $stm = $_db->prepare("SELECT * FROM product WHERE category_name = ? ORDER BY $sort $dir");
-    $stm->execute([$category]);
-    $product = $stm->fetchAll();
-} elseif ($category_id) {
-    // Fetch products based on the category ID (for subcategory)
-    $stm = $_db->prepare("SELECT * FROM product WHERE category_id = ? ORDER BY $sort $dir");
-    $stm->execute([$category_id]);
-    $product = $stm->fetchAll();
-} elseif ($name) {
-    // Query the database to search for products by description
-    $stm = $_db->prepare("SELECT * FROM product WHERE description LIKE ? ORDER BY $sort $dir");
-    $stm->execute(["%$name%"]);
-    $product = $stm->fetchAll();
-} else {
-    // Fetch all products if no category or search term is provided
-    $stm = $_db->query("SELECT * FROM product ORDER BY $sort $dir");
-    $product = $stm->fetchAll();
-}
+// Fetch products
+$product = fetchProducts($_db, $category, $category_id, $name, $sort, $dir);
 
 // ----------------------------------------------------------------------------
 $_title = $category ? "Products in $category" : "Products in Subcategory $category_id";
@@ -43,30 +19,51 @@ include '_head.php';
 <h1>Products</h1>
 
 <?php if (count($product) > 0): ?>
-    <table class="table">
-        <tr>
-            <th>
-                <a href="?sort=description&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>">Product Name</a>
-            </th>
-            <th>
-                <a href="?sort=product_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>">Product ID</a>
-            </th>
-            <th>
-                <a href="?sort=unit_price&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>">Price</a>
-            </th>
-        </tr>
+   
+            <button><a href="?sort=description&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Product Name</a>
+            </button>
+            <button><a href="?sort=product_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Product ID</a>
+            </button>
+            <button>
+            <a href="?sort=unit_price&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Price</a>
+            </button>
+  
 
-        <?php foreach ($product as $p): ?>
-            <tr>
-                <td><?= $p->description ?></td>
-                <td><?= $p->product_id ?></td>
-                <td><?= $p->unit_price ?></td>
-            </tr>
-        <?php endforeach ?>
-    </table>
+
+    <div class="product-items">
+    <?php foreach ($product as $p): ?>
+        <!-- single product -->
+        <div class="product">
+            <div class="product-content">
+                <div class="product-img">
+                <a href="product_details.php?product_id=<?= $p->product_id ?>"><img src="/image/<?= $p->photo ?>" alt="Product Photo" class="category">
+                    
+                </a>
+                </div>
+
+            </div>
+            <div class="product-info">
+                <div class="product-info-top">
+                    <h2 class="sm-title"><a href="product_details.php?product_id=<?= $p->product_id ?>"><?= $p->description ?></a></h2>
+
+                </div>
+                <?= $p->unit_price ?>
+
+            </div>
+            <div class="off-info">
+                <h2 class="sm-title">25% off</h2>
+            </div>
+        </div>
+
+    <?php endforeach ?>
+</div>
+   
+
+
 <?php else: ?>
     <p>No products found matching your search criteria.</p>
 <?php endif ?>
 
 <?php
 include '_foot.php';
+?>
