@@ -1,12 +1,19 @@
 /* Sidebar Styling */
+body {
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
 .sidebar {
-    height: 100%;
-    width: 250px;
+    height: 100vh;
+    width: 260px;
     background-color: #5c656e;
     color: #fff;
     position: fixed;
     top: 0;
     left: 0;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -32,6 +39,7 @@
     border-radius: 20px;  /* Rounded corners */
     transition: background-color 0.3s, border-color 0.3s;
     width: 70%;
+    font-size: 15px;
 }
 
 .menu > a:hover {
@@ -50,7 +58,6 @@
     margin: 0;
     background-color: #5c656e;
     list-style: none;  /* Remove default list style */
-
     transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -62,6 +69,7 @@
     background-color: #495057;/* Match background of the submenu */
     border: 1px solid #ccc;  /* Border to match the top-level menu items */
     border-radius: 20px;  /* Same rounded corners */
+    font-size: 15px;
 }
 
 .submenu li:hover {
@@ -73,12 +81,10 @@
     color: #fff;  /* Ensure text stays white on hover */
 }
 
-.main-content {
+.header-content {
     margin-left: 250px;  /* Adjust this to match the sidebar width */
     padding: 20px;
     background-color: #f4f6f9;  /* Light background for the main content */
-    height: 100vh;  /* Make sure the main content fills the full screen height */
-    overflow-y: auto;  /* Allow scrolling if the content is too long */
 }
 
 /* Header Styling */
@@ -90,6 +96,7 @@
     background-color: #fff;
     border-radius: 10px;
     margin-bottom: 20px;
+    margin-left: 10px;
 }
 
 .header-right i {

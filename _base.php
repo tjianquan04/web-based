@@ -90,7 +90,6 @@ function validateAdmin($admin_id, $password)
         $stm = $_db->prepare("SELECT * FROM `admin` WHERE admin_id = ?");
         $stm->execute([$admin_id]);
         $admin = $stm->fetch(); // Fetch the admin record
-        var_dump($admin);
         // Check if admin exists and password matches
         if ($admin && password_verify($password, $admin->password)) {
             // Return the admin object with role information if credentials are valid
@@ -102,6 +101,24 @@ function validateAdmin($admin_id, $password)
         // Log the error or handle it
         error_log("Database error: " . $e->getMessage());
         return false;
+    }
+}
+
+function getAllAdmins()
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare the SQL query to fetch all admins excluding the superadmin and the current logged-in admin
+        $stmt = $_db->prepare("SELECT * FROM `admin` WHERE `role` != 'superadmin'");
+        $stmt->execute();
+        
+        // Fetch all the results as an associative array
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        // Log the error and return an empty array or handle as needed
+        error_log("Database error: " . $e->getMessage());
+        return [];
     }
 }
 
