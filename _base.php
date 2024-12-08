@@ -178,26 +178,117 @@ function generateNextAdminId()
 
     try {
         // Fetch the latest admin_id from the database
-        $stm = $_db->query("SELECT admin_id FROM admin ORDER BY admin_id DESC LIMIT 1");
-        $latestAdmin = $stm->fetch(PDO::FETCH_ASSOC);
+        $stm = $_db->query("SELECT MAX(admin_id) AS latest_id FROM admin");
+        $latestAdmin = $stm->fetch(PDO::FETCH_OBJ);
 
-        if ($latestAdmin) {
-            // Extract the numeric part of the admin_id
-            preg_match('/(\d+)$/', $latestAdmin['admin_id'], $matches);
-            $nextId = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        // If there is an existing admin, increment the admin_id
+        if ($latestAdmin && isset($latestAdmin->latest_id)) {
+            $nextId = $latestAdmin->latest_id + 1;  // Increment the latest ID by 1
         } else {
-            // If no admin exists, start from 1
-            $nextId = 1;
+            // If no admins exist, start from 1000
+            $nextId = 1000;
         }
-        
-        // Generate the next admin ID
-        return "admin" . $nextId;
+
+        return $nextId;
+
     } catch (PDOException $e) {
         // Handle database errors
         error_log("Error generating next admin ID: " . $e->getMessage());
         return false; // Indicate failure
     }
 }
+
+// Function to get admin details by admin_id
+function getAdminById($admin_id) {
+    global $_db; // Assuming you're using PDO for database interaction
+
+    // Prepare the SQL query to fetch the admin details by admin_id
+    $stmt = $_db->prepare('SELECT * FROM admin WHERE admin_id = ? LIMIT 1');
+    
+    // Execute the query with the given admin_id
+    $stmt->execute([$admin_id]);
+    
+    // Fetch the result as an object
+    $admin = $stmt->fetch(PDO::FETCH_OBJ);
+    
+    // Return the admin object or null if not found
+    return $admin ?: null;
+}
+
+
+function generateDynamicPagination($pager)
+{
+    $currentPage = $pager->page;
+    $totalPages = $pager->page_count;
+
+    $paginationHTML = '<div class="pagination">';
+
+    // Add "First" link
+    if ($currentPage > 1) {
+        $paginationHTML .= '<a href="?page=1">&laquo; First</a>';
+    }
+
+    // Add "Previous" link
+    if ($currentPage > 1) {
+        $paginationHTML .= '<a href="?page=' . ($currentPage - 1) . '">&lt;</a>';
+    }
+
+    // Show previous, current, and next pages
+    for ($i = max(1, $currentPage - 1); $i <= min($totalPages, $currentPage + 1); $i++) {
+        if ($i == $currentPage) {
+            $paginationHTML .= '<span class="active">' . $i . '</span>';
+        } else {
+            $paginationHTML .= '<a href="?page=' . $i . '">' . $i . '</a>';
+        }
+    }
+
+    // Add "Next" link
+    if ($currentPage < $totalPages) {
+        $paginationHTML .= '<a href="?page=' . ($currentPage + 1) . '">&gt;</a>';
+    }
+
+    // Add "Last" link
+    if ($currentPage < $totalPages) {
+        $paginationHTML .= '<a href="?page=' . $totalPages . '">Last &raquo;</a>';
+    }
+
+    $paginationHTML .= '</div>';
+
+    return $paginationHTML;
+}
+
+// Crop, resize and save photo
+function save_photo($f, $folder, $width = 200, $height = 200)
+{
+    $photo = uniqid() . '.jpg';
+
+    require_once 'lib/SimpleImage.php';
+    $img = new SimpleImage();
+    $img->fromFile($f->tmp_name)
+        ->thumbnail($width, $height)
+        ->toFile("../image/$photo", 'image/jpeg');
+
+    return $photo;
+}
+
+function get_file($key)
+{
+    $f = $_FILES[$key] ?? null;
+
+    if ($f && $f['error'] == 0) {
+        return (object)$f;
+    }
+
+    return null;
+}
+
+function html_file($key, $accept = '', $attr = '')
+{
+    echo "<input type='file' id='$key' name='$key' accept='$accept' $attr>";
+}
+
+
+
 
 
 

@@ -1,19 +1,22 @@
 <link rel="stylesheet" href="/css/flash_msg.css">
 <?php
 include('_admin_head.php');
+require_once '../lib/SimplePager.php';
 
-// Ensure that the logged-in user is a superadmin
-//if ($_SESSION['role'] !== 'superadmin') {
-//    // If the logged-in user is not a superadmin, redirect to a different page (e.g., dashboard)
-//    header('Location: dashboard.php');
-//   exit();
-//}
+//Ensure that the logged-in user is a superadmin
+if ($_SESSION['role'] !== 'Superadmin') {
+    //If the logged-in user is not a superadmin, redirect to a different page (e.g., dashboard)
+    redirect('../index.php');
+    exit();
+}
 
-// Fetch all admins excluding the superadmin
-$admins = getAllAdmins();
+$page = req('page', 1);
+$p = new SimplePager("SELECT * FROM admin WHERE `role` != 'superadmin' ORDER BY admin_id ASC ", [], 10, $page);
+$admins = $p->result;
+
 // Function to fetch all admins excluding 'superadmin'
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     // Collect and sanitize input
     $admin_name = $_POST['admin_name'];
     $adminEmail = $_POST['adminEmail'];
@@ -28,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Call the function to add the admin
     $result = addAdmin($admin_name, $adminEmail, $adminPassword);
-    
+
     // Handling success or failure
     if ($result) {
-        temp('info','Admin added successfully!');
+        temp('info', 'Admin added successfully!');
         redirect('admin_management.php');
     } else {
         echo "Failed to add admin!";
@@ -49,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="/css/admin_management.css">
 
 </head>
+
 <body>
     <div class="container">
         <h1>Admin Management</h1>
@@ -69,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php
                 // Ensure $admins is an array
                 if ($admins && is_array($admins)) {
-                    $num = 1;  // Start numbering from 1
+                    $num = ($page - 1) * 10 + 1; // Start numbering from 1
                     foreach ($admins as $row) {
                         // Display each admin in the table, assuming $row is an associative array
                         echo "<tr>
@@ -91,8 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ?>
             </tbody>
         </table>
-        <!-- Button to Add New Admin -->
-        <button class="btn btn-add" onclick="openModal()">+ Add New Admin</button>
+
+        <!-- Button to Add New Admin and pagination-->
+        <div class="pagination-container">
+            <button class="btn btn-add" onclick="openModal()">+ Add New Admin</button>
+            <div class="pagination">
+                <?= generateDynamicPagination($p); ?>
+            </div>
+        </div>
+
 
         <!-- Modal for Adding New Admin -->
         <div id="addAdminModal" class="modal">
@@ -103,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form id="addAdminForm" method="POST">
                     <label for="admin_name">Admin Name<i class="fas fa-name"></i></label>
                     <div class="input-container">
-                    <input type="text" id="admin_name" name="admin_name" placeholder="Enter Name" oninput="this.value = this.value.toUpperCase()" required>
+                        <input type="text" id="admin_name" name="admin_name" placeholder="Enter Name" oninput="this.value = this.value.toUpperCase()" required>
                     </div><br>
 
                     <label for="adminEmail">Email<i class="fas fa-envelope"></i></label>
@@ -131,6 +142,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </body>
 
 </html>
-<?php
-
-?>

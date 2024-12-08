@@ -64,7 +64,7 @@ $admin_role = $_SESSION['role'];
         <!-- Main Content -->
         <main class="header-content">
             <header class="header">
-                <h2>Welcome, <?= htmlspecialchars($_SESSION['admin']) ?>!</h1>
+                <h2>Welcome, <?= htmlspecialchars($_SESSION['role']) ?>!</h1>
                 <div class="header-right">
                     <i class="fas fa-bell"></i>
                     <i class="fas fa-user-circle"></i>
@@ -72,4 +72,4 @@ $admin_role = $_SESSION['role'];
             </header>
         </main>
     </div>
-    <script src="/js/main.js"></script>
+    <script src="../js/main.js"></script>

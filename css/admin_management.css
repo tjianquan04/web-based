@@ -232,6 +232,69 @@ input[type="email"]:focus {
     background-color: #c82333;
 }
 
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination {
+    display: flex;
+}
+
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #333; /* Dark grey for text */
+    border: 1px solid #ccc; /* Light grey border */
+    border-radius: 4px;
+    background-color: #fff; /* White background */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #333; /* Dark grey hover background */
+    color: white; /* White text on hover */
+    border-color: #333; /* Match border to hover background */
+}
+
+.pagination .active {
+    background-color: #666; /* Medium grey for active state */
+    color: white; /* White text for active state */
+    border-color: #666; /* Match border to active background */
+    cursor: default;
+}
+
+.pagination a.disabled {
+    pointer-events: none;
+    color: #999; /* Light grey text for disabled */
+    background-color: #f9f9f9; /* Slightly darker background for disabled */
+    border-color: #ddd; /* Match disabled border to grey */
+}
+
+.pagination a:first-child,
+.pagination a:last-child {
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .pagination a, .pagination span {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+}
+
+
 /* Responsive Modal */
 @media (max-width: 768px) {
     .modal-content {
