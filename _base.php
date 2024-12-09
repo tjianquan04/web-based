@@ -5,7 +5,9 @@
 // ============================================================================
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ============================================================================
 // General Page Functions
@@ -170,13 +172,39 @@ function addAdmin($admin_name, $adminEmail, $adminPassword)
 function getNextUserId()
 {
     global $_db;
-
-    // Query to get the highest user_id in the database
-    $stmt = $_db->query("SELECT MAX(user_id) AS max_id FROM user");
+    
+    // get the highest member_id 
+    $stmt = $_db->query("SELECT MAX(member_id) AS max_id FROM member");
     $row = $stmt->fetch();
+    
+    // Get the current highest member_id 
+    $max_id = $row->max_id;
+    
+    // If no records, return M000001
+    if ($max_id === null) {
+        return 'M000001';
+    }
+    
+    // Extract the numeric part of the current max_id 
+    $numeric_part = (int) substr($max_id, 1);
+    
+    // Increment the numeric part and pad it to 6 digits
+    $new_id = 'M' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
+    
+    return $new_id;
+}
 
-    // Return the next user_id (max_id + 1)
-    return $row->max_id + 1;
+//auto generate random username
+function generateRandomUsername() {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    $name = '';
+    
+    // Generate a random username of 8 characters
+    for ($i = 0; $i < 8; $i++) {
+        $name .= $chars[rand(0, strlen($chars) - 1)];
+    }
+
+    return $name;
 }
 
 function generateNextAdminId()
@@ -325,6 +353,17 @@ function table_headers($fields, $sort, $dir, $href = '')
     }
 }
 
+// Is unique?
+function is_unique($value, $table, $field)
+{
+    global $_db;
+    $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
+    $stm->execute([$value]);
+    return $stm->fetchColumn() == 0;
+}
+// ============================================================================
+// HTML Helpers
+// ============================================================================
 
 // Crop, resize and save photo
 function save_photo($f, $folder, $width = 200, $height = 200)
@@ -335,7 +374,7 @@ function save_photo($f, $folder, $width = 200, $height = 200)
     $img = new SimpleImage();
     $img->fromFile($f->tmp_name)
         ->thumbnail($width, $height)
-        ->toFile("../image/$photo", 'image/jpeg');
+        ->toFile("$folder/$photo", 'image/jpeg');
 
     return $photo;
 }
@@ -351,27 +390,10 @@ function get_file($key)
     return null;
 }
 
-function html_file($key, $accept = '', $attr = '')
+function html_file($key, $value = '', $accept = '', $attr = '')
 {
-    echo "<input type='file' id='$key' name='$key' accept='$accept' $attr>";
+    echo "<input type='file' id='$key' name='$key' value= '$value' accept='$accept' $attr>";
 }
-
-
-
-
-
-
-// Is unique?
-function is_unique($value, $table, $field)
-{
-    global $_db;
-    $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
-    $stm->execute([$value]);
-    return $stm->fetchColumn() == 0;
-}
-// ============================================================================
-// HTML Helpers
-// ============================================================================
 
 // Encode HTML special characters
 function encode($value)
@@ -380,29 +402,24 @@ function encode($value)
 }
 
 // Generate input field
-function html_input($type, $key, $placeholder = '', $data = [], $attr = '')
-{
-    $value = encode($data[$key] ?? '');
+function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
+    $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
     echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
-function html_text($key, $placeholder = '', $data = [], $attr = '')
-{
+function html_text($key, $placeholder = '', $data = '', $attr = '') {
     html_input('text', $key, $placeholder, $data, $attr);
 }
 
 // Generate password input field
-function html_password($key, $placeholder = '', $data = [], $attr = '')
-{
+function html_password($key, $placeholder = '', $data = '', $attr = '') {
     html_input('password', $key, $placeholder, $data, $attr);
-    echo "<input type='checkbox' id='show-password' onclick='togglePasswordVisibility()'> Show Password<br>";
 }
 
 // Generate email input field
-function html_email($key, $placeholder = '', $data = [], $attr = '')
-{
+function html_email($key, $placeholder = '', $data = '', $attr = '') {
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
@@ -428,6 +445,10 @@ function html_select($key, $items, $default = '- Select One -', $attr = '') {
 }
 
 
+// Generate search input field
+function html_search($key,$placeholder = 'Search by name, email, contact', $data = "", $attr = '') {
+    html_input('search', $key, $placeholder, $data, $attr);
+}
 
 // ============================================================================
 // Error Handlings
