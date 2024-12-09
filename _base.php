@@ -124,16 +124,42 @@ function getAllAdmins()
     }
 }
 
-
+//auto genetate next user id 
 function getNextUserId() {
     global $_db;
     
-    // Query to get the highest user_id in the database
-    $stmt = $_db->query("SELECT MAX(user_id) AS max_id FROM user");
+    // get the highest member_id 
+    $stmt = $_db->query("SELECT MAX(member_id) AS max_id FROM member");
     $row = $stmt->fetch();
     
-    // Return the next user_id (max_id + 1)
-    return $row->max_id + 1;
+    // Get the current highest member_id 
+    $max_id = $row->max_id;
+    
+    // If no records, return M000001
+    if ($max_id === null) {
+        return 'M000001';
+    }
+    
+    // Extract the numeric part of the current max_id 
+    $numeric_part = (int) substr($max_id, 1);
+    
+    // Increment the numeric part and pad it to 6 digits
+    $new_id = 'M' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
+    
+    return $new_id;
+}
+
+//auto generate random username
+function generateRandomUsername() {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    $name = '';
+    
+    // Generate a random username of 8 characters
+    for ($i = 0; $i < 8; $i++) {
+        $name .= $chars[rand(0, strlen($chars) - 1)];
+    }
+
+    return $name;
 }
 
 // Is unique?
@@ -147,35 +173,65 @@ function is_unique($value, $table, $field) {
 // HTML Helpers
 // ============================================================================
 
+// Crop, resize and save photo
+function save_photo($f, $folder, $width = 200, $height = 200)
+{
+    $photo = uniqid() . '.jpg';
+
+    require_once 'lib/SimpleImage.php';
+    $img = new SimpleImage();
+    $img->fromFile($f->tmp_name)
+        ->thumbnail($width, $height)
+        ->toFile("$folder/$photo", 'image/jpeg');
+
+    return $photo;
+}
+
+function get_file($key)
+{
+    $f = $_FILES[$key] ?? null;
+
+    if ($f && $f['error'] == 0) {
+        return (object)$f;
+    }
+
+    return null;
+}
+
+function html_file($key, $value = '', $accept = '', $attr = '')
+{
+    echo "<input type='file' id='$key' name='$key' value= '$value' accept='$accept' $attr>";
+}
+
 // Encode HTML special characters
 function encode($value) {
     return htmlentities($value);
 }
 
 // Generate input field
-function html_input($type, $key, $placeholder = '', $data = [], $attr = '') {
-    $value = encode($data[$key] ?? '');
+function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
+    $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
     echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
-function html_text($key, $placeholder = '', $data = [], $attr = '') {
+function html_text($key, $placeholder = '', $data = '', $attr = '') {
     html_input('text', $key, $placeholder, $data, $attr);
 }
 
 // Generate password input field
-function html_password($key, $placeholder = '', $data = [], $attr = '') {
+function html_password($key, $placeholder = '', $data = '', $attr = '') {
     html_input('password', $key, $placeholder, $data, $attr);
 }
 
 // Generate email input field
-function html_email($key, $placeholder = '', $data = [], $attr = '') {
+function html_email($key, $placeholder = '', $data = '', $attr = '') {
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
 // Generate search input field
-function html_search($key,$placeholder = 'Search by name, email, contact', $data = [], $attr = '') {
+function html_search($key,$placeholder = 'Search by name, email, contact', $data = "", $attr = '') {
     html_input('search', $key, $placeholder, $data, $attr);
 }
 

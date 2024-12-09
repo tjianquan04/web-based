@@ -39,8 +39,8 @@ form {
 }
 
 button {
-    padding: 10px 15px;
-    font-size: 1em;
+    padding: 10px 15px; 
+    font-size: 1em; 
     background-color: #f5b041;
     color: white;
     border: none;
@@ -48,8 +48,10 @@ button {
     cursor: pointer;
     transition: background-color 0.3s;
     height: 40px; 
-    display: inline-flex; 
-    align-items: center; 
+    display: inline-block;
+    text-align: center;
+    margin: 2px; 
+    white-space: nowrap; 
 }
 
 button:hover {
@@ -73,8 +75,14 @@ p.records-count {
 
 .table th, .table td {
     padding: 12px 15px;
-    text-align: left;
     border: 1px solid #ddd;
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+.inactive {
+    background-color: #f5f5f5; 
+    color: #e74c3c; 
 }
 
 .table th {
@@ -83,12 +91,13 @@ p.records-count {
     font-weight: bold;
 }
 
-.table tr:nth-child(even) {
-    background-color: #f9f9f9;
+.table td:last-child {
+    white-space: nowrap; 
+    position: relative;
 }
 
 .table tr:hover {
-    background-color: #f1f1f1;
+    background-color: #e0e0e0;
 }
 
 .table td button {
@@ -113,3 +122,82 @@ p.records-count {
 .table td button[data-post]:hover {
     background-color: #c0392b;
 }
+
+/* Popup Styles */
+.table .popup {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(5px, -50%); 
+    z-index: 999;
+    display: none;
+    border: 1px solid #333;
+    background-color: #fff;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    max-width: 100px;
+}
+
+.table tr:hover .popup {
+    display: block;
+    animation: fadeIn 0.2s ease-in-out; 
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.table .popup img {
+    width: 100%; 
+    border-radius: 5px; 
+}
+
+/* pager css */
+.pager {
+    text-align: center;
+    margin: 20px 0; 
+    font-family: Arial, sans-serif; 
+}
+
+.pager a {
+    text-decoration: none; 
+    color: #333; 
+    padding: 8px 16px; 
+    margin: 0 5px; 
+    border: 1px solid #ccc; 
+    border-radius: 50px; 
+    background-color: white; 
+    transition: all 0.3s ease; 
+}
+
+.pager a:hover {
+    background-color: #e0e0e0; 
+    color: #333; 
+    border-color: #bbb; 
+}
+
+.pager a.active {
+    background-color: #333; 
+    color: white; 
+    font-weight: bold; 
+    border-color: #333; 
+    pointer-events: none; 
+}
+
+.pager a:first-child,
+.pager a:last-child {
+    font-weight: bold; 
+}
+
+.pager a:disabled {
+    color: #ccc; 
+    background-color: #f9f9f9; 
+    border-color: #ccc; 
+    pointer-events: none; 
+}
+
