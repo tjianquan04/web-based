@@ -44,6 +44,11 @@ td {
     background-color: #fff;
 }
 
+.description-cell {
+    word-wrap: break-word; /* This ensures long words will break and wrap onto the next line */
+    white-space: normal; /* This allows the content to wrap onto the next line */
+}
+
 tr:nth-child(even) td {
     background-color: #f9f9f9;
 }

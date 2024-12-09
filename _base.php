@@ -96,6 +96,7 @@ function validateAdmin($admin_id, $password)
         $stm = $_db->prepare("SELECT * FROM `admin` WHERE admin_id = ?");
         $stm->execute([$admin_id]);
         $admin = $stm->fetch(); // Fetch the admin record
+        
         // Check if admin exists and password matches
         if ($admin && $admin->password === sha1($password)) {
             // Return the admin object with role information if credentials are valid
@@ -405,6 +406,28 @@ function html_email($key, $placeholder = '', $data = [], $attr = '')
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
+// Generate <input type='number'>
+function html_number($key, $min = '', $max = '', $step = '', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='number' id='$key' name='$key' value='$value'
+                 min='$min' max='$max' step='$step' $attr>";
+}
+
+// Generate <select>
+function html_select($key, $items, $default = '- Select One -', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<select id='$key' name='$key' $attr>";
+    if ($default !== null) {
+        echo "<option value=''>$default</option>";
+    }
+    foreach ($items as $id => $text) {
+        $state = $id == $value ? 'selected' : '';
+        echo "<option value='$id' $state>$text</option>";
+    }
+    echo '</select>';
+}
+
+
 
 // ============================================================================
 // Error Handlings
@@ -452,8 +475,7 @@ function is_email($value)
 
 
 //Product
-function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
-{
+function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
     $query = "
         SELECT p.*, pp.photo
         FROM product p
@@ -461,7 +483,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
         ON p.product_id = pp.product_id AND pp.default_photo = 1
         WHERE 1=1
     ";
-
+    
     if ($category) {
         $query .= " AND p.category_name = ?";
         $params[] = $category;
@@ -483,8 +505,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 }
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
-{
+function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
     $query = "
         SELECT p.*, pp.photo 
         FROM product p
@@ -516,3 +537,6 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
 
     return $stm->fetchAll();
 }
+
+
+
