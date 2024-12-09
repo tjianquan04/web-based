@@ -258,6 +258,37 @@ function generateDynamicPagination($pager)
     return $paginationHTML;
 }
 
+$_user = $_SESSION['user'] ?? null;
+
+function login($user, $url = '/') {
+    $_SESSION['user'] = $user;
+    redirect($url);
+}
+
+// Logout user
+function logout($url = '/') {
+    unset($_SESSION['user']);
+    redirect($url);
+}
+
+// Authorization
+function auth(...$roles) {
+    global $_user;
+    if ($_user) {
+        if ($roles) {
+            if (in_array($_user->role, $roles)) {
+                return; // OK
+            }
+        }
+        else {
+            return; // OK
+        }
+    }
+    
+    redirect('admin_dashboard.php');
+}
+
+
 // Crop, resize and save photo
 function save_photo($f, $folder, $width = 200, $height = 200)
 {
@@ -367,6 +398,11 @@ function is_exists($value, $table, $field) {
     $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
     $stm->execute([$value]);
     return $stm->fetchColumn() > 0;
+}
+
+// Is email?
+function is_email($value) {
+    return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 
