@@ -90,8 +90,9 @@ function validateAdmin($admin_id, $password)
         $stm = $_db->prepare("SELECT * FROM `admin` WHERE admin_id = ?");
         $stm->execute([$admin_id]);
         $admin = $stm->fetch(); // Fetch the admin record
+        
         // Check if admin exists and password matches
-        if ($admin && password_verify($password, $admin->password)) {
+        if ($admin && $admin->password === sha1($password)) {
             // Return the admin object with role information if credentials are valid
             return $admin;
         } else {
@@ -379,6 +380,8 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
         ON p.product_id = pp.product_id AND pp.default_photo = 1
         WHERE 1=1
     ";
+
+    $params = [];
     
     if ($category) {
         $query .= " AND p.category_name = ?";
@@ -399,40 +402,5 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
-
-
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
-    $query = "
-        SELECT p.*, pp.photo 
-        FROM product p
-        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = "%$name%";
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stm = $db->prepare($query);
-    $stm->execute($params);
-
-    return $stm->fetchAll();
-}
-
 
 
