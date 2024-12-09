@@ -18,15 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $admin = validateAdmin($admin_id, $password);
 
         if ($admin) {
-            // Login successful: store admin details in session
-            $_SESSION['admin'] = $admin->admin_id; // Store admin ID
-            $_SESSION['role'] = $admin->role;     // Store admin role (superadmin/admin)
-
+            login($admin, 'admin_dashboard.php');
             // Set a temporary flash message
             temp('info', 'Successful login');
-
-            // Redirect to admin homepage
-            redirect('admin_dashboard.php');
             exit();
         } else {
             $error = 'Invalid username or password.'; // Invalid credentials

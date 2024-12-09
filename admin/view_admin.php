@@ -4,11 +4,7 @@
 include('_admin_head.php');
 
 // Ensure that the logged-in user is a superadmin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Superadmin') {
-    // Redirect if the user is not a superadmin
-    redirect('../index.php');
-    exit();
-}
+auth('Superadmin');
 
 // Fetch the admin data based on the 'id' passed in the query string
 $admin_id = req('id'); // Get the ID of the admin to view

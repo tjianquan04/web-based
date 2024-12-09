@@ -103,3 +103,29 @@ body {
     margin-left: 15px;
     cursor: pointer;
 }
+
+/* Logout Button Styles */
+.btn-logout {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+.btn-logout i {
+    margin-right: 10px;
+}
+
+form .btn-logout {
+    padding-left: 20px;
+}

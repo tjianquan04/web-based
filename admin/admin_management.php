@@ -3,12 +3,8 @@
 include('_admin_head.php');
 require_once '../lib/SimplePager.php';
 
-//Ensure that the logged-in user is a superadmin
-if ($_SESSION['role'] !== 'Superadmin') {
-    //If the logged-in user is not a superadmin, redirect to a different page (e.g., dashboard)
-    redirect('../index.php');
-    exit();
-}
+//Superadmin
+auth('Superadmin');
 
 $page = req('page', 1);
 $p = new SimplePager("SELECT * FROM admin WHERE `role` != 'superadmin' ORDER BY admin_id ASC ", [], 10, $page);
