@@ -363,6 +363,28 @@ function html_email($key, $placeholder = '', $data = [], $attr = '') {
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
+// Generate <input type='number'>
+function html_number($key, $min = '', $max = '', $step = '', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='number' id='$key' name='$key' value='$value'
+                 min='$min' max='$max' step='$step' $attr>";
+}
+
+// Generate <select>
+function html_select($key, $items, $default = '- Select One -', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<select id='$key' name='$key' $attr>";
+    if ($default !== null) {
+        echo "<option value=''>$default</option>";
+    }
+    foreach ($items as $id => $text) {
+        $state = $id == $value ? 'selected' : '';
+        echo "<option value='$id' $state>$text</option>";
+    }
+    echo '</select>';
+}
+
+
 
 // ============================================================================
 // Error Handlings
@@ -408,6 +430,12 @@ function is_email($value) {
 
 
 //Product
+
+//product-global constants & variables
+// Fetch all categories
+
+
+
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
     $query = "
         SELECT p.*, pp.photo
