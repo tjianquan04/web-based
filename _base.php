@@ -353,42 +353,6 @@ function table_headers($fields, $sort, $dir, $href = '')
     }
 }
 
-
-// Crop, resize and save photo
-function save_photo($f, $folder, $width = 200, $height = 200)
-{
-    $photo = uniqid() . '.jpg';
-
-    require_once 'lib/SimpleImage.php';
-    $img = new SimpleImage();
-    $img->fromFile($f->tmp_name)
-        ->thumbnail($width, $height)
-        ->toFile("../image/$photo", 'image/jpeg');
-
-    return $photo;
-}
-
-function get_file($key)
-{
-    $f = $_FILES[$key] ?? null;
-
-    if ($f && $f['error'] == 0) {
-        return (object)$f;
-    }
-
-    return null;
-}
-
-function html_file($key, $accept = '', $attr = '')
-{
-    echo "<input type='file' id='$key' name='$key' accept='$accept' $attr>";
-}
-
-
-
-
-
-
 // Is unique?
 function is_unique($value, $table, $field)
 {

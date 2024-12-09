@@ -68,7 +68,7 @@ include '_head.php';
             <button data-get="view_member_details.php?id=<?= $s->member_id ?>">View</button>
             <button data-get="edit_member_details.php?id=<?= $s->member_id ?>">Edit</button>
             <button data-post="block_member.php?id=<?= $s->member_id ?>">Block</button>
-            <button data-post="delete_member.php?id=<?= $s->member_id ?>">Delete</button>
+            <button data-post="delete_member.php?id=<?= $s->member_id ?> ">Delete</button>
             <img src="<?= $s->profile_photo ?>" class="popup">
         </td>
     </tr>

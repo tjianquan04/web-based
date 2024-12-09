@@ -54,7 +54,7 @@ $(() => {
     
     // Confirmation message
     $('[data-confirm]').on('click', e => {
-        const text = e.target.dataset.confirm || 'Are you sure?';
+        const text = e.target.dataset.confirm || 'Are you sure to delete ?';
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();
