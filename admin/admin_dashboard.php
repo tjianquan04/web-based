@@ -1,6 +1,8 @@
 <!-- include admin header -->
  <?php
- include('admin_head.php');
+ include('_admin_head.php');
+ auth('Superadmin','Admin');
+ 
  ?>
 
 

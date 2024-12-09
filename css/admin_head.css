@@ -103,3 +103,29 @@ body {
     margin-left: 15px;
     cursor: pointer;
 }
+
+.btn-logout {
+    padding: 10px 20px;
+    display: block;
+    color: #fff;  /* White text color */
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 150px;  /* Adjust top margin to align with other menu items */
+    margin-left: 30px;
+    border: 1px solid #ccc;  /* Border to match top-level menu buttons */
+    border-radius: 20px;  /* Rounded corners */
+    transition: background-color 0.3s, border-color 0.3s;
+    width: 70%;  /* Same width as other menu items */
+    font-size: 15px;  /* Same font size as menu items */
+    background-color: #5c656e;
+}
+
+.btn-logout:hover {
+    background-color: #495057;  /* Dark background color on hover */
+    border-color: #fff;  /* White border on hover */
+}
+
+.btn-logout i {
+    margin-right: 10px;  /* Space between icon and text */
+}
+

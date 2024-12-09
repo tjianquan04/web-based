@@ -266,3 +266,94 @@ footer .container{
 .footer2 .media-icons{
     margin: 1.5em 0;
 }
+
+/* Register Form CSS*/
+.form-section {
+    background: rgba(255, 255, 255, 0.9); /* Keeps a light background */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    padding: 20px;
+    width: 100%;
+    margin: 2em auto;
+}
+
+.form-section .form-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+}
+
+.form-section .link-container {
+    display: flex;
+    justify-content:right;
+    font-size: 14px;
+    margin: 15px 10px 10px 10px;
+    gap: 10px;
+}
+
+.form-section .link-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-section .link-container a:hover {
+    text-decoration: underline;
+}
+
+.form-section form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.form-section form .form-control {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0 20px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.form-section form .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-section form button {
+    width: calc(50% - 5px);
+    padding: 10px;
+    font-size: 1.1em;
+    margin-top: 10px;
+    background: #f5b041;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.form-section form button:hover {
+    background: #e67e22;
+}
+
+.form-section form button[type="reset"] {
+    background: #ccc;
+    color: #333;
+}
+
+.form-section form button[type="reset"]:hover {
+    background: #999;
+}
+
+.form-section .error-message {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+
