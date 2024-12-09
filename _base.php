@@ -472,9 +472,16 @@ function is_email($value)
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
+// Is money?
+function is_money($value) {
+    return preg_match('/^\-?\d+(\.\d{1,2})?$/', $value);
+}
+
 
 
 //Product
+
+
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
     $query = "
         SELECT p.*, pp.photo
@@ -538,5 +545,67 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
     return $stm->fetchAll();
 }
 
+function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<select id='$key' name='$key' $attr>";
+    
+    // Default option
+    if ($default !== null) {
+        echo "<option value=''>$default</option>";
+    }
 
+    foreach ($categories as $main_category => $data) {
+        $id = $data['id'];
+        $has_subcategories = !empty($data['subcategories']);
+        
+        // Main category: Disable if it has subcategories
+        $disabled = $has_subcategories ? 'disabled' : '';
+        echo "<option value='$id' $disabled>$main_category</option>";
+
+        // Subcategories
+        if ($has_subcategories) {
+            foreach ($data['subcategories'] as $subcategory) {
+                $sub_id = $subcategory['id'];
+                $sub_name = $subcategory['name'];
+                $selected = $sub_id == $value ? 'selected' : '';
+                echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
+            }
+        }
+    }
+
+    echo '</select>';
+}
+
+function generate_product_id($category_name, $subcategory, $_db) {
+    // Define mnemonics for categories and subcategories
+    $mnemonics = [
+        'racquet' => '1',
+        'shuttlecock' => '2SC',
+        'racquetbag' => '3RB',
+    ];
+
+    $sub_mnemonics = [
+        'xpseries' => 'XP',
+        '3dcalibar' => '3D',
+        'axforce' => 'AX',
+        'tectonic' => 'TT',
+    ];
+
+    $prefix = $mnemonics[strtolower($category_name)] ?? '';
+    $sub_prefix = $sub_mnemonics[strtolower($subcategory)] ?? '';
+
+    if ($prefix && $sub_prefix) {
+        $id_prefix = $prefix . $sub_prefix;
+    } else {
+        $id_prefix = $prefix; // Use main category mnemonic if subcategory doesn't exist
+    }
+
+    // Fetch the next sequence number
+    $stm = $_db->prepare("SELECT COUNT(*) + 1 AS seq FROM product WHERE product_id LIKE ?");
+    $stm->execute(["$id_prefix%"]);
+    $row = $stm->fetch();
+    $seq = str_pad($row['seq'], 4, '0', STR_PAD_LEFT);
+
+    return $id_prefix . '-' . $seq;
+}
 
