@@ -66,7 +66,7 @@ $_categories = $_db->query('SELECT * FROM category')->fetchAll(PDO::FETCH_ASSOC)
         <div class="pagination-container">
             <button class="btn btn-add" onclick="openModal()">+ Add New Product</button>
             <div class="pagination">
-                <?= generateDynamicPagination($p); ?>
+                <?= generateDynamicPagination($p, $sort, $dir); ?>
             </div>
         </div>
 
