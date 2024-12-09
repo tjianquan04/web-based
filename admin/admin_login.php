@@ -2,9 +2,6 @@
 <?php
 require '../_base.php';
 
-// Initialize error message
-$error = '';
-
 // Process the form when it's submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admin_id = $_POST['admin_id'] ?? '';
@@ -12,18 +9,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate login details
     if (empty($admin_id) || empty($password)) {
-        $error = 'Please enter both username and password.';
+        $_err['login_error'] = 'Please enter both username and password.';
     } else {
         // Validate admin credentials
         $admin = validateAdmin($admin_id, $password);
 
         if ($admin) {
-            login($admin, 'admin_dashboard.php');
-            // Set a temporary flash message
-            temp('info', 'Successful login');
-            exit();
+            // Example: Check if admin's account is active (assuming status is 'Active')
+            if ($admin->status !== 'Active') {
+                $_err['status_error'] = 'Your account is inactive. Please contact support.';
+            } else {
+                // Admin is valid and active, perform login
+                temp('info', 'Login successfully!');
+                login($admin, 'admin_dashboard.php');
+                exit(); // Exit after successful login
+            }
         } else {
-            $error = 'Invalid username or password.'; // Invalid credentials
+            $_err['login_error'] = 'Invalid username or password.';
         }
     }
 }
@@ -45,10 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-container">
         <h1>Admin Login</h1>
 
-        <!-- Display error message if any -->
-        <?php if (!empty($error)): ?>
-            <p style="color: red;"><?= $error; ?></p>
-        <?php endif; ?>
+        <!-- Display login error message if exists -->
+        <?php err('login_error'); ?>
+
+        <!-- Display status error message if exists -->
+        <?php err('status_error'); ?>
+
 
         <!-- Login Form -->
         <form action="" method="POST">

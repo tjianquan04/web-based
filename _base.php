@@ -12,45 +12,51 @@ session_start();
 // ============================================================================
 
 // Is GET request?
-function is_get() {
+function is_get()
+{
     return $_SERVER['REQUEST_METHOD'] == 'GET';
 }
 
 // Is POST request?
-function is_post() {
+function is_post()
+{
     return $_SERVER['REQUEST_METHOD'] == 'POST';
 }
 
 // Obtain GET parameter
-function get($key, $value = null) {
+function get($key, $value = null)
+{
     $value = $_GET[$key] ?? $value;
     return is_array($value) ? array_map('trim', $value) : trim($value);
 }
 
 // Obtain POST parameter
-function post($key, $value = null) {
+function post($key, $value = null)
+{
     $value = $_POST[$key] ?? $value;
     return is_array($value) ? array_map('trim', $value) : trim($value);
 }
 
 // Obtain REQUEST (GET and POST) parameter
-function req($key, $value = null) {
+function req($key, $value = null)
+{
     $value = $_REQUEST[$key] ?? $value;
     return is_array($value) ? array_map('trim', $value) : trim($value);
 }
 
 // Redirect to URL
-function redirect($url = null) {
+function redirect($url = null)
+{
     $url ??= $_SERVER['REQUEST_URI'];
     header("Location: $url");
     exit();
 }
 
-function temp($key, $value = null) {
+function temp($key, $value = null)
+{
     if ($value !== null) {
         $_SESSION["temp_$key"] = $value;
-    }
-    else {
+    } else {
         $value = $_SESSION["temp_$key"] ?? null;
         unset($_SESSION["temp_$key"]);
         return $value;
@@ -112,7 +118,7 @@ function getAllAdmins()
         // Prepare the SQL query to fetch all admins excluding the superadmin and the current logged-in admin
         $stmt = $_db->prepare("SELECT * FROM `admin` WHERE `role` != 'superadmin'");
         $stmt->execute();
-        
+
         // Fetch all the results as an associative array
         return $stmt->fetchAll();
     } catch (PDOException $e) {
@@ -129,7 +135,7 @@ function addAdmin($admin_name, $adminEmail, $adminPassword)
     // Check if the admin email already exists
     $stm = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
     $stm->execute([$adminEmail]);
-    
+
     // If email already exists, return false
     if ($stm->rowCount() > 0) {
         return false; // Email already exists
@@ -143,7 +149,7 @@ function addAdmin($admin_name, $adminEmail, $adminPassword)
     $role = 'Admin';  // Set default role as 'admin'
     $phone_number = '-';  // Similarly, handle phone number if needed
     $status = 'Active';
-    
+
     try {
         // Prepare SQL query to insert new admin
         $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status) 
@@ -152,7 +158,6 @@ function addAdmin($admin_name, $adminEmail, $adminPassword)
         // Execute the statement with the form data
         $result = $stmt->execute([$admin_id, $admin_name, $hashedPassword, $role, $adminEmail, $phone_number, $status]);
         return $result;
-
     } catch (PDOException $e) {
         // Handle the error if something goes wrong with the query
         echo "Database error: " . $e->getMessage();
@@ -161,13 +166,14 @@ function addAdmin($admin_name, $adminEmail, $adminPassword)
 }
 
 
-function getNextUserId() {
+function getNextUserId()
+{
     global $_db;
-    
+
     // Query to get the highest user_id in the database
     $stmt = $_db->query("SELECT MAX(user_id) AS max_id FROM user");
     $row = $stmt->fetch();
-    
+
     // Return the next user_id (max_id + 1)
     return $row->max_id + 1;
 }
@@ -190,7 +196,6 @@ function generateNextAdminId()
         }
 
         return $nextId;
-
     } catch (PDOException $e) {
         // Handle database errors
         error_log("Error generating next admin ID: " . $e->getMessage());
@@ -199,92 +204,124 @@ function generateNextAdminId()
 }
 
 // Function to get admin details by admin_id
-function getAdminById($admin_id) {
+function getAdminById($admin_id)
+{
     global $_db; // Assuming you're using PDO for database interaction
 
     // Prepare the SQL query to fetch the admin details by admin_id
     $stmt = $_db->prepare('SELECT * FROM admin WHERE admin_id = ? LIMIT 1');
-    
+
     // Execute the query with the given admin_id
     $stmt->execute([$admin_id]);
-    
+
     // Fetch the result as an object
     $admin = $stmt->fetch(PDO::FETCH_OBJ);
-    
+
     // Return the admin object or null if not found
     return $admin ?: null;
 }
 
 
-function generateDynamicPagination($pager)
+function generateDynamicPagination($pager, $sort, $dir)
 {
     $currentPage = $pager->page;
     $totalPages = $pager->page_count;
 
+    // Start the pagination container
     $paginationHTML = '<div class="pagination">';
 
-    // Add "First" link
+    // Add "First" link with sort and dir parameters
     if ($currentPage > 1) {
-        $paginationHTML .= '<a href="?page=1">&laquo; First</a>';
+        $paginationHTML .= '<a href="?page=1&sort=' . $sort . '&dir=' . $dir . '">&laquo; First</a>';
     }
 
-    // Add "Previous" link
+    // Add "Previous" link with sort and dir parameters
     if ($currentPage > 1) {
-        $paginationHTML .= '<a href="?page=' . ($currentPage - 1) . '">&lt;</a>';
+        $paginationHTML .= '<a href="?page=' . ($currentPage - 1) . '&sort=' . $sort . '&dir=' . $dir . '">&lt;</a>';
     }
 
-    // Show previous, current, and next pages
+    // Show previous, current, and next pages, with sort and dir parameters
     for ($i = max(1, $currentPage - 1); $i <= min($totalPages, $currentPage + 1); $i++) {
         if ($i == $currentPage) {
+            // Highlight the current page
             $paginationHTML .= '<span class="active">' . $i . '</span>';
         } else {
-            $paginationHTML .= '<a href="?page=' . $i . '">' . $i . '</a>';
+            // Link to other pages, with sort and dir parameters
+            $paginationHTML .= '<a href="?page=' . $i . '&sort=' . $sort . '&dir=' . $dir . '">' . $i . '</a>';
         }
     }
 
-    // Add "Next" link
+    // Add "Next" link with sort and dir parameters
     if ($currentPage < $totalPages) {
-        $paginationHTML .= '<a href="?page=' . ($currentPage + 1) . '">&gt;</a>';
+        $paginationHTML .= '<a href="?page=' . ($currentPage + 1) . '&sort=' . $sort . '&dir=' . $dir . '">&gt;</a>';
     }
 
-    // Add "Last" link
+    // Add "Last" link with sort and dir parameters
     if ($currentPage < $totalPages) {
-        $paginationHTML .= '<a href="?page=' . $totalPages . '">Last &raquo;</a>';
+        $paginationHTML .= '<a href="?page=' . $totalPages . '&sort=' . $sort . '&dir=' . $dir . '">Last &raquo;</a>';
     }
 
+    // Close the pagination container
     $paginationHTML .= '</div>';
 
     return $paginationHTML;
 }
 
+
 $_user = $_SESSION['user'] ?? null;
 
-function login($user, $url = '/') {
+function login($user, $url = '/')
+{
     $_SESSION['user'] = $user;
     redirect($url);
 }
 
 // Logout user
-function logout($url = '/') {
+function logout($url = '/')
+{
     unset($_SESSION['user']);
     redirect($url);
 }
 
 // Authorization
-function auth(...$roles) {
-    global $_user;
+function auth(...$roles)
+{
+    global $_user;  // Assuming $_user is set when the admin logs in
+
     if ($_user) {
-        if ($roles) {
-            if (in_array($_user->role, $roles)) {
-                return; // OK
+        // Check if the user's role is valid
+        if (in_array($_user->role, $roles)) {
+            // Check if the user's account is active
+            if ($_user->status === 'Active') {
+                $_err = 'Your account is inactive. Please contact support.';
+                return;  // User is authorized, continue execution
+            } else {
+                redirect('admin_login.php');
             }
-        }
-        else {
-            return; // OK
+        } else {
+            // If the user's role is not in the allowed roles, redirect to login
+            redirect('admin_login.php');
         }
     }
-    
-    redirect('admin_dashboard.php');
+
+    redirect('admin_login.php');
+}
+
+// Generate table headers <th>
+function table_headers($fields, $sort, $dir, $href = '')
+{
+    foreach ($fields as $k => $v) {
+        $d = 'asc'; // Default direction
+        $c = '';    // Default class
+
+        // TODO
+        if ($k == $sort) {
+            $d = $dir == 'asc' ? 'desc' : 'asc';
+            $c = $dir;
+        }
+
+        echo "<th><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
+    }
 }
 
 
@@ -324,7 +361,8 @@ function html_file($key, $accept = '', $attr = '')
 
 
 // Is unique?
-function is_unique($value, $table, $field) {
+function is_unique($value, $table, $field)
+{
     global $_db;
     $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
     $stm->execute([$value]);
@@ -335,30 +373,35 @@ function is_unique($value, $table, $field) {
 // ============================================================================
 
 // Encode HTML special characters
-function encode($value) {
+function encode($value)
+{
     return htmlentities($value);
 }
 
 // Generate input field
-function html_input($type, $key, $placeholder = '', $data = [], $attr = '') {
+function html_input($type, $key, $placeholder = '', $data = [], $attr = '')
+{
     $value = encode($data[$key] ?? '');
     $placeholder = encode($placeholder);
     echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
-function html_text($key, $placeholder = '', $data = [], $attr = '') {
+function html_text($key, $placeholder = '', $data = [], $attr = '')
+{
     html_input('text', $key, $placeholder, $data, $attr);
 }
 
 // Generate password input field
-function html_password($key, $placeholder = '', $data = [], $attr = '') {
+function html_password($key, $placeholder = '', $data = [], $attr = '')
+{
     html_input('password', $key, $placeholder, $data, $attr);
     echo "<input type='checkbox' id='show-password' onclick='togglePasswordVisibility()'> Show Password<br>";
 }
 
 // Generate email input field
-function html_email($key, $placeholder = '', $data = [], $attr = '') {
+function html_email($key, $placeholder = '', $data = [], $attr = '')
+{
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
@@ -371,13 +414,13 @@ function html_email($key, $placeholder = '', $data = [], $attr = '') {
 $_err = [];
 
 // Generate <span class='err'>
-function err($key) {
+function err($key)
+{
 
     global $_err;
     if ($_err[$key] ?? false) {
         echo "<span class='error-message'>$_err[$key]</span>";
-    }
-    else {
+    } else {
         echo '<span class = "error-message"></span>';
     }
 }
@@ -392,7 +435,8 @@ $_db = new PDO('mysql:dbname=assignment_db', 'root', '', [
 ]);
 
 // Is exists?
-function is_exists($value, $table, $field) {
+function is_exists($value, $table, $field)
+{
     global $_db;
     $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
     $stm->execute([$value]);
@@ -400,14 +444,16 @@ function is_exists($value, $table, $field) {
 }
 
 // Is email?
-function is_email($value) {
+function is_email($value)
+{
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 
 
 //Product
-function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
+function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
+{
     $query = "
         SELECT p.*, pp.photo
         FROM product p
@@ -415,7 +461,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
         ON p.product_id = pp.product_id AND pp.default_photo = 1
         WHERE 1=1
     ";
-    
+
     if ($category) {
         $query .= " AND p.category_name = ?";
         $params[] = $category;
@@ -437,7 +483,8 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
 }
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
+function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
+{
     $query = "
         SELECT p.*, pp.photo 
         FROM product p
@@ -469,6 +516,3 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
 
     return $stm->fetchAll();
 }
-
-
-

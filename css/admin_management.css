@@ -294,6 +294,15 @@ input[type="email"]:focus {
     }
 }
 
+.arrow-right {
+    float: right;  /* Align the icon to the right */
+    margin-left: 5px;  /* Add some space between the column name and the icon */
+}
+
+/* Optional: Style the sort icon when it's not used */
+
+
+
 
 /* Responsive Modal */
 @media (max-width: 768px) {

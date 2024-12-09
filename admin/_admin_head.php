@@ -55,10 +55,13 @@ $admin_role = $_SESSION['role'];
                 <?php endif; ?>
 
                 <a href="#"><i class="fas fa-cogs"></i> Settings</a>
-                <a href="#" class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-
+                
+                <!-- Logout Form -->
+                <form action="" method="POST" style="display:inline;">
+                    <button type="submit" name="logout" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </nav>
 
         </aside>

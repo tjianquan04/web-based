@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validate inputs
     if (!$admin_name || !$email) {
-        temp('error', 'Admin name and email are required!');
+        err('error', 'Admin name and email are required!');
     } else {
         // Update admin data in the database
         if ($photo && str_starts_with($photo->type, 'image/')) {
