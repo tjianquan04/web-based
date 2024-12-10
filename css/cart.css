@@ -1,0 +1,237 @@
+.cart-title {
+    width: 65%;
+    margin: auto;
+    color: rgb(102, 102, 102);
+
+}
+
+.cart {
+    width: 70%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+label.upload img {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    padding: 0;
+    float: left;
+}
+
+.item-checkbox,
+.checkall {
+    width: 15px;
+    height: 15px;
+}
+
+.checkBox {
+    text-align: center;
+    width: 40px;
+}
+
+.item_desc {
+    display: flex;
+}
+
+.item_details {
+    text-align: center;
+    width: 120px;
+}
+
+.emptySpace {
+    height: 40px;
+}
+
+.decrement-btn,
+.increment-btn {
+    font-size: 10px;
+    width: 25px;
+    height: 25px;
+    margin-left: 5px;
+    margin: 5px;
+}
+
+.delete-button,
+.delete-all-btn {
+    background: none;
+    border: 0;
+}
+
+.delete-button:hover,
+.delete-all-btn:hover {
+    color: red;
+}
+
+.amount_container {
+    width: 70%;
+    height: 70px;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: rgb(230, 230, 230);
+}
+
+.select-all-text {
+    width: 120px;
+    font-size: 17px;
+}
+
+.delete-all-btn {
+    font-size: 15px;
+}
+
+.totalitem {
+    margin: 0;
+    padding: 0;
+    width: 140px;
+    font-size: 18px;
+}
+
+.totalamount {
+    width: 70px;
+    font-size: 18px;
+}
+
+.checkout {
+    width: 200px;
+}
+
+.checkout-btn {
+    background-color: black;
+    color: white;
+    width: 90%;
+    height: 50%;
+}
+
+/* checkout title css*/
+.checkout-title {
+    width: 65%;
+    margin: auto;
+    color: rgb(102, 102, 102);
+}
+
+/* checkout address table css */
+.checkout-addressTable {
+    width: 70%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: rgb(242, 242, 242, 0.5);
+}
+
+.checkout-addressTable-a {
+    padding-left: 30px;
+    padding-top: 20px;
+    font-size: 18px;
+}
+
+.checkout-addressTable-b {
+    padding-left: 30px;
+    width: 180px;
+    height: 60px;
+    font-size: 17px;
+}
+
+.checkout-addressTable-c {
+    font-size: 17px;
+}
+
+.checkout-addressTable-d {
+    width: 120px;
+    text-align: center;
+}
+
+.checkout-addressTable-d-btn {
+    background-color: rgb(242, 242, 242, 0);
+    color: blue;
+    border: 0;
+    font-size: 15px;
+}
+
+/* checkout product table css */
+.checkout-productTable {
+    width: 70%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: rgb(242, 242, 242, 0.5);
+}
+
+.checkout-productTable-columnheader1 {
+    padding-left: 30px;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    font-size: 17px;
+}
+
+.checkout-productTable-columnheader2 {
+    width: 150px;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 17px;
+}
+
+label.checkout-productTable-productphoto img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    padding: 0;
+    float: left;
+}
+
+.checkout-productTable-product {
+    padding-left: 30px;
+    height: 80px;
+}
+
+.checkout-productTable-productdetails {
+    width: 150px;
+    text-align: center;
+}
+
+/* checkout payment table css */
+.checkout-paymentTable {
+    width: 70%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: rgb(242, 242, 242, 0.5);
+}
+
+.checkout-paymentTable-hrline hr {
+    padding: 0;
+    margin: 0;
+}
+
+.checkout-paymentTable-vouchertext {
+    padding-left: 30px;
+    font-size: 17px;
+}
+
+.checkout-paymentTable-voucher {
+    width: 180px;
+    padding-right: 30px;
+    text-align: right;
+    height: 50px;
+}
+
+.checkout-paymentTable-voucher-btn {
+    background-color: rgb(242, 242, 242, 0);
+    color: blue;
+    border: 0;
+    font-size: 15px;
+}
+
+.checkout-paymentTable-paymenttext {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 200px;
+    line-height: 30px;
+}
+
+.checkout-paymentTable-amount {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 30px;
+    width: 200px;
+    line-height: 30px;
+    text-align: right;
+}
