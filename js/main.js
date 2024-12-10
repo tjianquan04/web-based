@@ -1,3 +1,5 @@
+console.log('JavaScript loaded successfully');
+
 function toggleMenu(menuId) {
     const submenu = document.getElementById(menuId);
     if (submenu.style.display === "block") {
@@ -17,7 +19,7 @@ function closeModal() {
 }
 
 // Close the modal when clicking anywhere outside of it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target === document.getElementById('addAdminModal')) {
         closeModal();
     }
@@ -41,4 +43,49 @@ $('label.upload input[type=file]').on('change', e => {
         img.src = img.dataset.src; // Revert to the original image if invalid file
         e.target.value = ''; // Clear the file input
     }
+});
+
+$(() => {
+
+    // Autofocus
+    $('form :input:not(button):first').focus();
+    $('.err:first').prev().focus();
+    $('.err:first').prev().find(':input:first').focus();
+
+    // Delete confirmation message
+    $('[delete-confirm]').on('click', e => {
+        // Get the member_id from the data-confirm attribute
+        const memberId = e.target.dataset.confirm;
+        // Customize the confirmation message
+        const text = `Are you sure you want to delete member ${memberId}?`;
+
+        if (!confirm(text)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        }
+    });
+
+    // Initiate GET request
+    $('[data-get]').on('click', e => {
+        e.preventDefault();
+        const url = e.target.dataset.get;
+        location = url || location;
+    });
+
+    // Initiate POST request
+    $('[data-post]').on('click', e => {
+        e.preventDefault();
+        const url = e.target.dataset.post;
+        const f = $('<form>').appendTo(document.body)[0];
+        f.method = 'POST';
+        f.action = url || location;
+        f.submit();
+    });
+
+    // Reset form
+    $('[type=reset]').on('click', e => {
+        e.preventDefault();
+        location = location;
+    });
+
 });

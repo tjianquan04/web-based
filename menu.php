@@ -36,7 +36,7 @@ include '_head.php';
         <div class="product">
             <div class="product-content">
                 <div class="product-img">
-                <a href="product_details.php?product_id=<?= $p->product_id ?>"><img src="/image/<?= $p->photo ?>" alt="Product Photo" class="category">
+                <a href="product_card.php?product_id=<?= $p->product_id ?>"><img src="/image/<?= $p->photo ?>" alt="Product Photo" class="category">
                     
                 </a>
                 </div>
@@ -44,7 +44,7 @@ include '_head.php';
             </div>
             <div class="product-info">
                 <div class="product-info-top">
-                    <h2 class="sm-title"><a href="product_details.php?product_id=<?= $p->product_id ?>"><?= $p->description ?></a></h2>
+                    <h2 class="sm-title"><a href="product_card.php?product_id=<?= $p->product_id ?>"><?= $p->description ?></a></h2>
 
                 </div>
                 <?= $p->unit_price ?>
