@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-details, .address-details {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.member-details h2, .address-details h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+button.go-back {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.no-address {
+    padding: 20px;
+    border: 2px dashed #ff4d4d;
+    border-radius: 8px;
+    background-color: #ffe6e6;
+    text-align: center;
+    font-size: 16px;
+    color: #d43f3f;
+}
+
+
+.address {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
