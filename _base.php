@@ -274,6 +274,7 @@ $_user = $_SESSION['user'] ?? null;
 function login($user, $url = '/')
 {
     $_SESSION['user'] = $user;
+    
     redirect($url);
 }
 

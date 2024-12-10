@@ -4,7 +4,7 @@ require '../_base.php';
 auth('Admin', 'Superadmin');
 
 // Get admin role
-$admin_role = $_SESSION['role'];
+$admin_role = $_SESSION['user']->role; 
 ?>
 
 <!DOCTYPE html>
