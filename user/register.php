@@ -36,12 +36,10 @@ if (is_post()) {
 
         $user_id = getNextUserId();
         $name = generateRandomUsername();
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert the user into the database
             $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, status, profile_photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$user_id, $name, $email, "-", $hashedPassword, 1, '/photos/unknown.jpg']);
+            $stmt->execute([$user_id, $name, $email, "-", SHA1($password), 1, '/photos/unknown.jpg']);
 
             redirect('login.php');
             exit;

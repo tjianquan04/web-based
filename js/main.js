@@ -19,7 +19,7 @@ function closeModal() {
 }
 
 // Close the modal when clicking anywhere outside of it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target === document.getElementById('addAdminModal')) {
         closeModal();
     }
@@ -51,10 +51,14 @@ $(() => {
     $('form :input:not(button):first').focus();
     $('.err:first').prev().focus();
     $('.err:first').prev().find(':input:first').focus();
-    
-    // Confirmation message
-    $('[data-confirm]').on('click', e => {
-        const text = e.target.dataset.confirm || 'Are you sure to delete ?';
+
+    // Delete confirmation message
+    $('[delete-confirm]').on('click', e => {
+        // Get the member_id from the data-confirm attribute
+        const memberId = e.target.dataset.confirm;
+        // Customize the confirmation message
+        const text = `Are you sure you want to delete member ${memberId}?`;
+
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();

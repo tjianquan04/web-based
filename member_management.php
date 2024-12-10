@@ -36,7 +36,10 @@ include '_head.php';
         <?= html_search('search') ?>
         <button>Search</button>
     </form>
-    <p class="records-count"><?= count($arr) ?> record(s)</p>
+    <div class="top-right">
+        <a href="add_member.php" class="add-button">Add</a>
+        <p class="records-count"><?= count($arr) ?> record(s)</p>
+    </div>
 </div>
 
 <table class="table">
@@ -68,7 +71,7 @@ include '_head.php';
             <button data-get="view_member_details.php?id=<?= $s->member_id ?>">View</button>
             <button data-get="edit_member_details.php?id=<?= $s->member_id ?>">Edit</button>
             <button data-post="block_member.php?id=<?= $s->member_id ?>">Block</button>
-            <button data-post="delete_member.php?id=<?= $s->member_id ?> ">Delete</button>
+            <button data-post="delete_member.php?id=<?= $s->member_id ?>" delete-confirm ="<?= $s->member_id ?>">Delete</button>
             <img src="<?= $s->profile_photo ?>" class="popup">
         </td>
     </tr>

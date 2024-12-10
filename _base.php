@@ -194,6 +194,31 @@ function getNextUserId()
     return $new_id;
 }
 
+function getNextAddressId()
+{
+    global $_db;
+    
+    // get the highest member_id 
+    $stmt = $_db->query("SELECT MAX(address_id) AS max_id FROM address");
+    $row = $stmt->fetch();
+    
+    // Get the current highest member_id 
+    $max_id = $row->max_id;
+    
+    // If no records, return M000001
+    if ($max_id === null) {
+        return 'A000001';
+    }
+    
+    // Extract the numeric part of the current max_id 
+    $numeric_part = (int) substr($max_id, 1);
+    
+    // Increment the numeric part and pad it to 6 digits
+    $new_id = 'A' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
+    
+    return $new_id;
+}
+
 //auto generate random username
 function generateRandomUsername() {
     $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';

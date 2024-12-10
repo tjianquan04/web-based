@@ -53,6 +53,7 @@ include '_head.php';
             <?php endforeach; ?>
         </div>
     </div>
+    <button class="go-back" onclick="window.history.back()">Go Back</button>
 </body>
 
 <?php

@@ -13,6 +13,7 @@ body {
     margin: 20px auto;
     width: 80%;
     gap: 15px;
+    position: relative;
 }
 
 /* Search Form Styles */
@@ -58,7 +59,31 @@ button:hover {
     background-color: #e67e22;
 }
 
-p.records-count {
+/* add button */
+.top-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px; /* Space between the button and the record count */
+}
+
+.add-button {
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+    background-color: #45a049; /* Darker green when hovered */
+}
+
+.records-count {
     font-size: 1.2em;
     font-weight: bold;
     margin: 0;

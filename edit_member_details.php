@@ -47,20 +47,20 @@ if (is_post() && req('form_type') === 'member_details') {
         $_err['photo'] = 'Required';
     } else if (!str_starts_with($file->type, 'image/')) {
         $_err['photo'] = 'Must be image';
-    } else if ($f->size > 1 * 1024 * 1024) {
+    } else if ($file->size > 1 * 1024 * 1024) {
         $_err['photo'] = 'Maximum 1MB';
     }
 
 
     if (!$_err) {
-        $photo = save_photo($f, 'photos');
+        $photo = save_photo($file, 'photos');
 
         $stm = $_db->prepare('UPDATE member
                               SET name = ?, email = ?, contact = ?, status = ?, profile_photo = ?
-                              WHERE id = ?');
-        $stm->execute([$name, $email, $contact, $status, $photo, $id]);
+                              WHERE member_id = ?');
+        $stm->execute([$name, $email, $contact, $status, $photo, $memberId]);
 
-        temp('info', $id . ' Record updated');
+        temp('info', $memberId . ' details updated');
         redirect('/member_management.php');
     }
 
@@ -72,7 +72,7 @@ if (is_post() && req('form_type') === 'member_details') {
         $postalCode   = req('postal_code');
 
         if (!empty($addressId)) {
-            $stm = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ? WHERE id = ?');
+            $stm = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ? WHERE address_id = ?');
             $stm->execute([$addressLine, $state, $postalCode, $addressId]);
 
             temp('info', 'Address updated successfully');
@@ -93,24 +93,34 @@ include '_head.php';
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="form_type" value="member_details">
 
-            <label for="photo"><strong>Photo:</strong></label>
-            <label class="upload" tabindex="0">
-                <?= html_file('photo', $s->profile_photo, 'image/*', 'hidden') ?>
-                <img src="/photos/unknown.jpg">
+            <label for="id"><strong>Member ID: </strong></label>
+            <?= html_text('id', '', $memberId,'disabled') ?>
+            <br>
+
+            <label for="photo"><strong>Photo:</strong></label><br>
+            <label class="upload" tabindex="0" >
+            <?= html_file('photo',$s->profile_photo ?  $s->profile_photo : '/photos/unknown.jpg' ,'image/*', 'hidden') ?>
+            <img
+                src="<?= $s->profile_photo ?  $s->profile_photo : '/photos/unknown.jpg' ?>"
+                alt="Member Photo" title="Click to upload photo"/>
             </label>
             <?= err('photo') ?>
+            </label>
             <br>
 
             <label for="name"><strong>Name:</strong></label>
-            <?php html_text('name', 'Enter Name', $s->name, 'class="input-field" maxlength="100" required'); ?>
+            <?php html_text('name', 'Enter Name', $s->name, 'class="input-field" maxlength="100" '); ?>
+            <?= err('name') ?>
             <br>
 
             <label for="email"><strong>Email:</strong></label>
-            <?php html_email('email', 'Enter Email', $s->email, 'class="input-field" required'); ?>
+            <?php html_email('email', 'Enter Email', $s->email, 'class="input-field"'); ?>
+            <?= err('email') ?>
             <br>
 
             <label for="contact"><strong>Contact:</strong></label>
-            <?php html_text('contact', 'Enter Contact Number', $s->contact, 'class="input-field" required'); ?>
+            <?php html_text('contact', 'Enter Contact Number', $s->contact, 'class="input-field"'); ?>
+            <?= err('contact') ?>
             <br>
 
             <label for="status"><strong>Status:</strong></label>
@@ -148,10 +158,8 @@ include '_head.php';
             <hr>
         <?php endforeach; ?>
     </div>
+    <button class="go-back" onclick="window.history.back()">Go Back</button>
 </body>
-
-
-
 
 <?php
 include '_foot.php';
