@@ -31,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $admin->photo = $photo_path; // Update the photo path if new photo is uploaded
         }
 
+        if ($_SESSION['role'] !== 'Superadmin') {
+            // Retain the current role and status for non-Superadmin users
+            $role = $admin->role;
+            $status = $admin->status;
+        }
+
         // Determine the password
         if ($password === '********') {
             // Retain the old password
@@ -49,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stm->execute([$admin_name, $hash_password, $email, $phone_number, $role, $status, $admin->photo, $admin_id]);
 
         temp('info', 'Admin updated successfully!');
-        redirect('admin_management.php');
+        redirect("view_admin.php?id=$admin_id");
     }
 }
 ?>

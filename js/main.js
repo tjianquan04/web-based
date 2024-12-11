@@ -13,9 +13,22 @@ function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
-document.getElementById('userProfile').addEventListener('click', function() {
-    const dropdown = document.getElementById('profileDropdown');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+document.addEventListener('DOMContentLoaded', () => {
+    const currentDateElement = document.getElementById('currentDate');
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
+    const currentDate = new Date().toLocaleDateString('en-US', options);
+    currentDateElement.textContent = currentDate;
+
+    // Dropdown interaction
+    const userProfile = document.getElementById('userProfile');
+    userProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userProfile.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => {
+        userProfile.classList.remove('active');
+    });
 });
 
 function clearPasswordField(input) {
