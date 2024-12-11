@@ -132,6 +132,16 @@ button:hover {
     background-color: #c0392b;
 }
 
+/* Unblock button styles */
+.table td button.unblock {
+    background-color: #4CAF50; 
+    color: white;
+}
+
+.table td button.unblock:hover {
+    background-color: #45a049; 
+}
+
 /* Popup Styles */
 .table .popup {
     position: absolute;

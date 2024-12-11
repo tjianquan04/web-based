@@ -69,8 +69,11 @@ include '_head.php';
         <td>
             <button data-get="view_member_details.php?id=<?= $s->member_id ?>">View</button>
             <button data-get="edit_member_details.php?id=<?= $s->member_id ?>">Edit</button>
-            <button data-post="block_member.php?id=<?= $s->member_id ?>">Block</button>
-            <button data-post="delete_member.php?id=<?= $s->member_id ?>" delete-confirm ="<?= $s->member_id ?>">Delete</button>
+            <button data-post="update_member_status.php?id=<?=$s->member_id ?>"
+            class="block-btn <?= $s->status ? 'block' : 'unblock' ?>">    
+             <?= $s->status ? 'Block' : 'Unblock' ?>
+            </button>
+            <button data-post="delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>">Delete</button>
             <img src="<?= $s->profile_photo ? 'photos/' . $s->profile_photo : '/photos/unknown.jpg' ?>" class="popup">
         </td>
     </tr>

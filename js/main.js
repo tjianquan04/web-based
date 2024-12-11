@@ -54,11 +54,12 @@ $(() => {
 
     // Delete confirmation message
     $('[delete-confirm]').on('click', e => {
-        // Get the member_id from the data-confirm attribute
-        const Id = e.target.dataset.confirm;
+        // Check for either address_id or member_id
+        const Id = e.target.dataset.addressId || e.target.dataset.memberId;
+    
         // Customize the confirmation message
         const text = `Are you sure you want to delete ${Id}?`;
-
+    
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();

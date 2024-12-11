@@ -4,7 +4,7 @@ require '_base.php';
 
 $address_id = getNextAddressId();
 $member_id = req('id');
-$addressArr = getAllAddressbyId($member_id);
+$addressArr = getAllAddressbyMemberId($member_id);
 
 if (is_post()) {
 
@@ -59,7 +59,7 @@ if (empty($addressArr)) {
         $addressStm -> execute([$address_id, $address_line,$postal_code,$state, $is_default, $member_id]);
 
         temp('info','New address has added');
-        redirect('/edit_member_details.php');
+        redirect('/edit_member_details.php?id='.$member_id);
     }
 }
 
@@ -69,31 +69,31 @@ include '_head.php';
 ?>
 <link rel="stylesheet" href="/css/add_address.css">
 
+<div class="address-container">
+<h2>New Address</h2>
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
+    
     <label for="id"><strong>Address ID :</strong></label>
-    <?= html_text('id', '', $address_id, 'disabled') ?>
+    <?= html_text('id', '', $address_id,' class="input-field" disabled') ?>
 
     <label for="address_line"><strong>Address:</strong></label>
     <?php html_text('address_line', '', '', '" class="input-field"'); ?>
     <?= err('address_line') ?>
-    <br>
 
     <label for="state"><strong>State:</strong></label>
     <?php html_text('state', '', '', '" class="input-field" '); ?>
     <?= err('state') ?>
-    <br>
 
     <label for="postal_code"><strong>Postal Code:</strong></label>
     <?php html_text('postal_code', '', '', '" class="input-field"'); ?>
     <?= err('postal_code') ?>
-    <br>
 
     <section>
         <button type="submit">Submit</button>
         <button type="reset">Reset</button>
     </section>
 </form>
-
+</div>
 <button class="go-back" onclick="window.history.back()">Go Back</button>
 
 <?php

@@ -231,7 +231,7 @@ function getMemberbyId($member_id){
     return $member ?: null;
 }
 
-function getAllAddressbyId($memberId){
+function getAllAddressbyMemberId($memberId){
     global $_db;
     $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
     $addressStm->execute([$memberId]);
@@ -240,6 +240,14 @@ function getAllAddressbyId($memberId){
     return $addressArr;
 }
 
+function getAddressbyId($address_id){
+    global $_db;
+    $addressStm = $_db->prepare('SELECT * FROM address WHERE address_id = ?');
+    $addressStm->execute([$address_id]);
+    $address = $addressStm->fetch(PDO::FETCH_OBJ);
+
+    return $address;
+}
 
 function generateNextAdminId()
 {
