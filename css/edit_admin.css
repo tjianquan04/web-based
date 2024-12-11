@@ -81,3 +81,49 @@ button:hover {
 label i {
     margin-right: 10px;
 }
+
+.btn-submit {
+    background-color: #28a745; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-clear {
+    background-color: #007bff; /* Blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-cancel {
+    background-color: #dc3545; /* Red */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+section button {
+    margin-right: 10px;
+}
+
+section button:last-child {
+    margin-right: 0;
+}
