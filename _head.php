@@ -30,7 +30,7 @@
                             </a>
                         </li>
                         <li class="right">
-                            <i class="ico ico-shopping"></i>
+                            <a href="/cart.php"><i class="ico ico-shopping"></i></a>
                         </li>
                     </ul>
                 </div>
@@ -61,8 +61,8 @@
                                 <form method="GET" action="menu.php">
                                     <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? $_GET['name'] : '' ?>">
                                     <a class="search-btn">
-                                    <i class="ico ico-search"></i> 
-                                </a>
+                                        <i class="ico ico-search"></i>
+                                    </a>
                                 </form>
 
 

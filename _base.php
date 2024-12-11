@@ -232,18 +232,27 @@ function getNextAddressId()
     return $new_id;
 }
 
-//auto generate random username
-function generateRandomUsername() {
-    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-    $name = '';
+function getMemberbyId($member_id){
+    global $_db;
     
-    // Generate a random username of 8 characters
-    for ($i = 0; $i < 8; $i++) {
-        $name .= $chars[rand(0, strlen($chars) - 1)];
-    }
+    $stmt = $_db->prepare("SELECT * FROM member where member_id = ? LIMIT 1");
 
-    return $name;
+    $stmt->execute([$member_id]);
+
+    $member = $stmt->fetch(PDO::FETCH_OBJ);
+   
+    return $member ?: null;
 }
+
+function getAllAddressbyId($memberId){
+    global $_db;
+    $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
+    $addressStm->execute([$memberId]);
+    $addressArr = $addressStm->fetchAll();
+
+    return $addressArr;
+}
+
 
 function generateNextAdminId()
 {
