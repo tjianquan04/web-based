@@ -77,7 +77,7 @@ function validateUser($email, $password)
         $user = $stm->fetch();
 
         // Check if user exists and password matches
-        if ($user && password_verify($password, $user->password)) {
+        if ($user&& $user->password === sha1($password)) {
             return $user; // Return the user object if credentials are valid
         } else {
             return false; // Return false if credentials are invalid
@@ -131,38 +131,51 @@ function getAllAdmins()
     }
 }
 
-function addAdmin($admin_name, $adminEmail, $adminPassword)
+function addAdmin($user)
 {
     global $_db;
 
     // Check if the admin email already exists
     $stm = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
-    $stm->execute([$adminEmail]);
+    $stm->execute([$user->email]);
 
-    // If email already exists, return false
     if ($stm->rowCount() > 0) {
         return false; // Email already exists
     }
 
-    // Hash the password
-    $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+    // Hash the password using SHA1 (or consider using password_hash())
+    $hashed_password = sha1($user->password);
 
     // Default values for other fields
     $admin_id = generateNextAdminId();
-    $role = 'Admin';  // Set default role as 'admin'
-    $phone_number = '-';  // Similarly, handle phone number if needed
-    $status = 'Active';
+    $role = $user->role ?? 'Admin'; // Default to 'Admin' if no role is provided
+    $phone_number = $user->phone_number ?? '-'; // Default to '-' if no phone number is provided
+    $status = $user->status ?? 'Active'; // Default to 'Active' if no status is provided
 
+    // Handle photo upload
+    if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
+        $photo_path = save_photo($user->photo, 'photos'); // Save photo in 'photos' folder
+    } else {
+        $photo_path = 'default_user_photo.png'; // Default photo if none is uploaded
+    }
+
+    // Insert the new admin into the database
     try {
-        // Prepare SQL query to insert new admin
-        $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status, photo) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Execute the statement with the form data
-        $result = $stmt->execute([$admin_id, $admin_name, $hashedPassword, $role, $adminEmail, $phone_number, $status]);
-        return $result;
+        return $stmt->execute([
+            $admin_id,
+            $user->admin_name,
+            $hashed_password,
+            $role,
+            $user->email,
+            $phone_number,
+            $status,
+            $photo_path
+        ]);
     } catch (PDOException $e) {
-        // Handle the error if something goes wrong with the query
         echo "Database error: " . $e->getMessage();
         return false;
     }
@@ -327,7 +340,7 @@ $_user = $_SESSION['user'] ?? null;
 function login($user, $url = '/')
 {
     $_SESSION['user'] = $user;
-    
+    $_SESSION['role'] = $user->role;
     redirect($url);
 }
 

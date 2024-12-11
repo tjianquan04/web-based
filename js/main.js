@@ -9,41 +9,27 @@ function toggleMenu(menuId) {
     }
 }
 
-function openModal() {
-    document.getElementById('addAdminModal').style.display = 'block';
-}
-
-// Close the modal
-function closeModal() {
-    document.getElementById('addAdminModal').style.display = 'none';
-}
-
-// Close the modal when clicking anywhere outside of it
-window.onclick = function (event) {
-    if (event.target === document.getElementById('addAdminModal')) {
-        closeModal();
-    }
-};
-
 function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
-$('label.upload input[type=file]').on('change', e => {
-    const file = e.target.files[0]; // Get the selected file
-    const img = $(e.target).siblings('img')[0]; // Reference the <img> tag
-
-    if (!img) return;
-
-    img.dataset.src ??= img.src; // Backup the original image src if not already backed up
-
-    if (file?.type.startsWith('image/')) {
-        img.src = URL.createObjectURL(file); // Display the new image preview
-    } else {
-        img.src = img.dataset.src; // Revert to the original image if invalid file
-        e.target.value = ''; // Clear the file input
-    }
+document.getElementById('userProfile').addEventListener('click', function() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
 });
+
+function clearPasswordField(input) {
+    if (input.value === '********') {
+        input.value = '';
+    }
+}
+
+function restoreDefaultPwIfEmpty(input) {
+    if (input.value.trim() === '') {
+        input.value = '********';
+    }
+}
+
 
 $(() => {
 
@@ -51,14 +37,10 @@ $(() => {
     $('form :input:not(button):first').focus();
     $('.err:first').prev().focus();
     $('.err:first').prev().find(':input:first').focus();
-
-    // Delete confirmation message
-    $('[delete-confirm]').on('click', e => {
-        // Get the member_id from the data-confirm attribute
-        const memberId = e.target.dataset.confirm;
-        // Customize the confirmation message
-        const text = `Are you sure you want to delete member ${memberId}?`;
-
+    
+    // Confirmation message
+    $('[data-confirm]').on('click', e => {
+        const text = e.target.dataset.confirm || 'Are you sure?';
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -86,6 +68,32 @@ $(() => {
     $('[type=reset]').on('click', e => {
         e.preventDefault();
         location = location;
+    });
+
+    // Auto uppercase
+    $('[data-upper]').on('input', e => {
+        const a = e.target.selectionStart;
+        const b = e.target.selectionEnd;
+        e.target.value = e.target.value.toUpperCase();
+        e.target.setSelectionRange(a, b);
+    });
+
+    // Photo preview
+    $('label.upload input[type=file]').on('change', e => {
+        const f = e.target.files[0];
+        const img = $(e.target).siblings('img')[0];
+
+        if (!img) return;
+
+        img.dataset.src ??= img.src;
+
+        if (f?.type.startsWith('image/')) {
+            img.src = URL.createObjectURL(f);
+        }
+        else {
+            img.src = img.dataset.src;
+            e.target.value = '';
+        }
     });
 
 });

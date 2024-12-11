@@ -4,11 +4,11 @@
 include('_admin_head.php');
 
 // Ensure that the logged-in user is a superadmin
-auth('Superadmin');
+auth('Admin', 'Superadmin');
 
 // Fetch the admin data based on the 'id' passed in the query string
 $admin_id = req('id'); // Get the ID of the admin to view
-$admin = getAdminById($admin_id); // Assuming a function `getAdminById` exists that fetches admin data
+$admin = getAdminById($admin_id); 
 ?>
 
 <div class="container">
