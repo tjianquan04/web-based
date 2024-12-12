@@ -18,6 +18,11 @@ if (is_post()) {
         $_err['category_id'] = 'Category ID already exists.';
     }
 
+    // if($sub_category==null){
+    //     $sub_category='';
+
+    // }
+
     // Validate: category_name
     if ($category_name == '') {
         $_err['category_name'] = 'Category name is required.';
@@ -36,9 +41,9 @@ if (is_post()) {
 
     // DB operation
     if (!$_err) {
-        try {
+        
             // Save photo
-            $photo_path = save_photo($category_photo, '../photos');
+            $photo_path = save_photo($category_photo, '../image');
 
             $stm = $_db->prepare('
                 INSERT INTO category (category_id, category_name, sub_category, category_photo)
@@ -47,10 +52,11 @@ if (is_post()) {
             $stm->execute([$category_id, $category_name, $sub_category, $photo_path]);
 
             temp('info', 'Category successfully inserted.');
-            redirect('index.php');
-        } catch (Exception $e) {
-            $_err['database'] = 'Failed to insert category: ' . $e->getMessage();
-        }
+            redirect('../index.php');
+        
+    }
+    else{
+        temp('info', 'Category failed inserted.');
     }
 }
 
