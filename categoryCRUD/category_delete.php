@@ -57,46 +57,181 @@ $_title = 'Category Management | DELETE';
 include '../_head.php';
 ?>
 
-<h2>Confirm Deletion</h2>
-<p>Are you sure you want to delete the following category and its associated products?</p>
+<style>
 
-<h3>Category Details:</h3>
-<ul>
-    <li><strong>ID:</strong> <?= htmlspecialchars($category->category_id) ?></li>
-    <li><strong>Name:</strong> <?= htmlspecialchars($category->category_name) ?></li>
-    <li><strong>Subcategory:</strong> <?= htmlspecialchars($category->sub_category) ?></li>
-    <li><strong>Photo:</strong> <img src="../image/<?= htmlspecialchars($category->category_photo) ?>" alt="Category Photo" width="100"></li>
-</ul>
+        .delete {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-<h3>Associated Products:</h3>
-<?php if (count($products) > 0): ?>
-    <table border="1" cellspacing="0" cellpadding="10">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Product ID</th>
-                <th>Product Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($products as $index => $product): ?>
-                <tr>
-                    <td><?= $index + 1 ?></td>
-                    <td><?= htmlspecialchars($product->product_id) ?></td>
-                    <td><?= htmlspecialchars($product->description) ?></td>
-                    <td><?= htmlspecialchars($product->unit_price) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php else: ?>
-    <p>No products are associated with this category.</p>
-<?php endif; ?>
+        h2 {
+            color: #dc3545;
+            font-size: 24px;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+        }
 
-<form method="POST">
-    <button type="submit" name="confirm_delete" style="background-color: red; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">Confirm Delete</button>
-    <a href="viewCategory.php" style="margin-left: 10px; padding: 10px 15px; background-color: gray; color: white; text-decoration: none; border-radius: 4px;">Cancel</a>
-</form>
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 30px;
+        }
 
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        img {
+            display: block;
+            margin-top: 10px;
+            border-radius: 5px;
+            max-height: 100px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 5px;
+            text-align: center;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+
+        .link {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .link:hover {
+            background-color: #5a6268;
+        }
+    </style>
+
+<div class="delete">
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete the following category and its associated products?</p>
+
+        <h3>Category Details:</h3>
+        <ul>
+            <li><strong>ID:</strong> <?= htmlspecialchars($category->category_id) ?></li>
+            <li><strong>Name:</strong> <?= htmlspecialchars($category->category_name) ?></li>
+            <li><strong>Subcategory:</strong> <?= htmlspecialchars($category->sub_category) ?></li>
+            <li><strong>Photo:</strong> <img src="../image/<?= htmlspecialchars($category->category_photo) ?>" alt="Category Photo"></li>
+        </ul>
+
+        <h3>Associated Products:</h3>
+        <?php if (count($products) > 0): ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($products as $index => $product): ?>
+                        <tr>
+                            <td><?= $index + 1 ?></td>
+                            <td><?= htmlspecialchars($product->product_id) ?></td>
+                            <td><?= htmlspecialchars($product->description) ?></td>
+                            <td><?= htmlspecialchars($product->unit_price) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>No products are associated with this category.</p>
+        <?php endif; ?>
+
+        <form method="POST">
+            <button type="submit" name="confirm_delete">Confirm Delete</button>
+            <a href="viewCategory.php" class="link">Cancel</a>
+        </form>
+    </div>
 <?php include '../_foot.php'; ?>

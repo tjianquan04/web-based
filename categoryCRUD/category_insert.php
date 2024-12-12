@@ -65,9 +65,118 @@ if (is_post()) {
 $_title = 'Category | Insert';
 include '../_head.php';
 ?>
+<style>
+/* Form Container Styling */
+form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Labels and Inputs */
+form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+form input, form button, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+form input:focus, form textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* File Upload Styling */
+.upload {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.upload img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.upload:hover {
+    background-color: #f0f0f0;
+    border-color: #007bff;
+}
+
+/* Error Messages */
+.error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+form button {
+    background-color: #28a745;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+form button[type="reset"] {
+    background-color: #dc3545;
+}
+
+form button[type="reset"]:hover {
+    background-color: #c82333;
+}
+
+/* Back Button */
+p button {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+p button:hover {
+    background-color: #0056b3;
+}
+</style>
 
 <p>
-    <button data-get="index.php">Back to Index</button>
+    <button onclick="window.location.href='index.php'">Back to Index</button>
 </p>
 
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
@@ -80,7 +189,7 @@ include '../_head.php';
     <?= err('category_name') ?>
 
     <label for="sub_category">Subcategory (optional)</label>
-    <?= html_text('sub_category', 'maxlength="100" placeholder="Optional")') ?>
+    <?= html_text('sub_category', 'maxlength="100" placeholder="Optional"') ?>
     <?= err('sub_category') ?>
 
     <label for="category_photo">Photo</label>
@@ -91,10 +200,33 @@ include '../_head.php';
     <?= err('category_photo') ?>
 
     <section>
-        <button>Submit</button>
+        <button type="submit">Submit</button>
         <button type="reset">Reset</button>
     </section>
 </form>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.querySelector('input[name="category_photo"]');
+    const previewImage = document.querySelector('.upload img');
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '/images/photo.jpg'; // Placeholder image
+        }
+    });
+});
+</script>
+
+
 <?php
 include '../_foot.php';
+?>
+

@@ -105,13 +105,74 @@ $_title = 'Product | Insert';
 include '../_head.php';
 ?>
 
+<style>
+/* Form Styling */
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+}
+
+form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+form input, form select, form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+form input:focus, form select:focus, form button:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+form button {
+    background-color: #28a745;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+form button[type="reset"] {
+    background-color: #dc3545;
+}
+
+form button[type="reset"]:hover {
+    background-color: #c82333;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+</style>
+
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
     <label for="category_id">Category</label>
     <?= html_select_with_subcategories('category_id', $grouped_categories) ?>
     <?= err('category_id') ?>
 
     <label for="description">Product Description</label>
-    <?= html_text('description', 'maxlength="100"') ?>
+    <?= html_text('description') ?>
     <?= err('description') ?>
 
     <label for="unit_price">Unit Price</label>
