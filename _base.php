@@ -77,7 +77,7 @@ function validateUser($email, $password)
         $user = $stm->fetch();
 
         // Check if user exists and password matches
-        if ($user && password_verify($password, $user->password)) {
+        if ($user&& $user->password === sha1($password)) {
             return $user; // Return the user object if credentials are valid
         } else {
             return false; // Return false if credentials are invalid
@@ -131,38 +131,51 @@ function getAllAdmins()
     }
 }
 
-function addAdmin($admin_name, $adminEmail, $adminPassword)
+function addAdmin($user)
 {
     global $_db;
 
     // Check if the admin email already exists
     $stm = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
-    $stm->execute([$adminEmail]);
+    $stm->execute([$user->email]);
 
-    // If email already exists, return false
     if ($stm->rowCount() > 0) {
         return false; // Email already exists
     }
 
-    // Hash the password
-    $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+    // Hash the password using SHA1 (or consider using password_hash())
+    $hashed_password = sha1($user->password);
 
     // Default values for other fields
     $admin_id = generateNextAdminId();
-    $role = 'Admin';  // Set default role as 'admin'
-    $phone_number = '-';  // Similarly, handle phone number if needed
-    $status = 'Active';
+    $role = $user->role ?? 'Admin'; // Default to 'Admin' if no role is provided
+    $phone_number = $user->phone_number ?? '-'; // Default to '-' if no phone number is provided
+    $status = $user->status ?? 'Active'; // Default to 'Active' if no status is provided
 
+    // Handle photo upload
+    if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
+        $photo_path = save_photo($user->photo, 'photos'); // Save photo in 'photos' folder
+    } else {
+        $photo_path = 'default_user_photo.png'; // Default photo if none is uploaded
+    }
+
+    // Insert the new admin into the database
     try {
-        // Prepare SQL query to insert new admin
-        $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $_db->prepare("INSERT INTO admin (admin_id, admin_name, password, role, email, phone_number, status, photo) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Execute the statement with the form data
-        $result = $stmt->execute([$admin_id, $admin_name, $hashedPassword, $role, $adminEmail, $phone_number, $status]);
-        return $result;
+        return $stmt->execute([
+            $admin_id,
+            $user->admin_name,
+            $hashed_password,
+            $role,
+            $user->email,
+            $phone_number,
+            $status,
+            $photo_path
+        ]);
     } catch (PDOException $e) {
-        // Handle the error if something goes wrong with the query
         echo "Database error: " . $e->getMessage();
         return false;
     }
@@ -194,17 +207,59 @@ function getNextUserId()
     return $new_id;
 }
 
-//auto generate random username
-function generateRandomUsername() {
-    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-    $name = '';
+function getNextAddressId()
+{
+    global $_db;
     
-    // Generate a random username of 8 characters
-    for ($i = 0; $i < 8; $i++) {
-        $name .= $chars[rand(0, strlen($chars) - 1)];
+    // get the highest member_id 
+    $stmt = $_db->query("SELECT MAX(address_id) AS max_id FROM address");
+    $row = $stmt->fetch();
+    
+    // Get the current highest member_id 
+    $max_id = $row->max_id;
+    
+    // If no records, return M000001
+    if ($max_id === null) {
+        return 'A000001';
     }
+    
+    // Extract the numeric part of the current max_id 
+    $numeric_part = (int) substr($max_id, 1);
+    
+    // Increment the numeric part and pad it to 6 digits
+    $new_id = 'A' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
+    
+    return $new_id;
+}
 
-    return $name;
+function getMemberbyId($member_id){
+    global $_db;
+    
+    $stmt = $_db->prepare("SELECT * FROM member where member_id = ? LIMIT 1");
+
+    $stmt->execute([$member_id]);
+
+    $member = $stmt->fetch(PDO::FETCH_OBJ);
+   
+    return $member ?: null;
+}
+
+function getAllAddressbyMemberId($memberId){
+    global $_db;
+    $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
+    $addressStm->execute([$memberId]);
+    $addressArr = $addressStm->fetchAll();
+
+    return $addressArr;
+}
+
+function getAddressbyId($address_id){
+    global $_db;
+    $addressStm = $_db->prepare('SELECT * FROM address WHERE address_id = ?');
+    $addressStm->execute([$address_id]);
+    $address = $addressStm->fetch(PDO::FETCH_OBJ);
+
+    return $address;
 }
 
 function generateNextAdminId()
@@ -302,6 +357,7 @@ $_user = $_SESSION['user'] ?? null;
 function login($user, $url = '/')
 {
     $_SESSION['user'] = $user;
+    $_SESSION['role'] = $user->role;
     redirect($url);
 }
 

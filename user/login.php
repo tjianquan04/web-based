@@ -16,17 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
-        $error = 'Please enter both email and password.';
+        $_err['empty_error'] = 'Please enter both email and password.';
     } else {
         $user = validateUser($email, $password);
         if ($user) {
             // Set session data if login is successful
-            $_SESSION['user'] = $user->username; // Store the username or other relevant data
             temp('info', 'Successful login'); 
-            redirect('../index.php');
+            login($user, '../index.php'); // Store the username or other relevant data
               // Redirect to the homepage or a protected page
         } else {
-            $error = 'Invalid email or password.';  // If credentials are invalid
+            $_err['login_error'] = 'Invalid email or password.';  // If credentials are invalid
         }
     }
 }
@@ -36,45 +35,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Background image element -->
 <div class="login-background"></div>
 
-<main>
-    <!-- Login form container -->
+<body>
     <div class="login-container">
-        <h1>Login</h1>
+        <!-- Left Section: Login Form -->
+        <div class="form-container">
+            <h1>WELCOME BACK</h1>
+            <p>Welcome back! Please enter your details.</p>
 
-        <!-- Display error if there's any -->
-        <?php if (!empty($error)): ?>
-            <p style="color: red;"><?= $error; ?></p>
-        <?php endif; ?>
+            <!-- Error Messages -->
+        <div class="error-message"><?php err('login_error'); ?></div>
+        <div class="error-message"><?php err('empty_error'); ?></div>
 
-        <!-- Login form -->
-        <form action="" method="POST">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="E.g. abc@gmail.com" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <a href="forgot_pw.php" class="forgot-password">Forgot Password?</a>
-                <input type="password" id="password" name="password" placeholder="Enter your password"required>
-            </div>
-            <!-- Remember me checkbox -->
-            <div class="form-group">
-                <label for="remember-me" class="remember-me-label">
-                    <input type="checkbox" id="remember-me" name="remember-me">
-                    Remember me
-                </label>
-            </div>
-            <div>
-                <button type="submit">Login</button>
-                <p>Don't have an account? <a href="register.php">Sign Up</a></p>
-            </div>
-        </form>
+
+            <form action="" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="options">
+                    <label>
+                        <input type="checkbox" name="remember"> Remember me
+                    </label>
+                    <a href="forgot_password.php">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn-signin">Sign in</button>
+            </form>
+            <p class="signup-text">Don't have an account? <a href="signup.php">Sign up for free!</a></p>
+        </div>
+
+        <!-- Right Section: Image -->
+        <div class="image-container">
+            <img src="../image/badminton_shop.png" alt="shop" class="login-image">
+        </div>
     </div>
+</body>
 
     
 
 <?php
-
-
-
 include '../_foot.php';

@@ -38,21 +38,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin_login.css">
 </head>
 
 
 <body>
-
-    <div class="login-container">
+<div class="login-container">
+    <!-- Left Section: Form -->
+    <div class="form-container">
         <h1>Admin Login</h1>
 
-        <!-- Display login error message if exists -->
-        <?php err('login_error'); ?>
-
-        <!-- Display status error message if exists -->
-        <?php err('status_error'); ?>
-
+        <!-- Error Messages -->
+        <div class="error-message"><?php err('login_error'); ?></div>
+        <div class="error-message"><?php err('status_error'); ?></div>
 
         <!-- Login Form -->
         <form action="" method="POST">
@@ -70,6 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
+    <!-- Right Section: Image -->
+    <div class="image-container">
+        <img src="../image/security.png" alt="Security Image">
+    </div>
+</div>
 </body>
 
 </html>

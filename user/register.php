@@ -3,6 +3,7 @@ require '../_base.php';
 // ----------------------------------------------------------------------------
 
 if (is_post()) {
+    $name     = req('name');
     $email    = req('email');
     $password = req('password');
     $confirmPassword = req('confirm_password');
@@ -19,8 +20,8 @@ if (is_post()) {
     // Validate Password
     if (empty($password)) {
         $_err['password'] = 'Password is required.';
-    } else if (strlen($password) < 8) {
-        $_err['password'] = 'Password must be at least 8 characters.';
+    } else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
+        $_err['password'] = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, one special symbol, and be at least 8 characters.';
     }
 
     // Validate Confirm Password
@@ -35,13 +36,10 @@ if (is_post()) {
         echo "Form submitted successfully!";
 
         $user_id = getNextUserId();
-        $name = generateRandomUsername();
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert the user into the database
             $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, status, profile_photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$user_id, $name, $email, "-", $hashedPassword, 1, '/photos/unknown.jpg']);
+            $stmt->execute([$user_id, $name, $email, "-", SHA1($password), 0, 'unknown.jpg']);
 
             redirect('login.php');
             exit;
@@ -63,6 +61,10 @@ include '../_head.php';
                 <h1>Create an Account</h1>
             </div>
             <form method="post" class="form">
+                <label for="name">Email Address</label>
+                <?php html_text('name', 'e.g. henry', '', 'class="form-control"'); ?>
+                <?php err('name'); ?>
+
                 <label for="email">Email Address</label>
                 <?php html_email('email', 'e.g. henry@gmail.com', '', 'class="form-control"'); ?>
                 <?php err('email'); ?>

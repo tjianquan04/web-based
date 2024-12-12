@@ -13,6 +13,7 @@ body {
     margin: 20px auto;
     width: 80%;
     gap: 15px;
+    position: relative;
 }
 
 /* Search Form Styles */
@@ -58,7 +59,15 @@ button:hover {
     background-color: #e67e22;
 }
 
-p.records-count {
+
+.top-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px; /* Space between the button and the record count */
+}
+
+.records-count {
     font-size: 1.2em;
     font-weight: bold;
     margin: 0;
@@ -123,6 +132,29 @@ p.records-count {
     background-color: #c0392b;
 }
 
+/* Unblock button styles */
+.table td button.unblock {
+    background-color: #4CAF50; 
+    color: white;
+}
+
+.table td button.unblock:hover {
+    background-color: #45a049; 
+}
+
+table a {
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.arrow-right {
+    float: right;  
+    margin-left: 5px;  
+}
+
 /* Popup Styles */
 .table .popup {
     position: absolute;
@@ -170,7 +202,6 @@ p.records-count {
     padding: 8px 16px; 
     margin: 0 5px; 
     border: 1px solid #ccc; 
-    border-radius: 50px; 
     background-color: white; 
     transition: all 0.3s ease; 
 }

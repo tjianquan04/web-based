@@ -19,13 +19,13 @@ $addressArr = $addressStm->fetchAll();
 include '_head.php';
 ?>
 
-<link rel="stylesheet" href="/css/member_details.css">
+<link rel="stylesheet" href="/css/view_member.css">
 
 <body>
     <div class="profile-container">
         <h2>Member Details</h2>
         <div class="profile-details">
-            <img src="<?= $s->profile_photo ?>" alt="Profile Photo">
+            <img src="<?= $s->profile_photo ? 'photos/' . $s->profile_photo : '/photos/unknown.jpg' ?>" alt="Profile Photo">
             <div class="details">
                 <h4>Member ID: <?= $s->member_id ?></h4>
                 <p><strong>Name:</strong> <?= $s->name ?></p>
@@ -53,6 +53,7 @@ include '_head.php';
             <?php endforeach; ?>
         </div>
     </div>
+    <button class="go-back" onclick="window.history.back()">Go Back</button>
 </body>
 
 <?php

@@ -150,35 +150,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- Button to Add New Admin and pagination-->
         <div class="pagination-container">
-            <button class="btn btn-add" onclick="openModal()">+ Add New Admin</button>
+            <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
             <div class="pagination">
                 <?= generateDynamicPagination($p, $sort, $dir); ?>
-            </div>
-        </div>
-
-        <!-- Modal for Adding New Admin -->
-        <div id="addAdminModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2>Add New Admin</h2>
-                <form id="addAdminForm" method="POST">
-                    <label for="admin_name">Admin Name<i class="fas fa-name"></i></label>
-                    <input type="text" id="admin_name" name="admin_name" placeholder="Enter Name" oninput="this.value = this.value.toUpperCase()" required><br>
-
-                    <label for="adminEmail">Email<i class="fas fa-envelope"></i></label>
-                    <input type="email" id="adminEmail" name="adminEmail" placeholder="Enter Email" required><br>
-
-                    <label for="adminPassword">Password<i class="fas fa-lock"></i></label>
-                    <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter Password" required><br>
-
-                    <label for="confirmPassword">Confirm Password<i class="fas fa-lock"></i></label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required><br>
-
-                    <div class="form-buttons">
-                        <button type="submit" class="btn btn-submit">Add Admin</button>
-                        <button type="button" class="btn btn-clear" onclick="clearForm()">Clear</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

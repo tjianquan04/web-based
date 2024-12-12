@@ -1,14 +1,17 @@
+<script src="../js/main.js"></script>
 <?php
 require '../_base.php';
 
 auth('Admin', 'Superadmin');
 
 // Get admin role
-$admin_role = $_SESSION['role'];
+$admin_role = $_SESSION['role'] ?? NULL;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
+
 
 <head>
     <meta charset="UTF-8">
@@ -55,7 +58,7 @@ $admin_role = $_SESSION['role'];
                 <?php endif; ?>
 
                 <a href="#"><i class="fas fa-cogs"></i> Settings</a>
-                
+
                 <!-- Logout Form -->
                 <form action="" method="POST" style="display:inline;">
                     <button type="submit" name="logout" class="btn btn-logout">
@@ -73,15 +76,29 @@ $admin_role = $_SESSION['role'];
         }
         ?>
 
-        <!-- Main Content -->
         <main class="header-content">
             <header class="header">
-                <h2>Welcome, <?= htmlspecialchars($_SESSION['role']) ?>!</h1>
-                    <div class="header-right">
-                        <i class="fas fa-bell"></i>
-                        <i class="fas fa-user-circle"></i>
+                <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
+                <div class="header-right">
+                    <!-- Email and Notification Icons -->
+                    <i class="fas fa-envelope" id="emailIcon"></i>
+                    <i class="fas fa-bell" id="notificationIcon"></i>
+
+                    <!-- User Profile Section -->
+                    <div class="user-profile" id="userProfile" tabindex="0">
+                        <!-- Check if there's a user photo, otherwise display the default photo -->
+                        <img src="<?= isset($_SESSION['user']->photo) && $_SESSION['user']->photo ? '../image/' . $_SESSION['user']->photo : '../image/default_user_photo.png' ?>"
+                            alt="User Photo" class="user-icon">
+                        <div class="user-details">
+                            <p class="admin-name"><?= htmlspecialchars($_SESSION['user']->role) ?></p>
+                            <p class="current-date" id="currentDate"></p>
+                        </div>
+                        <div class="dropdown-content" id="profileDropdown">
+                            <a href="view_admin.php?id=<?= $_SESSION['user']->admin_id ?>">View Profile</a>
+                            <a href="edit_admin.php?id=<?= $_SESSION['user']->admin_id ?>">Edit Profile</a>
+                        </div>
                     </div>
+                </div>
             </header>
         </main>
     </div>
-    <script src="../js/main.js"></script>

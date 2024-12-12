@@ -9,41 +9,40 @@ function toggleMenu(menuId) {
     }
 }
 
-function openModal() {
-    document.getElementById('addAdminModal').style.display = 'block';
-}
-
-// Close the modal
-function closeModal() {
-    document.getElementById('addAdminModal').style.display = 'none';
-}
-
-// Close the modal when clicking anywhere outside of it
-window.onclick = function(event) {
-    if (event.target === document.getElementById('addAdminModal')) {
-        closeModal();
-    }
-};
-
 function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
-$('label.upload input[type=file]').on('change', e => {
-    const file = e.target.files[0]; // Get the selected file
-    const img = $(e.target).siblings('img')[0]; // Reference the <img> tag
+document.addEventListener('DOMContentLoaded', () => {
+    const currentDateElement = document.getElementById('currentDate');
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
+    const currentDate = new Date().toLocaleDateString('en-US', options);
+    currentDateElement.textContent = currentDate;
 
-    if (!img) return;
+    // Dropdown interaction
+    const userProfile = document.getElementById('userProfile');
+    userProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userProfile.classList.toggle('active');
+    });
 
-    img.dataset.src ??= img.src; // Backup the original image src if not already backed up
-
-    if (file?.type.startsWith('image/')) {
-        img.src = URL.createObjectURL(file); // Display the new image preview
-    } else {
-        img.src = img.dataset.src; // Revert to the original image if invalid file
-        e.target.value = ''; // Clear the file input
-    }
+    document.addEventListener('click', () => {
+        userProfile.classList.remove('active');
+    });
 });
+
+function clearPasswordField(input) {
+    if (input.value === '********') {
+        input.value = '';
+    }
+}
+
+function restoreDefaultPwIfEmpty(input) {
+    if (input.value.trim() === '') {
+        input.value = '********';
+    }
+}
+
 
 $(() => {
 
@@ -51,10 +50,15 @@ $(() => {
     $('form :input:not(button):first').focus();
     $('.err:first').prev().focus();
     $('.err:first').prev().find(':input:first').focus();
+
+    // Delete confirmation message
+    $('[delete-confirm]').on('click', e => {
+        // Check for either address_id or member_id
+        const Id = e.target.dataset.addressId || e.target.dataset.memberId;
     
-    // Confirmation message
-    $('[data-confirm]').on('click', e => {
-        const text = e.target.dataset.confirm || 'Are you sure to delete ?';
+        // Customize the confirmation message
+        const text = `Are you sure you want to delete ${Id}?`;
+    
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -82,6 +86,32 @@ $(() => {
     $('[type=reset]').on('click', e => {
         e.preventDefault();
         location = location;
+    });
+
+    // Auto uppercase
+    $('[data-upper]').on('input', e => {
+        const a = e.target.selectionStart;
+        const b = e.target.selectionEnd;
+        e.target.value = e.target.value.toUpperCase();
+        e.target.setSelectionRange(a, b);
+    });
+
+    // Photo preview
+    $('label.upload input[type=file]').on('change', e => {
+        const f = e.target.files[0];
+        const img = $(e.target).siblings('img')[0];
+
+        if (!img) return;
+
+        img.dataset.src ??= img.src;
+
+        if (f?.type.startsWith('image/')) {
+            img.src = URL.createObjectURL(f);
+        }
+        else {
+            img.src = img.dataset.src;
+            e.target.value = '';
+        }
     });
 
 });
