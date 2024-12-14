@@ -155,13 +155,14 @@ include '../_head.php';
     <tbody>
         <?php $numofcategories = 1; ?>
         <?php foreach ($_categories as $_category): ?>
-            <tr onclick="showCategoryDetails('<?= $_category->category_id ?>', '<?= $_category->category_name ?>', '<?= $_category->sub_category ?>', '<?= $_category->category_photo ?>')">
+            <!-- <tr onclick="showCategoryDetails('<?= $_category->category_id ?>', '<?= $_category->category_name ?>', '<?= $_category->sub_category ?>', '<?= $_category->category_photo ?>')"> -->
+                <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'">
                 <td><?= $numofcategories++ ?></td>
                 <td><?= $_category->category_id ?></td>
                 <td class="description-cell"><?= $_category->category_name ?></td>
                 <td><?= $_category->sub_category ?></td>
                 <td>
-                    <a href='#' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
+                    <a href='category_update.php?category_id=<?= $_category->category_id ?>' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
                     <!-- <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete' onclick='return confirm("Are you sure you want to delete this Category?")'> -->
                     <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete'>
 
@@ -193,7 +194,7 @@ include '../_head.php';
     </div>
 </div>
 
-<script>
+<!-- <script>
     function showCategoryDetails(categoryID, categoryName, subCategory, categoryPhoto) {
         // Set the values in the popup
         document.getElementById('popupCategoryID').textContent = categoryID;
@@ -209,7 +210,7 @@ include '../_head.php';
         // Hide the popup
         document.getElementById('categoryPopup').style.display = 'none';
     }
-</script>
+</script> -->
 
 <?php
 include '../_foot.php';

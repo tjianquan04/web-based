@@ -469,7 +469,9 @@ function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
 
 // Generate text input field
 function html_text($key, $placeholder = '', $data = '', $attr = '') {
-    html_input('text', $key, $placeholder, $data, $attr);
+    $value = htmlspecialchars($data); // Prevent XSS by escaping special characters
+    // Create the input field with the value and other attributes
+    html_input('text', $key, $placeholder, $value, $attr);
 }
 
 // Generate password input field
@@ -502,6 +504,17 @@ function html_select($key, $items, $default = '- Select One -', $attr = '') {
     }
     echo '</select>';
 }
+
+// Generate <input type='checkbox'>
+function html_checkbox($key, $status = 'inactive', $attr = '') {
+    $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
+  
+    echo "<label for='$key'>"; // Add a label for accessibility
+    echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
+    echo "</label>";
+}
+
+
 
 
 // Generate search input field
