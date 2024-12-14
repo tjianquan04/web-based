@@ -20,6 +20,10 @@ $page = req('page', 1);
 $p = new SimplePager("SELECT * FROM admin WHERE `role` != 'superadmin' ORDER BY $sort $dir", [], 10, $page);
 $admins = $p->result;
 
+// Get total number of admins (excluding 'superadmin')
+$total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superadmin'")->fetchColumn();
+
+
 // Handle POST request for adding admin
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $admin_name = $_POST['admin_name'];
@@ -56,7 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body>
     <div class="container">
+    <div class="admin-management-header">
         <h1>Admin Management</h1>
+        <span class="total-record">Total Records of Admin: <?= $total_admins ?></span>
+    </div>
 
         <!-- Admin Table -->
         <table border="1">
