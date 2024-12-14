@@ -290,7 +290,7 @@ function getMemberbyId($member_id){
     return $member ?: null;
 }
 
-function getAllAddressbyId($memberId){
+function getAllAddressbyMemberId($memberId){
     global $_db;
     $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
     $addressStm->execute([$memberId]);
@@ -299,6 +299,14 @@ function getAllAddressbyId($memberId){
     return $addressArr;
 }
 
+function getAddressbyId($address_id){
+    global $_db;
+    $addressStm = $_db->prepare('SELECT * FROM address WHERE address_id = ?');
+    $addressStm->execute([$address_id]);
+    $address = $addressStm->fetch(PDO::FETCH_OBJ);
+
+    return $address;
+}
 
 function generateNextAdminId()
 {
@@ -472,6 +480,9 @@ function save_photo($f, $folder, $width = 200, $height = 200)
 
     return $photo;
 }
+
+
+
 
 function get_file($key)
 {
@@ -703,28 +714,45 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
 }
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
+    // Get the selected value (category_id or subcategory_id)
+    $value = encode($GLOBALS[$key] ?? '');  
+
+    // Debug: Log the selected value
+    error_log("Selected value (category or subcategory): $value");
+
     echo "<select id='$key' name='$key' $attr>";
-    
+
     // Default option
     if ($default !== null) {
         echo "<option value=''>$default</option>";
     }
 
+    // Iterate through categories and display options
     foreach ($categories as $main_category => $data) {
-        $id = $data['id'];
+        $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
         
+        // Debug: Log the category data
+        error_log("Processing category: $main_category (ID: $id)");
+
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
-        echo "<option value='$id' $disabled>$main_category</option>";
+        
+        // Set selected for the main category
+        $selected = ($id == $value) ? 'selected' : '';
+        error_log("Main category selected: $selected");  // Debug: Check if it's selected
+        echo "<option value='$id' $selected $disabled>$main_category</option>";
 
-        // Subcategories
+        // Subcategories: If subcategories exist
         if ($has_subcategories) {
             foreach ($data['subcategories'] as $subcategory) {
-                $sub_id = $subcategory['id'];
+                $sub_id = $subcategory['id'];  // The subcategory_id
                 $sub_name = $subcategory['name'];
-                $selected = $sub_id == $value ? 'selected' : '';
+                $selected = ($sub_id == $value) ? 'selected' : '';  // Compare with the selected value (subcategory_id)
+
+                // Debug: Log subcategory selection
+                error_log("Subcategory: $sub_name (ID: $sub_id), Selected: $selected");
+
                 echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
             }
         }
@@ -733,36 +761,48 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     echo '</select>';
 }
 
-function generate_product_id($category_name, $subcategory, $_db) {
-    // Define mnemonics for categories and subcategories
-    $mnemonics = [
-        'racquet' => '1',
-        'shuttlecock' => '2SC',
-        'racquetbag' => '3RB',
-    ];
 
-    $sub_mnemonics = [
-        'xpseries' => 'XP',
-        '3dcalibar' => '3D',
-        'axforce' => 'AX',
-        'tectonic' => 'TT',
-    ];
 
-    $prefix = $mnemonics[strtolower($category_name)] ?? '';
-    $sub_prefix = $sub_mnemonics[strtolower($subcategory)] ?? '';
+function generate_product_id($category_id, $db) {
+    // Fetch the last product ID in the category
+    $stm = $db->prepare('
+        SELECT product_id 
+        FROM product 
+        WHERE product_id LIKE ? 
+        ORDER BY product_id DESC 
+        LIMIT 1
+    ');
+    $stm->execute([$category_id . '%']); // Match category_id followed by any number
 
-    if ($prefix && $sub_prefix) {
-        $id_prefix = $prefix . $sub_prefix;
-    } else {
-        $id_prefix = $prefix; // Use main category mnemonic if subcategory doesn't exist
-    }
+    $last_id = $stm->fetchColumn();
 
-    // Fetch the next sequence number
-    $stm = $_db->prepare("SELECT COUNT(*) + 1 AS seq FROM product WHERE product_id LIKE ?");
-    $stm->execute(["$id_prefix%"]);
-    $row = $stm->fetch();
-    $seq = str_pad($row['seq'], 4, '0', STR_PAD_LEFT);
+    // Extract the numeric part and increment it
+    // Assuming the format is like XXX0001, XXX0002, etc., we remove the category prefix and parse the number
+    $last_number = $last_id ? intval(substr($last_id, strlen($category_id))) : 0; // Skip the category_id part
+    $new_number = str_pad($last_number + 1, 4, '0', STR_PAD_LEFT); // Increment and pad with leading zeros (4 digits)
 
-    return $id_prefix . '-' . $seq;
+    // Return the product ID in the format: category_id + 4-digit number
+    return $category_id . $new_number;
 }
+
+function generate_photo_id($db) {
+    // Fetch the last product_photo_id
+    $stm = $db->prepare('
+        SELECT product_photo_id
+        FROM product_photo
+        ORDER BY product_photo_id DESC
+        LIMIT 1
+    ');
+    $stm->execute();
+
+    $last_id = $stm->fetchColumn();
+
+    // If no IDs are found, start from 1, otherwise increment the last ID
+    $new_id = $last_id ? $last_id + 1 : 1;
+
+    return $new_id;
+}
+
+
+
 

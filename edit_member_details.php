@@ -5,7 +5,7 @@ $memberId = req('id');
 
 $s = getMemberbyId($memberId);
 
-$addressArr = getAllAddressbyId($memberId);
+$addressArr = $addressArr = getAllAddressbyMemberId($memberId);
 
 //validation
 if (is_post() && req('form_type') === 'member_details') {
@@ -135,7 +135,7 @@ if (is_post() && req('form_type') === 'member_details') {
 
 include '_head.php';
 ?>
-
+<script src="/js/main.js"></script>
 <link rel="stylesheet" href="/css/edit_member.css">
 
 <body>
@@ -229,7 +229,7 @@ include '_head.php';
                         <br>
 
                         <button type="submit" class="save-btn">Save Address</button>
-                        <button data-post="delete_address.php?id=<?= $address->address_id ?>" delete-confirm="<?= $address->address_id ?>" class="delete-btn">Delete</button>
+                        <button data-post="delete_address.php?id=<?= $address->address_id ?>" delete-confirm data-address-id="<?= $address->address_id ?>" class="delete-btn">Delete</button>
                     </form>
                     <hr>
                 <?php endforeach; ?>
@@ -237,7 +237,7 @@ include '_head.php';
             <?php endif; ?>
         </div>
     </div>
-    <button class="go-back" onclick="window.history.back()">Go Back</button>
+    <button class="go-back" data-get="member_management.php">Go Back</button>
 </body>
 
 <?php
