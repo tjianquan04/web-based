@@ -89,6 +89,29 @@ function validateUser($email, $password)
     }
 }
 
+function validUserEmail($email)
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare the SQL query to check if the email exists
+        $stmt = $_db->prepare("SELECT * FROM `user` WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(); // Fetch the admin record
+
+        if($user){
+            return $user;
+        }
+        else{
+            return false;
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in checkValidEmail: " . $e->getMessage());
+        return false; // Treat failure as email not existing
+    }
+}
+
 function validateAdmin($admin_id, $password)
 {
     global $_db; // Use the database connection defined in _base.php
@@ -110,6 +133,29 @@ function validateAdmin($admin_id, $password)
         // Log the error or handle it
         error_log("Database error: " . $e->getMessage());
         return false;
+    }
+}
+
+function validAdminEmail($email)
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare the SQL query to check if the email exists
+        $stmt = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch(); // Fetch the admin record
+
+        if($admin){
+            return $admin;
+        }
+        else{
+            return false;
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in checkValidEmail: " . $e->getMessage());
+        return false; // Treat failure as email not existing
     }
 }
 
@@ -154,7 +200,7 @@ function addAdmin($user)
 
     // Handle photo upload
     if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
-        $photo_path = save_photo($user->photo, 'photos'); // Save photo in 'photos' folder
+        $photo_path = save_photo($user->photo, '../photos'); // Save photo in 'photos' folder
     } else {
         $photo_path = 'default_user_photo.png'; // Default photo if none is uploaded
     }
@@ -498,6 +544,38 @@ function html_search($key,$placeholder = 'Search by name, email, contact', $data
     html_input('search', $key, $placeholder, $data, $attr);
 }
 
+
+// ============================================================================
+// Email Functions
+// ============================================================================
+
+// Demo Accounts:
+// --------------
+// AACS3173@gmail.com           npsg gzfd pnio aylm
+// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
+// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
+// liawcv1@gmail.com            obyj shnv prpa kzvj
+
+// Initialize and return mail object
+function get_mail() {
+    require_once 'lib/PHPMailer.php';
+    require_once 'lib/SMTP.php';
+
+    $m = new PHPMailer(true);
+    $m->isSMTP();
+    $m->SMTPAuth = true;
+    $m->Host = 'smtp.gmail.com';
+    $m->Port = 587;
+    $m->Username = 'AACS3173@gmail.com';
+    $m->Password = 'npsg gzfd pnio aylm';
+    $m->CharSet = 'utf-8';
+    $m->setFrom($m->Username, '😺 Admin');
+
+    return $m;
+}
+
+
+
 // ============================================================================
 // Error Handlings
 // ============================================================================
@@ -544,6 +622,16 @@ function is_email($value)
 // Is money?
 function is_money($value) {
     return preg_match('/^\-?\d+(\.\d{1,2})?$/', $value);
+}
+
+// Return base url (host + port)
+function base($path = '') {
+    return "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]/$path";
+}
+
+// Return local root path
+function root($path = '') {
+    return "$_SERVER[DOCUMENT_ROOT]/$path";
 }
 
 

@@ -1,0 +1,100 @@
+/* Main container */
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.forgot-password-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+
+.form-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+.form-container h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group input:focus {
+    border-color: #f47738;
+    outline: none;
+}
+
+button {
+    background-color: #f47738;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #fc7840;
+}
+
+button[type="reset"] {
+    background-color: #ccc;
+    margin-top: 10px;
+}
+
+button[type="reset"]:hover {
+    background-color: #bbb;
+}
+
+input[type="password"] {
+    font-size: 16px;
+}
+
+/* The form's success message */
+.info-message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: green;
+}
+
