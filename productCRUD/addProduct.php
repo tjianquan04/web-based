@@ -58,7 +58,7 @@ if (is_post()) {
     if ($category_data) {
         $category_name = $category_data->category_name;
         $subcategory = $category_data->sub_category;
-    
+
         // Log the fetched data
         error_log("Fetched Category Name: $category_name, Subcategory: $subcategory");
     } else {
@@ -66,11 +66,11 @@ if (is_post()) {
         error_log("No category found for category_id: $category_id");
         $_err['category_name'] = 'Invalid category or subcategory.';
     }
-    
+
     // Validate and insert the product if no errors
     if (empty($_err)) {
         $product_id = generate_product_id($category_id, $_db);
-    
+
         if ($description == '') {
             $_err['description'] = 'Required.';
         }
@@ -80,7 +80,7 @@ if (is_post()) {
         if ($stock_quantity == '' || !is_numeric($stock_quantity) || $stock_quantity < 10) {
             $_err['stock_quantity'] = 'Minimum stock quantity is 10.';
         }
-    
+
         // Insert the product if no errors
         if (empty($_err)) {
             $stm = $_db->prepare('
@@ -88,6 +88,23 @@ if (is_post()) {
                 VALUES (?, ?, ?, ?, ?, ?)
             ');
             $stm->execute([$product_id, $description, $stock_quantity, $unit_price, $category_name, $category_id]);
+
+            // Fetch current stock for the category
+            $currentCatStock = $_db->prepare('SELECT currentStock FROM category WHERE category_id = ?');
+            $currentCatStock->execute([$category_id]);
+            $currentStock = $currentCatStock->fetchColumn();
+
+            // Calculate new stock quantity
+            $newStockQuantity = $currentStock + $stock_quantity;
+
+            // Update the stock in the category table
+            $updateCatStock = $_db->prepare('
+            UPDATE category
+            SET currentStock = ?
+            WHERE category_id = ?
+            ');
+            $updateCatStock->execute([$newStockQuantity, $category_id]);
+
             temp('info', 'Product added successfully.');
             redirect('viewProduct.php');
         }
@@ -97,7 +114,6 @@ if (is_post()) {
         // If there are validation errors, you don't insert the product
         // You can display error messages or handle it accordingly
     }
-    
 }
 
 // Page setup and rendering
@@ -106,64 +122,68 @@ include '../_head.php';
 ?>
 
 <style>
-/* Form Styling */
-form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    font-family: Arial, sans-serif;
-}
+    /* Form Styling */
+    form {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+    }
 
-form label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
-}
+    form label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+    }
 
-form input, form select, form button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
+    form input,
+    form select,
+    form button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
 
-form input:focus, form select:focus, form button:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
+    form input:focus,
+    form select:focus,
+    form button:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 
-form button {
-    background-color: #28a745;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-}
+    form button {
+        background-color: #28a745;
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
 
-form button:hover {
-    background-color: #218838;
-}
+    form button:hover {
+        background-color: #218838;
+    }
 
-form button[type="reset"] {
-    background-color: #dc3545;
-}
+    form button[type="reset"] {
+        background-color: #dc3545;
+    }
 
-form button[type="reset"]:hover {
-    background-color: #c82333;
-}
+    form button[type="reset"]:hover {
+        background-color: #c82333;
+    }
 
-.error {
-    color: red;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
 </style>
 
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
