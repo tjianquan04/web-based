@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="/css/flash_msg.css">
 <link rel="stylesheet" href="/css/edit_admin.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../js/main.js"></script>
 <?php
 include('_admin_head.php');
@@ -54,8 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ');
         $stm->execute([$admin_name, $hash_password, $email, $phone_number, $role, $status, $admin->photo, $admin_id]);
 
-        temp('info', 'Admin updated successfully!');
-        redirect("view_admin.php?id=$admin_id");
+        // Update the session with the new details
+        if ($_SESSION['user']->admin_id === $admin_id) {
+            $_SESSION['user']->photo = $admin->photo;
+            $_SESSION['user']->admin_name = $admin_name;
+        }
+
+        temp('UpdateSuccess', "Account updated successfully");
+        temp('showSwal', true); // Set flag to show SweetAlert
     }
 }
 ?>
@@ -119,5 +127,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="admin_management.php"><button type="button" class="btn-cancel">Cancel</button></a>
         </section>
     </form>
-
+    <?php if (temp('showSwal')): ?>
+    <script>
+        // Determine the redirection URL based on the role
+        const redirectUrl = <?= $_SESSION['user']->role === 'Superadmin' 
+            ? json_encode('admin_management.php') 
+            : json_encode('admin_dashboard.php') ?>;
+        
+        // Display swal() popup with the success message and redirect after user confirms
+        swal("Congrats", "<?= temp('UpdateSuccess'); ?>", "success")
+            .then(function() {
+                window.location.href = redirectUrl; // Redirect to the appropriate page
+            });
+    </script>
+<?php endif; ?>
 </div>

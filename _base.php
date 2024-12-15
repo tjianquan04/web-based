@@ -159,6 +159,18 @@ function validAdminEmail($email)
     }
 }
 
+function updateSessionData($admin_id) {
+    global $_db;
+
+    $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
+    $stm->execute([$admin_id]);
+    $user = $stm->fetchObject();
+
+    if ($user) {
+        $_SESSION['user'] = $user;
+    }
+}
+
 function getAllAdmins()
 {
     global $_db; // Use the database connection defined in _base.php
