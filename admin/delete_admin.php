@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
 <?php
 include('_admin_head.php');
 
@@ -13,9 +14,16 @@ if (isset($_GET['id'])) {
     $stm->execute([$admin_id]);
 
     // Set a flash message to inform the user that the deletion was successful
-    temp('info', 'Admin deleted successfully!');
-
-    // Redirect back to the admin management page
-    redirect('admin_management.php');
+    temp('DeleteSucess', "Account delete successfully");
+    temp('showSwal', true); // Set flag to show SweetAlert
 }
 ?>
+<?php if (temp('showSwal')): ?>
+    <script>
+        // Display swal() popup with the registration success message
+        swal("Congrats", "<?= temp('AddingSuccess'); ?>", "success")
+            .then(function() {
+                window.location.href = 'admin_management.php'; // Redirect after the popup closes
+            });
+    </script>
+<?php endif; ?>

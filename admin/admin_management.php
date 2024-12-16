@@ -16,8 +16,25 @@ $dir = in_array(req('dir'), $valid_dirs) ? req('dir') : 'asc';  // Default to 'a
 // Set page number
 $page = req('page', 1);
 
-// Modify SQL query to allow sorting by any of the valid columns
-$p = new SimplePager("SELECT * FROM admin WHERE `role` != 'superadmin' ORDER BY $sort $dir", [], 10, $page);
+// Search logic
+$search = req('search', ''); // Capture the search term
+$search_query = '';
+$params = []; // Query parameters for prepared statements
+
+if (!empty($search)) {
+    // Append the search condition
+    $search_query = " AND (admin_id LIKE :search OR admin_name LIKE :search OR email LIKE :search OR role LIKE :search)";
+    $params[':search'] = '%' . $search . '%'; // Add wildcard search term
+}
+
+// Integrate search query into the final query
+$p = new SimplePager(
+    "SELECT * FROM admin WHERE `role` != 'superadmin' $search_query ORDER BY $sort $dir",
+    $params,
+    10, // Items per page
+    $page
+);
+
 $admins = $p->result;
 
 // Get total number of admins (excluding 'superadmin')
@@ -62,6 +79,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
     <div class="admin-management-header">
         <h1>Admin Management</h1>
+
+        <!-- Search Bar -->
+        <div class="search-bar-container">
+                <form action="admin_management.php" method="GET">
+                    <input type="text" name="search" placeholder="Search by ID, Name, Email, Role..." value="<?= htmlspecialchars($search) ?>" />
+                    <!-- Retain sort and dir parameters during search -->
+                    <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
+                    <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
+                </form>
+            </div>
+
+        <!-- Total Record -->    
         <span class="total-record">Total Records of Admin: <?= $total_admins ?></span>
     </div>
 

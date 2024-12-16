@@ -24,24 +24,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (empty($email) || empty($password)) {
         $_err['empty_error'] = 'Please enter both email and password.';
     } else {
-        $user = validateUser($email, $password);
-        if ($user) {
+        // Fetch user details by email
+        $stmt = $_db->prepare("SELECT * FROM user WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$user) {
+            $_err['login_error'] = 'Invalid email or password.';
+        } elseif ($user->status === 'Inactive') {
+            $_err['login_error'] = 'Your account has been locked due to multiple failed login attempts.';
+        } elseif ($user->password === sha1($password)) {
+            // Successful login, reset login attempts
+            $stmt = $_db->prepare("UPDATE user SET login_attempts = 0 WHERE email = ?");
+            $stmt->execute([$email]);
+
             // Handle "Remember Me" functionality
             if (isset($_POST['remember'])) {
                 setcookie('remember_user_email', $email, time() + (30 * 24 * 60 * 60), "/"); // 30 days
-                setcookie('remember_user_password', $password, time() + (30 * 24 * 60 * 60), "/"); // Save password
+                setcookie('remember_user_password', $password, time() + (30 * 24 * 60 * 60), "/");
             } else {
-                // Clear cookies if "Remember Me" is not selected
                 setcookie('remember_user_email', '', time() - 3600, "/");
                 setcookie('remember_user_password', '', time() - 3600, "/");
             }
 
-
-            // Set session data if login is successful
+            // Set session data for successful login
             temp('info', 'Successful login');
-            login($user, '../index.php'); // Redirect to the homepage or a protected page
+            login($user, '../index.php'); // Redirect to dashboard or protected page
         } else {
-            $_err['login_error'] = 'Invalid email or password.';
+            // Increment login attempts
+            $new_attempts = $user->login_attempts + 1;
+
+            // Update login attempts in the database
+            $stmt = $_db->prepare("UPDATE user SET login_attempts = ? WHERE email = ?");
+            $stmt->execute([$new_attempts, $email]);
+
+            if ($new_attempts >= 3) {
+                // Lock account if login attempts exceed threshold
+                $stmt = $_db->prepare("UPDATE user SET status = 'Inactive' WHERE email = ?");
+                $stmt->execute([$email]);
+                $_err['login_error'] = 'Your account has been locked due to multiple failed login attempts.';
+            } else {
+                $remaining_attempts = 3 - $new_attempts;
+                $_err['login_error'] = "Invalid email or password.";
+            }
         }
     }
 }

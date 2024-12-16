@@ -6,6 +6,7 @@ auth('Admin', 'Superadmin');
 
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
+updateSessionData($_SESSION['user']->admin_id);
 ?>
 
 <!DOCTYPE html>

@@ -153,57 +153,11 @@ label i{
     margin-left: 10px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-input[type="password"]:focus,
-input[type="text"]:focus,
-input[type="email"]:focus {
-    outline: none;
-    border-color: #007bff;
-}
-
 /* Buttons Styling */
 .form-buttons {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-}
-
-.btn-submit,
-.btn-clear {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.btn-submit {
-    background-color: #007bff;
-    color: white;
-    border: none;
-}
-
-.btn-submit:hover {
-    background-color: #0056b3;
-}
-
-.btn-clear {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-}
-
-.btn-clear:hover {
-    background-color: #c82333;
 }
 
 .pagination-container {
@@ -271,6 +225,29 @@ input[type="email"]:focus {
 .arrow-right {
     float: right;  /* Align the icon to the right */
     margin-left: 5px;  /* Add some space between the column name and the icon */
+}
+
+/*Search Bar*/
+.search-bar-container {
+    flex-grow: 2; /* Allow the search bar container to take up more space */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the search bar horizontally */
+    width: 100%; /* Ensure it takes up available space */
+    max-width: 600px; /* Optionally set a max width for the search bar */
+}
+
+.search-bar-container input[type="text"] {
+    padding: 8px; /* Reduce padding to make the input smaller */
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-top: 15px;
+    outline: none;
+    color: #333;
+    width: 500px; /* Let the input fill the allocated space */
+    max-width: 100%; /* Keep it within the container */
+    box-sizing: border-box; /* Include padding in total width */
 }
 
 
