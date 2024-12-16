@@ -481,6 +481,21 @@ function save_photo($f, $folder, $width = 200, $height = 200)
     return $photo;
 }
 
+function save_photos($tmp_name, $folder, $width = 200, $height = 200)
+{
+    $photo = uniqid() . '.jpg';
+
+    require_once 'lib/SimpleImage.php';
+    $img = new SimpleImage();
+    $img->fromFile($tmp_name) // Passing the correct file path here
+        ->thumbnail($width, $height)
+        ->toFile("$folder/$photo", 'image/jpeg');
+
+    return $photo;
+}
+
+
+
 
 
 
@@ -664,8 +679,9 @@ function root($path = '') {
 
 
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
+    $params=[];
     $query = "
-        SELECT p.*, pp.photo
+        SELECT p.*, pp.product_photo_id
         FROM product p
         LEFT JOIN product_photo pp 
         ON p.product_id = pp.product_id AND pp.default_photo = 1
@@ -814,6 +830,64 @@ function generate_photo_id($db) {
     $new_id = $last_id ? $last_id + 1 : 1;
 
     return $new_id;
+}
+
+function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'], $maxFileSize = 5 * 1024 * 1024, $width = 200, $height = 200)
+{
+    $results = []; // Store results for each file
+
+    // Ensure the target directory exists
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
+    }
+
+    // Loop through the uploaded files
+    for ($i = 0; $i < count($files['name']); $i++) {
+        $fileName = $files['name'][$i];
+        $fileTmpName = $files['tmp_name'][$i];
+        $fileSize = $files['size'][$i];
+        $fileError = $files['error'][$i];
+        $fileType = $files['type'][$i];
+
+        // Initialize response for this file
+        $fileResult = [
+            'fileName' => $fileName,
+            'success' => false,
+            'message' => '',
+            'uploadedPath' => ''
+        ];
+
+        // Check for upload errors
+        if ($fileError === 0) {
+            // Extract file extension
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            // Validate file extension
+            if (in_array($fileExtension, $allowedExtensions)) {
+                // Validate file size
+                if ($fileSize <= $maxFileSize) {
+                    // Use the save_photo() function to upload and resize the image
+                    $uniqueFileName = save_photo($files, $targetDir, $width, $height);
+                    $uploadPath = $targetDir . $uniqueFileName;
+
+                    $fileResult['success'] = true;
+                    $fileResult['uploadedPath'] = $uploadPath;
+                    $fileResult['message'] = "File uploaded and resized successfully.";
+                } else {
+                    $fileResult['message'] = "File size exceeds the limit.";
+                }
+            } else {
+                $fileResult['message'] = "Invalid file type.";
+            }
+        } else {
+            $fileResult['message'] = "Error during file upload.";
+        }
+
+        // Add this file's result to the results array
+        $results[] = $fileResult;
+    }
+
+    return $results;
 }
 
 

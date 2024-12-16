@@ -36,7 +36,7 @@ include '_head.php';
         <div class="product">
             <div class="product-content">
                 <div class="product-img">
-                <a href="product_card.php?product_id=<?= $p->product_id ?>"><img src="/image/<?= $p->photo ?>" alt="Product Photo" class="category">
+                <a href="product_card.php?product_id=<?= $p->product_id ?>"><img src="/product_gallery/<?= $p->product_photo_id ?>" alt="Product Photo" class="category">
                     
                 </a>
                 </div>

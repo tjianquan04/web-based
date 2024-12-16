@@ -11,11 +11,6 @@ if (is_get()) {
     $stm->execute([$category_id]);
     $category = $stm->fetch();
 
-    echo '<pre>';
-
-    var_dump($category); // This will show the structure of the $category object
-    echo '</pre>';
-
 
     if (!$category) {
         redirect('index.php'); // If no category found, redirect to index

@@ -160,7 +160,7 @@ a {
         <?php if ($photos): ?>
             <div class="photo-gallery">
                 <?php foreach ($photos as $photo): ?>
-                    <img src="../image/<?= ($photo->photo) ?>" alt="Product Photo" class="product-photo">
+                    <img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo">
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
@@ -175,6 +175,8 @@ a {
 
         <p><strong>Category:</strong> <?= $product->category_name ?></p>
         <p><strong>Subcategory:</strong> <?= $subcategory['sub_category'] ?: 'None' ?></p>
+
+        <p><strong>Status:</strong><?= $product->status ?></p>
     </div>
 
 

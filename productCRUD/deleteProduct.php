@@ -24,6 +24,19 @@ if (is_post()) {
     $stm->execute([$product_id]);
     $product_data = $stm->fetch();
 
+
+    $galleryStm = $_db->prepare(
+        'SELECT product_photo_id
+    FROM product_photo
+    WHERE product_id = ?'
+    );
+    $galleryStm->execute([$product_id]);
+
+    // Fetch all rows and store them in the $gallery array
+    $gallery = $galleryStm->fetchAll(PDO::FETCH_OBJ);
+
+
+
     if (!$product_data) {
         temp('info', 'Product not found');
         error_log('Failed to delete: Product not found');
@@ -34,6 +47,18 @@ if (is_post()) {
     $stock_quantity = $product_data->stock_quantity;
     $currentStock = $product_data->currentStock;
 
+
+    foreach ($gallery as $photo) {  // Delete associated photo 
+        echo $photo->product_photo_id; // Access each product_photo_id
+        // Delete associated photo 
+        $photo_path = '../product_gallery/' . $photo->product_photo_id;
+        if (file_exists($photo_path)) {
+            unlink($photo_path);
+        }
+
+        $deletePhotosStm = $_db->prepare('DELETE FROM product_photo WHERE product_id = ?');
+        $deletePhotosStm->execute([$product_id]);
+    }
     // Delete the product
     $deleteStm = $_db->prepare('DELETE FROM product WHERE product_id = ?');
     if ($deleteStm->execute([$product_id])) {
@@ -47,6 +72,10 @@ if (is_post()) {
         ');
         $updateCatStock->execute([$newStockQuantity, $category_id]);
 
+
+
+
+
         temp('info', 'Product deleted successfully');
         error_log("Product with ID $product_id deleted successfully. Stock updated for category $category_id.");
     } else {
@@ -59,4 +88,3 @@ if (is_post()) {
 }
 
 redirect('viewProduct.php');
-?>
