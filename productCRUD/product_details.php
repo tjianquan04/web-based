@@ -160,7 +160,7 @@ a {
         <?php if ($photos): ?>
             <div class="photo-gallery">
                 <?php foreach ($photos as $photo): ?>
-                    <img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo">
+                    <a href="product_photo.php?product_id=<?= $product->product_id ?>"><img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo"></a>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
