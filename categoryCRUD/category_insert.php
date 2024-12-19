@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="../css/categoryForm.css">
+
 <?php
 include '../_base.php';
 
@@ -7,6 +9,7 @@ if (is_post()) {
     $category_id   = req('category_id');
     $category_name = req('category_name');
     $sub_category  = req('sub_category') ?: null; // Assign null if empty
+    $minStock = req('minStock');
     $category_photo = get_file('category_photo');
 
     // Validate: category_id
@@ -17,6 +20,7 @@ if (is_post()) {
     } else if (!is_unique($category_id, 'category', 'category_id')) {
         $_err['category_id'] = 'Category ID already exists.';
     }
+
 
     // Validate: category_name
     if ($category_name == '') {
@@ -36,21 +40,28 @@ if (is_post()) {
 
     // DB operation
     if (!$_err) {
-        try {
+        
             // Save photo
-            $photo_path = save_photo($category_photo, '../photos');
+            $photo_path = save_photo($category_photo, '../image');
 
-            $stm = $_db->prepare('
-                INSERT INTO category (category_id, category_name, sub_category, category_photo)
-                VALUES (?, ?, ?, ?)
-            ');
-            $stm->execute([$category_id, $category_name, $sub_category, $photo_path]);
+            // Set default values for currentStock, stockAlert, and Status
+        $currentStock = 0; // Default to 0
+        $stockAlert = false; // Default to false
+        $status = true; // Default to 'active' (1)
+
+        $stm = $_db->prepare('
+            INSERT INTO category (category_id, category_name, sub_category, category_photo, minStock, currentStock, stockAlert, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ');
+        $stm->execute([$category_id, $category_name, $sub_category, $photo_path, $minStock, $currentStock, $stockAlert, $status]);
+
 
             temp('info', 'Category successfully inserted.');
-            redirect('index.php');
-        } catch (Exception $e) {
-            $_err['database'] = 'Failed to insert category: ' . $e->getMessage();
-        }
+            redirect('../index.php');
+        
+    }
+    else{
+        temp('info', 'Category failed inserted.');
     }
 }
 
@@ -60,8 +71,9 @@ $_title = 'Category | Insert';
 include '../_head.php';
 ?>
 
+
 <p>
-    <button data-get="index.php">Back to Index</button>
+    <button onclick="window.location.href='index.php'">Back to Index</button>
 </p>
 
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
@@ -74,8 +86,12 @@ include '../_head.php';
     <?= err('category_name') ?>
 
     <label for="sub_category">Subcategory (optional)</label>
-    <?= html_text('sub_category', 'maxlength="100" placeholder="Optional")') ?>
+    <?= html_text('sub_category', 'maxlength="100" placeholder="Optional"') ?>
     <?= err('sub_category') ?>
+
+    <label for="minStock">Minimum Stock</label>
+    <?= html_number('minStock', 0, 100000, 1) ?>
+    <?= err('minStock') ?>
 
     <label for="category_photo">Photo</label>
     <label class="upload" tabindex="0">
@@ -85,10 +101,33 @@ include '../_head.php';
     <?= err('category_photo') ?>
 
     <section>
-        <button>Submit</button>
+        <button type="submit">Submit</button>
         <button type="reset">Reset</button>
     </section>
 </form>
 
+<script>
+  // Photo preview
+  $('label.upload input[type=file]').on('change', e => {
+        const f = e.target.files[0];
+        const img = $(e.target).siblings('img')[0];
+
+        if (!img) return;
+
+        img.dataset.src ??= img.src;
+
+        if (f?.type.startsWith('image/')) {
+            img.src = URL.createObjectURL(f);
+        }
+        else {
+            img.src = img.dataset.src;
+            e.target.value = '';
+        }
+    });
+</script>
+
+
 <?php
 include '../_foot.php';
+?>
+

@@ -89,6 +89,29 @@ function validateUser($email, $password)
     }
 }
 
+function validUserEmail($email)
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare the SQL query to check if the email exists
+        $stmt = $_db->prepare("SELECT * FROM `user` WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(); // Fetch the admin record
+
+        if($user){
+            return $user;
+        }
+        else{
+            return false;
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in checkValidEmail: " . $e->getMessage());
+        return false; // Treat failure as email not existing
+    }
+}
+
 function validateAdmin($admin_id, $password)
 {
     global $_db; // Use the database connection defined in _base.php
@@ -110,6 +133,41 @@ function validateAdmin($admin_id, $password)
         // Log the error or handle it
         error_log("Database error: " . $e->getMessage());
         return false;
+    }
+}
+
+function validAdminEmail($email)
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Prepare the SQL query to check if the email exists
+        $stmt = $_db->prepare("SELECT * FROM `admin` WHERE email = ?");
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch(); // Fetch the admin record
+
+        if($admin){
+            return $admin;
+        }
+        else{
+            return false;
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in checkValidEmail: " . $e->getMessage());
+        return false; // Treat failure as email not existing
+    }
+}
+
+function updateSessionData($admin_id) {
+    global $_db;
+
+    $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
+    $stm->execute([$admin_id]);
+    $user = $stm->fetchObject();
+
+    if ($user) {
+        $_SESSION['user'] = $user;
     }
 }
 
@@ -154,7 +212,7 @@ function addAdmin($user)
 
     // Handle photo upload
     if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
-        $photo_path = save_photo($user->photo, 'photos'); // Save photo in 'photos' folder
+        $photo_path = save_photo($user->photo, '../photos'); // Save photo in 'photos' folder
     } else {
         $photo_path = 'default_user_photo.png'; // Default photo if none is uploaded
     }
@@ -448,6 +506,24 @@ function save_photo($f, $folder, $width = 200, $height = 200)
     return $photo;
 }
 
+function save_photos($tmp_name, $folder, $width = 200, $height = 200)
+{
+    $photo = uniqid() . '.jpg';
+
+    require_once 'lib/SimpleImage.php';
+    $img = new SimpleImage();
+    $img->fromFile($tmp_name) // Passing the correct file path here
+        ->thumbnail($width, $height)
+        ->toFile("$folder/$photo", 'image/jpeg');
+
+    return $photo;
+}
+
+
+
+
+
+
 function get_file($key)
 {
     $f = $_FILES[$key] ?? null;
@@ -518,6 +594,17 @@ function html_select($key, $items, $default = '', $attr = '', $currentValue = nu
     echo '</select>';
 }
 
+// Generate <input type='checkbox'>
+function html_checkbox($key, $status = 'inactive', $attr = '') {
+    $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
+  
+    echo "<label for='$key'>"; // Add a label for accessibility
+    echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
+    echo "</label>";
+}
+
+
+
 function html_radios($key, $items, $br = false) {
 
     $value = isset($_POST[$key]) ? htmlspecialchars($_POST[$key]) : ($GLOBALS[$key] ?? '');
@@ -539,6 +626,38 @@ function html_search($key,$placeholder = 'Search by name, email, contact', $data
     $value = htmlspecialchars($data);
     echo "<input type='search' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
+
+
+// ============================================================================
+// Email Functions
+// ============================================================================
+
+// Demo Accounts:
+// --------------
+// AACS3173@gmail.com           npsg gzfd pnio aylm
+// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
+// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
+// liawcv1@gmail.com            obyj shnv prpa kzvj
+
+// Initialize and return mail object
+function get_mail() {
+    require_once 'lib/PHPMailer.php';
+    require_once 'lib/SMTP.php';
+
+    $m = new PHPMailer(true);
+    $m->isSMTP();
+    $m->SMTPAuth = true;
+    $m->Host = 'smtp.gmail.com';
+    $m->Port = 587;
+    $m->Username = 'AACS3173@gmail.com';
+    $m->Password = 'npsg gzfd pnio aylm';
+    $m->CharSet = 'utf-8';
+    $m->setFrom($m->Username, '😺 Admin');
+
+    return $m;
+}
+
+
 
 // ============================================================================
 // Error Handlings
@@ -588,14 +707,25 @@ function is_money($value) {
     return preg_match('/^\-?\d+(\.\d{1,2})?$/', $value);
 }
 
+// Return base url (host + port)
+function base($path = '') {
+    return "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]/$path";
+}
+
+// Return local root path
+function root($path = '') {
+    return "$_SERVER[DOCUMENT_ROOT]/$path";
+}
+
 
 
 //Product
 
 
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
+    $params=[];
     $query = "
-        SELECT p.*, pp.photo
+        SELECT p.*, pp.product_photo_id
         FROM product p
         LEFT JOIN product_photo pp 
         ON p.product_id = pp.product_id AND pp.default_photo = 1
@@ -657,28 +787,45 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
 }
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
+    // Get the selected value (category_id or subcategory_id)
+    $value = encode($GLOBALS[$key] ?? '');  
+
+    // Debug: Log the selected value
+    error_log("Selected value (category or subcategory): $value");
+
     echo "<select id='$key' name='$key' $attr>";
-    
+
     // Default option
     if ($default !== null) {
         echo "<option value=''>$default</option>";
     }
 
+    // Iterate through categories and display options
     foreach ($categories as $main_category => $data) {
-        $id = $data['id'];
+        $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
         
+        // Debug: Log the category data
+        error_log("Processing category: $main_category (ID: $id)");
+
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
-        echo "<option value='$id' $disabled>$main_category</option>";
+        
+        // Set selected for the main category
+        $selected = ($id == $value) ? 'selected' : '';
+        error_log("Main category selected: $selected");  // Debug: Check if it's selected
+        echo "<option value='$id' $selected $disabled>$main_category</option>";
 
-        // Subcategories
+        // Subcategories: If subcategories exist
         if ($has_subcategories) {
             foreach ($data['subcategories'] as $subcategory) {
-                $sub_id = $subcategory['id'];
+                $sub_id = $subcategory['id'];  // The subcategory_id
                 $sub_name = $subcategory['name'];
-                $selected = $sub_id == $value ? 'selected' : '';
+                $selected = ($sub_id == $value) ? 'selected' : '';  // Compare with the selected value (subcategory_id)
+
+                // Debug: Log subcategory selection
+                error_log("Subcategory: $sub_name (ID: $sub_id), Selected: $selected");
+
                 echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
             }
         }
@@ -687,37 +834,104 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     echo '</select>';
 }
 
-function generate_product_id($category_name, $subcategory, $_db) {
-    // Define mnemonics for categories and subcategories
-    $mnemonics = [
-        'racquet' => '1',
-        'shuttlecock' => '2SC',
-        'racquetbag' => '3RB',
-    ];
 
-    $sub_mnemonics = [
-        'xpseries' => 'XP',
-        '3dcalibar' => '3D',
-        'axforce' => 'AX',
-        'tectonic' => 'TT',
-    ];
 
-    $prefix = $mnemonics[strtolower($category_name)] ?? '';
-    $sub_prefix = $sub_mnemonics[strtolower($subcategory)] ?? '';
+function generate_product_id($category_id, $db) {
+    // Fetch the last product ID in the category
+    $stm = $db->prepare('
+        SELECT product_id 
+        FROM product 
+        WHERE product_id LIKE ? 
+        ORDER BY product_id DESC 
+        LIMIT 1
+    ');
+    $stm->execute([$category_id . '%']); // Match category_id followed by any number
 
-    if ($prefix && $sub_prefix) {
-        $id_prefix = $prefix . $sub_prefix;
-    } else {
-        $id_prefix = $prefix; // Use main category mnemonic if subcategory doesn't exist
+    $last_id = $stm->fetchColumn();
+
+    // Extract the numeric part and increment it
+    // Assuming the format is like XXX0001, XXX0002, etc., we remove the category prefix and parse the number
+    $last_number = $last_id ? intval(substr($last_id, strlen($category_id))) : 0; // Skip the category_id part
+    $new_number = str_pad($last_number + 1, 4, '0', STR_PAD_LEFT); // Increment and pad with leading zeros (4 digits)
+
+    // Return the product ID in the format: category_id + 4-digit number
+    return $category_id . $new_number;
+}
+
+function generate_photo_id($db) {
+    // Fetch the last product_photo_id
+    $stm = $db->prepare('
+        SELECT product_photo_id
+        FROM product_photo
+        ORDER BY product_photo_id DESC
+        LIMIT 1
+    ');
+    $stm->execute();
+
+    $last_id = $stm->fetchColumn();
+
+    // If no IDs are found, start from 1, otherwise increment the last ID
+    $new_id = $last_id ? $last_id + 1 : 1;
+
+    return $new_id;
+}
+
+function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'], $maxFileSize = 5 * 1024 * 1024, $width = 200, $height = 200)
+{
+    $results = []; // Store results for each file
+
+    // Ensure the target directory exists
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
     }
 
-    // Fetch the next sequence number
-    $stm = $_db->prepare("SELECT COUNT(*) + 1 AS seq FROM product WHERE product_id LIKE ?");
-    $stm->execute(["$id_prefix%"]);
-    $row = $stm->fetch();
-    $seq = str_pad($row['seq'], 4, '0', STR_PAD_LEFT);
+    // Loop through the uploaded files
+    for ($i = 0; $i < count($files['name']); $i++) {
+        $fileName = $files['name'][$i];
+        $fileTmpName = $files['tmp_name'][$i];
+        $fileSize = $files['size'][$i];
+        $fileError = $files['error'][$i];
+        $fileType = $files['type'][$i];
 
-    return $id_prefix . '-' . $seq;
+        // Initialize response for this file
+        $fileResult = [
+            'fileName' => $fileName,
+            'success' => false,
+            'message' => '',
+            'uploadedPath' => ''
+        ];
+
+        // Check for upload errors
+        if ($fileError === 0) {
+            // Extract file extension
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            // Validate file extension
+            if (in_array($fileExtension, $allowedExtensions)) {
+                // Validate file size
+                if ($fileSize <= $maxFileSize) {
+                    // Use the save_photo() function to upload and resize the image
+                    $uniqueFileName = save_photo($files, $targetDir, $width, $height);
+                    $uploadPath = $targetDir . $uniqueFileName;
+
+                    $fileResult['success'] = true;
+                    $fileResult['uploadedPath'] = $uploadPath;
+                    $fileResult['message'] = "File uploaded and resized successfully.";
+                } else {
+                    $fileResult['message'] = "File size exceeds the limit.";
+                }
+            } else {
+                $fileResult['message'] = "Invalid file type.";
+            }
+        } else {
+            $fileResult['message'] = "Error during file upload.";
+        }
+
+        // Add this file's result to the results array
+        $results[] = $fileResult;
+    }
+
+    return $results;
 }
 
 

@@ -6,6 +6,7 @@ require '../_base.php';
 
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
+updateSessionData($_SESSION['user']->admin_id);
 ?>
 
 <!DOCTYPE html>

@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = addAdmin($_user);  // Pass the $_user object to the function
 
         if ($result) {
-            temp('info', 'Admin added successfully!');
-            redirect('admin_management.php');
+            temp('AddingSuccess', "Account register successfully");
+            temp('showSwal', true); // Set flag to show SweetAlert
         } else {
             err('error', 'Failed to add admin. The email may already exist.');
         }
@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
     <title>Add Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="/css/edit_admin.css">
@@ -102,6 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<p class='error-message'>$error</p>";
         } ?>
     </div>
+
+    <?php if (temp('showSwal')): ?>
+        <script>
+            // Display swal() popup with the registration success message
+            swal("Congrats", "<?= temp('AddingSuccess'); ?>", "success")
+                .then(function() {
+                    window.location.href = 'admin_dashboard.php'; // Redirect after the popup closes
+                });
+        </script>
+    <?php endif; ?>
 </body>
 
 </html>

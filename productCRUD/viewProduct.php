@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+require '../_base.php';
 
 // ----------------------------------------------------------------------------
 
@@ -12,23 +12,72 @@ include '../_head.php';
 ?>
 
 <style>
-    .popup {
-        width: 100px;
-        height: 100px;
-    }
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+}
 
-    tr {
-        cursor: pointer;
-    }
+thead {
+    background-color: #f4f4f4;
+}
 
-    tr:hover {
-        background-color: #f0f0f0;
-    }
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+td .btn {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.btn-edit {
+    background-color: #007bff;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-add {
+    background-color:rgb(108, 235, 137);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    display: inline-block;
+
+}
+
+.btn-add:hover {
+    background-color: #218838;
+}
 </style>
 
-
-
-<p><?= count($_products) ?> record(s)</p>
+<a href="addProduct.php" class="btn-add"><i class="fas fa-plus-circle"></i> Add New Product</a>
 
 <table>
     <thead>
@@ -37,7 +86,7 @@ include '../_head.php';
             <th>Product ID</th>
             <th>Description</th>
             <th>Category</th>
-            <th>Unit_price</th>
+            <th>Unit Price</th>
             <th>Stock</th>
             <th>Action</th>
         </tr>
@@ -53,16 +102,21 @@ include '../_head.php';
                 <td><?= $product->unit_price ?></td>
                 <td><?= $product->stock_quantity ?></td>
                 <td>
-                    <a href='#' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
-                    <a href='#' class='btn btn-delete' onclick='return confirm("Are you sure you want to delete this admin?")'>
-                        <i class='fas fa-trash-alt'></i>Delete</a>
+                    <a href="#" class="btn btn-edit"><i class="fas fa-tools"></i> Edit</a>
+                    <form action="deleteProduct.php" method="POST" style="display: inline;">
+                        <input type="hidden" name="product_id" value="<?= $product->product_id ?>">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this product?')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
-        <?php endforeach ?>
+        <?php endforeach; ?>
     </tbody>
-    </table>
-
-    <a href="product_insert.php"><button>Add new product</button></a>
+</table>
 
     <?php
     include '../_foot.php';
+
+
+    

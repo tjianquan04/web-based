@@ -41,7 +41,7 @@ include '_head.php';
                     <?php foreach ($photos as $index => $pho): ?>
                         <img
                             class="<?= $index === 0 ? 'active' : '' ?>"
-                            src="/image/<?= $pho->photo ?>"
+                            src="/product_gallery/<?= $pho->product_photo_id ?>"
                             alt="<?= $product->description ?>" />
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -54,7 +54,7 @@ include '_head.php';
                     <?php foreach ($photos as $index => $pho): ?>
                         <div class="<?= $index === 0 ? 'active' : '' ?>">
                             <img
-                                src="/image/<?= $pho->photo ?>"
+                                src="/product_gallery/<?= $pho->product_photo_id ?>"
                                 alt="<?= $product->description ?>" />
                         </div>
                     <?php endforeach; ?>

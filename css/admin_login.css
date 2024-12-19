@@ -65,10 +65,29 @@ body {
     font-size: 15px;
 }
 
+.options {
+    display: flex;
+    width: 90%; /* Match the width of the inputs */
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 0.9rem;
+    padding-left: 16px;
+    justify-content: space-between;
+}
+
+.options a {
+    color: #002286;
+    text-decoration: none;
+}
+
+.options a:hover {
+    text-decoration: underline;
+}
+
 button[type="submit"] {
     width: 88%;
     padding: 10px;
-    background-color: #2b73b3;
+    background-color: #0d63ad;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -98,10 +117,21 @@ button[type="submit"]:hover {
     object-fit: cover;
 }
 
-/* Error Message Styling */
-.error-message {
-    color: red;
-    font-size: 20px;
-    text-align: center;
-    margin-bottom: 20px;       /* Add space below the error message */
+.captcha-container {
+    margin-left: 10px;
 }
+
+.g-recaptcha {
+    display: inline-block; /* Ensure proper centering */
+}
+
+/* Error Message Styling */
+.error-messages {
+    color: rgb(255, 0, 0);
+    margin: 10px 0; /* Ensure spacing above and below the errors */
+    display: flex; /* Align items inline */
+    flex-direction: column; /* Stack errors vertically */
+    font-size: 20px; /* Adjust size to make consistent */
+    text-align: center;
+}
+
