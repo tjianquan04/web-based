@@ -1,5 +1,5 @@
 <?php
-include('_base.php');
+include('../_base.php');
 
 //auth('Admin');
 
@@ -13,6 +13,6 @@ if (is_Post()) {
 
     temp('info', 'Address deleted successfully!');
 
-    redirect('edit_member_details.php?id='.$memberId);
+    redirect('/edit_member_details.php?id='.$memberId);
 }
 ?>

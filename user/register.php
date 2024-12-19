@@ -38,8 +38,8 @@ if (is_post()) {
         $user_id = getNextUserId();
 
             // Insert the user into the database
-            $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, status, profile_photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$user_id, $name, $email, "-", SHA1($password), 0, 'unknown.jpg']);
+            $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, wallet,  status, profile_photo) VALUES (?, ?, ?, ? ,?, ?, ?, ?)");
+            $stmt->execute([$user_id, $name, $email, "-", SHA1($password),0, 0, 'unknown.jpg']);
 
             redirect('login.php');
             exit;

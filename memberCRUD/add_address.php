@@ -1,5 +1,5 @@
 <?php
-require '_base.php';
+require '../_base.php';
 // ----------------------------------------------------------------------------
 
 $address_id = getNextAddressId();
@@ -65,9 +65,9 @@ if (empty($addressArr)) {
 
 // ----------------------------------------------------------------------------
 $_title = 'Add address';
-include '_head.php';
+include '../_head.php';
 ?>
-<link rel="stylesheet" href="/css/add_address.css">
+<link rel="stylesheet" href="../css/add_address.css">
 
 <div class="address-container">
 <h2>New Address</h2>
@@ -81,7 +81,7 @@ include '_head.php';
     <?= err('address_line') ?>
 
     <label for="state"><strong>State:</strong></label>
-    <?php html_text('state', '', '', '" class="input-field" '); ?>
+    <?= html_select('state', $_states, '-- Select State --', 'class="input-field"') ?>
     <?= err('state') ?>
 
     <label for="postal_code"><strong>Postal Code:</strong></label>
@@ -97,4 +97,4 @@ include '_head.php';
 <button class="go-back" onclick="window.history.back()">Go Back</button>
 
 <?php
-include '_foot.php';
+include '../_foot.php';
