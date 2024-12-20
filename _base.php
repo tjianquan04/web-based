@@ -578,6 +578,7 @@ function html_select($key, $items, $default = '- Select One -', $attr = '') {
     echo '</select>';
 }
 
+
 // Generate <input type='checkbox'>
 function html_checkbox($key, $status = 'inactive', $attr = '') {
     $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
@@ -721,45 +722,11 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
 }
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
-    $query = "
-        SELECT p.*, pp.photo 
-        FROM product p
-        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = "%$name%";
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stm = $db->prepare($query);
-    $stm->execute($params);
-
-    return $stm->fetchAll();
-}
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '') {
     // Get the selected value (category_id or subcategory_id)
     $value = encode($GLOBALS[$key] ?? '');  
 
-    // Debug: Log the selected value
-    error_log("Selected value (category or subcategory): $value");
 
     echo "<select id='$key' name='$key' $attr>";
 
@@ -773,8 +740,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
         $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
         
-        // Debug: Log the category data
-        error_log("Processing category: $main_category (ID: $id)");
 
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
@@ -901,6 +866,7 @@ function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions
 
     return $results;
 }
+
 
 
 

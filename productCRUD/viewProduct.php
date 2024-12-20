@@ -5,6 +5,19 @@ require '../_base.php';
 
 $_products = $_db->query('SELECT * FROM product')->fetchAll();
 
+$name = req('name'); // Search keyword
+
+if ($name) {
+    // Fetch categories based on the search keyword
+    $stm = $_db->prepare('SELECT * FROM product WHERE description LIKE ? ');
+    $stm->execute(["%$name%"]);
+    $_products = $stm->fetchAll();
+    
+} else {
+    // Fetch all categories if no search keyword is provided
+    $_products = $_db->query('SELECT * FROM product')->fetchAll();
+}
+
 // ----------------------------------------------------------------------------
 
 $_title = 'Product | Index';

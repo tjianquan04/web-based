@@ -3,8 +3,18 @@ include '../_base.php';
 
 // ----------------------------------------------------------------------------
 
-$_categories = $_db->query('SELECT * FROM category')->fetchAll();
+$name = req('name'); // Search keyword
 
+if ($name) {
+    // Fetch categories based on the search keyword
+    $stm = $_db->prepare('SELECT * FROM category WHERE category_name LIKE ? OR sub_category LIKE ?');
+    $stm->execute(["%$name%", "%$name%"]);
+    $_categories = $stm->fetchAll();
+    
+} else {
+    // Fetch all categories if no search keyword is provided
+    $_categories = $_db->query('SELECT * FROM category')->fetchAll();
+}
 // ----------------------------------------------------------------------------
 
 $_title = 'Category Management';

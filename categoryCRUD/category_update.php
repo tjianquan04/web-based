@@ -17,6 +17,7 @@ if (is_get()) {
     }
 
     $status = $category->Status; // Directly use the status from the database
+    $currentStock = $category->currentStock;
 
 
 
@@ -70,18 +71,18 @@ if (is_post()) {
         ');
         $update_result = $stm->execute([$category_photo, $minStock, $status, $category_id]);
 
-
         // Check if current stock is below the minimum stock and set stockAlert
-        $stock_alert = ($currentStock < $minStock) ? true : false;
+        $stock_alert = ($currentStock < $minStock);
 
+        // Update the category table with the new stockAlert value
         $stm = $_db->prepare('
             UPDATE category
             SET stockAlert = ?
             WHERE category_id = ?
-        ');
+            ');
         $stm->execute([$stock_alert, $category_id]);
 
-        // Update all products' status based on the category status
+      // Update all products' status based on the category status
         $product_status = ($status == true) ? 'Active' : 'Inactive'; // Map boolean status to 'Active' or 'Inactive'
 
         $stm = $_db->prepare('
@@ -125,6 +126,8 @@ include '../_head.php';
 
     <label for="currentStock">Current Stock</label>
     <input type="number" value="<?= $currentStock ?>" disabled>
+    <input type="hidden" name="currentStock" value="<?= $currentStock ?>">
+
 
     <label for="minStock">Minimum Stock</label>
     <?= html_number('minStock', 0, 100000, 1) ?>
