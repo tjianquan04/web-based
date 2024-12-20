@@ -67,12 +67,6 @@ button:hover {
     gap: 10px; /* Space between the button and the record count */
 }
 
-.records-count {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin: 0;
-}
-
 /* Table Styles */
 .table {
     width: 80%;
@@ -153,40 +147,6 @@ table a {
 .arrow-right {
     float: right;  
     margin-left: 5px;  
-}
-
-/* Popup Styles */
-.table .popup {
-    position: absolute;
-    top: 50%;
-    left: 100%;
-    transform: translate(5px, -50%); 
-    z-index: 999;
-    display: none;
-    border: 1px solid #333;
-    background-color: #fff;
-    padding: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    max-width: 100px;
-}
-
-.table tr:hover .popup {
-    display: block;
-    animation: fadeIn 0.2s ease-in-out; 
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.table .popup img {
-    width: 100%; 
-    border-radius: 5px; 
 }
 
 /* pager css */

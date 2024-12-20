@@ -143,3 +143,9 @@ hr {
     border-top: 1px solid #ddd;
     margin: 20px 0;
 }
+
+.error-message {
+    font-size: 0.9rem;
+    color: #e74c3c;
+    margin-top: -10px;
+}

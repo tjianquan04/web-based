@@ -1,5 +1,5 @@
 <?php
-include('_base.php');
+include('../_base.php');
 
 //auth('Admin');
 
@@ -11,6 +11,6 @@ if (is_Post()) {
 
     temp('info', 'Member ID: '.$member_id.' deleted successfully!');
 
-    redirect('member_management.php');
+    redirect('../admin/member_management.php');
 }
 ?>

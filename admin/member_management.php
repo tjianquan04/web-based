@@ -1,6 +1,6 @@
 <?php
-require '_base.php';
-
+include '../_base.php';
+include '../_head.php';
 // Get the search input
 $searchTerm = req('search') ?? '';
 
@@ -27,7 +27,7 @@ if ($searchTerm != "") {
 
 $query .= " ORDER BY $sort $dir";
 
-require_once 'lib/SimplePager.php';
+require_once '../lib/SimplePager.php';
 $p = new SimplePager($query, $params, 10, $page);
 
 // Fetch results
@@ -36,10 +36,9 @@ $arr = $p->result;
 
 // ----------------------------------------------------------------------------
 
-include '_head.php';
 ?>
-<script src="/js/main.js"></script>
-<link rel="stylesheet" href="/css/member.css">
+<script src="../js/main.js"></script>
+<link rel="stylesheet" href="../css/member.css">
 
 <div class="container">
     <form method="get">
@@ -54,7 +53,7 @@ include '_head.php';
     <tr>
         <th>No.</th>
         <th>
-            <a href="?sort=admin_id&dir=<?= ($sort == 'member_id' && $dir == 'asc') ? 'desc' : 'asc' ?>">
+            <a href="?sort=member_id&dir=<?= ($sort == 'member_id' && $dir == 'asc') ? 'desc' : 'asc' ?>">
                 Member ID
                 <?php if ($sort == 'member_id'): ?>
                     <?php if ($dir == 'asc'): ?>
@@ -143,14 +142,13 @@ include '_head.php';
             <td><?= $s->contact ?></td>
             <td><?= $s->status ? 'Active' : 'Inactive' ?></td>
             <td>
-                <button data-get="view_member_details.php?id=<?= $s->member_id ?>">View</button>
-                <button data-get="edit_member_details.php?id=<?= $s->member_id ?>">Edit</button>
-                <button data-post="update_member_status.php?id=<?= $s->member_id ?>"
+                <button data-get="../memberCRUD/view_member_details.php?id=<?= $s->member_id ?>">View</button>
+                <button data-get="../memberCRUD/edit_member_details.php?id=<?= $s->member_id ?>">Edit</button>
+                <button data-post="../memberCRUD/update_member_status.php?id=<?= $s->member_id ?>"
                     class="block-btn <?= $s->status ? 'block' : 'unblock' ?>">
                     <?= $s->status ? 'Block' : 'Unblock' ?>
                 </button>
-                <button data-post="delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>">Delete</button>
-                <img src="<?= $s->profile_photo ? 'photos/' . $s->profile_photo : '/photos/unknown.jpg' ?>" class="popup">
+                <button data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>">Delete</button>
             </td>
         </tr>
     <?php endforeach ?>
@@ -159,5 +157,4 @@ include '_head.php';
 <?= $p->html("search=$searchTerm") ?>
 <br>
 
-<?php
-include '_foot.php';
+</html>
