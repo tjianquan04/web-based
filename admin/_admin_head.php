@@ -1,8 +1,8 @@
-<script src="../js/main.js"></script>
+<script src="../js/main.js" async defer></script>
 <?php
 require '../_base.php';
 
-auth('Admin', 'Superadmin');
+auth('Admin', 'Superadmin', 'Product Manager');
 
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
@@ -11,9 +11,6 @@ updateSessionData($_SESSION['user']->admin_id);
 
 <!DOCTYPE html>
 <html lang="en">
-
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,11 +32,14 @@ updateSessionData($_SESSION['user']->admin_id);
                 <!-- Top-Level Menu Items -->
                 <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
-                <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
-                <ul id="product-menu" class="submenu">
-                    <li><a href="product_index.php">Add Product</a></li>
-                    <li><a href="#">Manage Inventory</a></li>
-                </ul>
+                <!-- Only Product Manager can see this section -->
+                <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
+                    <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
+                    <ul id="product-menu" class="submenu">
+                        <li><a href="product_index.php">Add Product</a></li>
+                        <li><a href="#">Manage Inventory</a></li>
+                    </ul>
+                <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
@@ -81,8 +81,7 @@ updateSessionData($_SESSION['user']->admin_id);
             <header class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
-                    <!-- Email and Notification Icons -->
-                    <i class="fas fa-envelope" id="emailIcon"></i>
+                    <!-- Notification Icons -->
                     <i class="fas fa-bell" id="notificationIcon"></i>
 
                     <!-- User Profile Section -->
@@ -103,3 +102,4 @@ updateSessionData($_SESSION['user']->admin_id);
             </header>
         </main>
     </div>
+</body>

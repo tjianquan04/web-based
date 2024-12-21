@@ -1,3 +1,4 @@
+
 console.log('JavaScript loaded successfully');
 
 function toggleMenu(menuId) {
@@ -143,3 +144,4 @@ function showSlides() {
     // Set a timeout to move to the next slide
     setTimeout(showSlides, 4000); // Change image every 2 seconds
 }
+

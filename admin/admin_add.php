@@ -2,6 +2,7 @@
 // Include necessary files
 include('_admin_head.php');
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect form data
     $_user = new stdClass(); // Create an object to store user data
