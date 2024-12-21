@@ -1,5 +1,5 @@
 <?php
-require '_base.php';
+require '../_base.php';
 
 $memberId = req('id');
 
@@ -8,7 +8,7 @@ $stm = $_db->prepare('SELECT * FROM member WHERE member_id = ?');
 $stm->execute([$memberId]);
 $s = $stm->fetch();
 if (!$s) {
-    redirect('/member_management.php');
+    redirect('../admin/member_management.php');
 }
 
 // Get member address from address table
@@ -16,16 +16,16 @@ $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
 $addressStm->execute([$memberId]);
 $addressArr = $addressStm->fetchAll();
 
-include '_head.php';
+include '../_head.php';
 ?>
 
-<link rel="stylesheet" href="/css/view_member.css">
+<link rel="stylesheet" href="../css/view_member.css">
 
 <body>
     <div class="profile-container">
         <h2>Member Details</h2>
         <div class="profile-details">
-            <img src="<?= $s->profile_photo ? 'photos/' . $s->profile_photo : '/photos/unknown.jpg' ?>" alt="Profile Photo">
+            <img src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>" alt="Profile Photo">
             <div class="details">
                 <h4>Member ID: <?= $s->member_id ?></h4>
                 <p><strong>Name:</strong> <?= $s->name ?></p>
@@ -57,5 +57,5 @@ include '_head.php';
 </body>
 
 <?php
-include '_foot.php';
+include '../_foot.php';
 ?>

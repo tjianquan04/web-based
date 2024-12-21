@@ -238,6 +238,19 @@ function addAdmin($user)
     }
 }
 
+function validCurrentPassword($password, $member_id){
+    global $_db;
+    
+    //get current password from database
+    $stmt = $_db->prepare("SELECT password FROM member WHERE member_id = ?");
+    $stmt ->execute($member_id);
+    $current_password = $stmt ->fetch();
+    
+    if(SHA1($password) != $current_password){
+        return false;
+    }
+    return true;
+}
 
 function getNextUserId()
 {
@@ -643,9 +656,9 @@ function get_file($key)
     return null;
 }
 
-function html_file($key, $value = '', $accept = '', $attr = '')
+function html_file($key, $accept = '', $attr = '')
 {
-    echo "<input type='file' id='$key' name='$key' value= '$value' accept='$accept' $attr>";
+    echo "<input type='file' id='$key' name='$key' accept='$accept' $attr>";
 }
 
 // Encode HTML special characters
@@ -655,30 +668,27 @@ function encode($value)
 }
 
 // Generate input field
-function html_input($type, $key, $placeholder = '', $data = '', $attr = '')
-{
+function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
     $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
     echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
-function html_text($key, $placeholder = '', $data = '', $attr = '')
-{
+function html_text($key, $placeholder = '', $data = '', $attr = '') {
     $value = htmlspecialchars($data); // Prevent XSS by escaping special characters
     // Create the input field with the value and other attributes
     html_input('text', $key, $placeholder, $value, $attr);
 }
 
 // Generate password input field
-function html_password($key, $placeholder = '', $data = '', $attr = '')
-{
+function html_password($key, $placeholder = '', $data = '', $attr = '') {
     html_input('password', $key, $placeholder, $data, $attr);
 }
 
+
 // Generate email input field
-function html_email($key, $placeholder = '', $data = '', $attr = '')
-{
+function html_email($key, $placeholder = '', $data = '', $attr = '') {
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
@@ -691,19 +701,21 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 }
 
 // Generate <select>
-function html_select($key, $items, $default = '- Select One -', $attr = '')
-{
+function html_select($key, $items, $default = '- Select One -', $attr = '') {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
-    if ($default !== null) {
-        echo "<option value=''>$default</option>";
-    }
+    
+    echo $defaultOption;
+    
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
         echo "<option value='$id' $state>$text</option>";
     }
+    
+    // Close the select element
     echo '</select>';
 }
+
 
 // Generate <input type='checkbox'>
 function html_checkbox($key, $status = 'inactive', $attr = '')
@@ -717,10 +729,24 @@ function html_checkbox($key, $status = 'inactive', $attr = '')
 
 
 
+function html_radios($key, $items, $br = false) {
+
+    $value = isset($_POST[$key]) ? htmlspecialchars($_POST[$key]) : ($GLOBALS[$key] ?? '');
+    
+    $output = '<div>';
+    foreach ($items as $id => $text) {
+        $state = ($id == $value) ? 'checked' : ''; 
+        $output .= "<label><input type='radio' id='{$key}_{$id}' name='{$key}' value='{$id}' $state> $text</label>";
+        if ($br) {
+            $output .= '<br>';
+        }
+    }
+    $output .= '</div>';
+    return $output;
+}
 
 // Generate search input field
-function html_search($key, $placeholder = 'Search by name, email, contact', $data = "", $attr = '')
-{
+function html_search($key,$placeholder = 'Search by name, email, contact', $data = "", $attr = '') {
     html_input('search', $key, $placeholder, $data, $attr);
 }
 
@@ -855,8 +881,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 }
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
-{
+function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
     $query = "
         SELECT p.*, pp.photo 
         FROM product p
@@ -894,8 +919,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     // Get the selected value (category_id or subcategory_id)
     $value = encode($GLOBALS[$key] ?? '');
 
-    // Debug: Log the selected value
-    error_log("Selected value (category or subcategory): $value");
 
     echo "<select id='$key' name='$key' $attr>";
 
@@ -908,7 +931,7 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     foreach ($categories as $main_category => $data) {
         $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
-
+        
         // Debug: Log the category data
         error_log("Processing category: $main_category (ID: $id)");
 
@@ -1039,3 +1062,7 @@ function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions
 
     return $results;
 }
+
+
+
+

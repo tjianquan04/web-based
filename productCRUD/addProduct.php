@@ -35,6 +35,7 @@ if (is_post()) {
 
     $product_photos = $_FILES['product_photos']; // Capture the uploaded photos
 
+    
 
     // If no subcategory is selected, set it to null
     if ($sub_category === '') {
@@ -76,23 +77,6 @@ if (is_post()) {
         }
 
         // Validate product photos (file upload)
-        //   if (empty($product_photos['name'][0])) {
-        //     $_err['product_photos'] = 'At least one photo is required.';
-        // } else {
-        //     foreach ($product_photos['name'] as $key => $photo_name) {
-        //         if (!str_starts_with($product_photos['type'][$key], 'image/')) {
-        //             $_err['product_photos'] = 'Each photo must be an image.';
-        //             break;
-        //         }
-        //         if ($product_photos['size'][$key] > 1 * 1024 * 1024) {
-        //             $_err['product_photos'] = 'Each photo must not exceed 1MB.';
-        //             break;
-        //         }
-        //     }
-        // }
-
-
-        // Validate product photos (file upload)
         if (empty($product_photos['name'][0])) {
             $_err['product_photos'] = 'At least one photo is required.';
         } else {
@@ -110,10 +94,6 @@ if (is_post()) {
             }
         }
 
-        foreach ($_FILES['product_photos']['name'] as $key => $filename) {
-            echo "Uploaded file name: " . $filename;
-        }
-
         // Insert the product if no errors
         if (empty($_err)) {
 
@@ -125,8 +105,8 @@ if (is_post()) {
             $status = ($defStatus && $defStatus->Status) ? 'Active' : 'Inactive';
 
             $stm = $_db->prepare('
-                INSERT INTO product (product_id, description, stock_quantity, unit_price, category_name, category_id,status) 
-                VALUES (?, ?, ?, ?, ?, ?,?)
+                INSERT INTO product (product_id, description, stock_quantity, unit_price, category_name, category_id,status,dateAdded) 
+                VALUES (?, ?, ?, ?, ?, ?,?,CURRENT_TIMESTAMP)
             ');
             $stm->execute([$product_id, $description, $stock_quantity, $unit_price, $category_name, $category_id, $status]);
 

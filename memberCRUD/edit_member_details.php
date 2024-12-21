@@ -1,20 +1,20 @@
 <?php
-require '_base.php';
+require '../_base.php';
 
 $memberId = req('id');
 
 $s = getMemberbyId($memberId);
 
-$addressArr = $addressArr = getAllAddressbyMemberId($memberId);
+$addressArr = getAllAddressbyMemberId($memberId);
 
-//validation
-if (is_post() && req('form_type') === 'member_details') {
+if (is_post() && (req('form_type') == 'member_details')) {
     $name      = req('name');
     $email     = req('email');
     $contact   = req('contact');
     $password  = req('password');
     $status    = req('status');
     $file      = get_file('photo');
+    $currentPhoto = req('current_photo');
 
 
     // Validate Name
@@ -45,16 +45,20 @@ if (is_post() && req('form_type') === 'member_details') {
     }
 
     //Validate photo file
-    if (!$file) {
-        $_err['photo'] = 'Required';
-    } else if (!str_starts_with($file->type, 'image/')) {
-        $_err['photo'] = 'Must be image';
-    } else if ($file->size > 1 * 1024 * 1024) {
-        $_err['photo'] = 'Maximum 1MB';
+    $photo = $currentPhoto; // Default to current photo
+    if ($file && $file->error !== UPLOAD_ERR_NO_FILE) { 
+        // New file uploaded, validate it
+        if (!str_starts_with($file->type, 'image/')) {
+            $_err['photo'] = 'Must be an image.';
+        } else if ($file->size > 1 * 1024 * 1024) {
+            $_err['photo'] = 'Maximum 1MB.';
+        } else {
+            // Save new photo and update path
+            $photo = save_photo($file, 'photos');
+        }
     }
 
     if (!$_err) {
-        $photo = save_photo($file, 'photos');
 
         if (empty($password)) {
             $stm = $_db->prepare('UPDATE member
@@ -69,74 +73,61 @@ if (is_post() && req('form_type') === 'member_details') {
         }
 
         temp('info', $memberId . ' details updated');
-        redirect('/member_management.php');
+        redirect('../admin/member_management.php');
+    }
+}else if (is_post() && (req('form_type') == 'address_update')){
+
+    $address_id    = req('address_id');
+    $address_line  = req('address_line_'.$address_id);
+    $state        = req('state_'.$address_id);
+    $postal_code   = req('postal_code_'.$address_id);
+    $is_default   = req('is_default_'.$address_id);   
+
+    // Validate Address Line
+    if (empty($address_line)) {
+        $_err['address_line_'.$address_id] = 'Address is required.';
     }
 
-    if (is_post() && req('form_type') === 'address_update') {
+    // Validate State
+    if (empty($state)) {
+        $_err['state_'.$address_id] = 'State is required.';
+    } else if (!preg_match('/^[a-zA-Z\s]+$/', $state)) {
+        $_err['state_'.$address_id] = 'State must contain only letters.';
+    }
 
-        // Validate Address Line
-        if (empty($address_line)) {
-            $_err['address_line'] = 'Address is required.';
+    // Validate Postal Code
+    if (empty($postal_code)) {
+        $_err['postal_code_'.$address_id] = 'Postal code is required.';
+    } else if (!preg_match('/^\d{5}$/', $postal_code)) {
+        $_err['postal_code_'.$address_id] = 'Postal code must be exactly 5 digits.';
+    }
+
+    if ($is_default == 1) {
+        // Query to check if another default address exists for the same member
+        $otherDefaultStm = $_db->prepare('SELECT address_id FROM address WHERE member_id = ? AND is_default = 1 AND address_id != ?');
+        $otherDefaultStm->execute([$memberId, $address_id]);
+        $otherDefault = $otherDefaultStm->fetch();
+
+        if ($otherDefault) {
+            $_err['is_default_' . $address_id] = 'Another default address already exists. Only one default address is allowed.';
         }
+    }
 
-        // Validate State
-        if (empty($state)) {
-            $_err['state'] = 'State is required.';
-        } else if (!preg_match('/^[a-zA-Z\s]+$/', $state)) {
-            $_err['state'] = 'State must contain only letters.';
-        }
+    if (!$_err) {
 
-        // Validate Postal Code
-        if (empty($postal_code)) {
-            $_err['postal_code'] = 'Postal code is required.';
-        } else if (!preg_match('/^\d{5}$/', $postal_code)) {
-            $_err['postal_code'] = 'Postal code must be exactly 5 digits.';
-        }
+        // Update the selected address
+        $updateAddressStm = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
+        $updateAddressStm->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
 
-        $addressId    = req('address_id');
-        $addressLine  = req('address_line');
-        $state        = req('state');
-        $postalCode   = req('postal_code');
-        $is_default   = req('is_default');
-
-        if (!$_err) {
-            $_db->beginTransaction(); // Start transaction 
-    
-            try {
-                // If the address is being set as default
-                if ($is_default == 1) {
-                    // Check if there are existing default address for this member
-                    $currentDefaultStm = $_db->prepare('SELECT address_id FROM address WHERE member_id = ? AND is_default = 1');
-                    $currentDefaultStm->execute([$memberId]);
-                    $currentDefault = $currentDefaultStm->fetch();
-    
-                    // If there is an existing default address, reset its `is_default`
-                    if ($currentDefault && $currentDefault['address_id'] != $addressId) {
-                        $resetDefaultStm = $_db->prepare('UPDATE address SET is_default = 0 WHERE address_id = ?');
-                        $resetDefaultStm->execute([$currentDefault['address_id']]);
-                    }
-                }
-    
-                // Update the selected address
-                $updateAddressStm = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
-                $updateAddressStm->execute([$addressLine, $state, $postalCode, $is_default, $addressId]);
-    
-                $_db->commit(); // Commit transaction
-    
-                temp('info', 'Address updated successfully');
-                redirect('/member_management.php');
-            } catch (Exception $e) {
-                $_db->rollBack(); // Roll back changes on error
-                temp('error', 'Error updating address: ' . $e->getMessage());
-            }
-        }
+        temp('info', 'Address updated successfully');
+        redirect('/member_management.php');
     }
 }
 
-include '_head.php';
+include '../_head.php';
 ?>
-<script src="/js/main.js"></script>
-<link rel="stylesheet" href="/css/edit_member.css">
+<script src="../js/main.js"></script>
+<link rel="stylesheet" href="../css/edit_member.css">
 
 <body>
     <div class="profile-container">
@@ -147,16 +138,17 @@ include '_head.php';
                 <input type="hidden" name="form_type" value="member_details">
 
                 <label for="id"><strong>Member ID: </strong></label>
-                <p id="id"><?= $memberId ?></p>
+                <p id="id"><?= $s->member_id ?></p>
                 <br>
 
                 <label for="photo"><strong>Photo:</strong></label><br>
                 <label class="upload" tabindex="0">
-                    <?= html_file('photo', $s->profile_photo ?  'photos/' . $s->profile_photo : '/photos/unknown.jpg', 'image/*', 'hidden') ?>
+                    <?= html_file('photo', 'image/*', 'hidden') ?>
                     <img
-                        src="<?= $s->profile_photo ? 'photos/' . $s->profile_photo : '/photos/unknown.jpg' ?>"
+                        src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>"
                         alt="Member Photo" title="Click to upload photo" />
                 </label>
+                <input type="hidden" name="current_photo" value="<?= $s->profile_photo ? $s->profile_photo : '' ?>">
                 <?= err('photo') ?>
                 </label>
                 <br>
@@ -188,7 +180,7 @@ include '_head.php';
                 </select>
                 <br>
 
-                <button type="submit" class="save-btn">Save Member Details</button>
+                <button type="submit" class="save-btn">Save Changes</button>
             </form>
         </div>
 
@@ -204,31 +196,32 @@ include '_head.php';
                 <?php foreach ($addressArr as $address): ?>
                     <form method="post">
                         <input type="hidden" name="form_type" value="address_update">
-                        <input type="hidden" name="address_id" value="<?= $address->id ?>">
+                        <input type="hidden" name="address_id" value="<?= $address->address_id ?>">
 
-                        <label for="address_line"><strong>Address:</strong></label>
-                        <?php html_text('address_line', '', $address->address_line, '" class="input-field"'); ?>
-                        <?= err('address_line') ?>
+                        <label for="address_line_<?= $address->address_id ?>"><strong>Address:</strong></label>
+                        <?php html_text('address_line_'.$address->address_id, '', $address->address_line, '" class="input-field"'); ?>
+                        <?= err('address_line_'.$address->address_id) ?>
                         <br>
 
-                        <label for="state"><strong>State:</strong></label>
-                        <?php html_text('state', '', $address->state, '" class="input-field"'); ?>
-                        <?= err('state') ?>
+                        <label for="state_<?= $address->address_id ?>"><strong>State:</strong></label>
+                        <?php html_select('state_'.$address->address_id, $_states, '- Select a State -', 'class="input-field"', $address->state) ?>
+                        <?= err('state_'.$address->address_id) ?>
                         <br>
 
-                        <label for="postal_code"><strong>Postal Code:</strong></label>
-                        <?php html_text('postal_code', '', $address->postal_code, '" class="input-field" '); ?>
-                        <?= err('postal_code') ?>
+                        <label for="postal_code_<?= $address->address_id ?>"><strong>Postal Code:</strong></label>
+                        <?php html_text('postal_code_'.$address->address_id, '', $address->postal_code, '" class="input-field" '); ?>
+                        <?= err('postal_code_'.$address->address_id) ?>
                         <br>
 
-                        <label for="is_default"><strong>Is Default:</strong></label>
-                        <select id="is_default" name="is_default" class="input-field">
+                        <label for="is_default_<?= $address->address_id ?>"><strong>Is Default:</strong></label>
+                        <select id="is_default_<?= $address->address_id ?>" name="is_default_<?= $address->address_id ?>" class="input-field">
                             <option value="1" <?= $address->is_default == 1 ? 'selected' : '' ?>>TRUE</option>
                             <option value="0" <?= $address->is_default == 0 ? 'selected' : '' ?>>FALSE</option>
                         </select>
+                        <?= err('is_default_'.$address->address_id) ?>
                         <br>
 
-                        <button type="submit" class="save-btn">Save Address</button>
+                        <button type="submit" class="save-btn">Save Changes</button>
                         <button data-post="delete_address.php?id=<?= $address->address_id ?>" delete-confirm data-address-id="<?= $address->address_id ?>" class="delete-btn">Delete</button>
                     </form>
                     <hr>
@@ -237,8 +230,8 @@ include '_head.php';
             <?php endif; ?>
         </div>
     </div>
-    <button class="go-back" data-get="member_management.php">Go Back</button>
+    <button class="go-back" data-get="../admin/member_management.php">Go Back</button>
 </body>
 
 <?php
-include '_foot.php';
+include '../_foot.php';

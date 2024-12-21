@@ -1,3 +1,8 @@
+<?php
+// Get the current page name dynamically
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,11 +63,11 @@
                     <span class="nav-search-box">
                         <form class="search-form">
                             <div class="search-wrapper">
-                                <form method="GET" action="menu.php">
-                                    <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? $_GET['name'] : '' ?>">
-                                    <a class="search-btn">
+                                <form method="GET" action="<?= htmlspecialchars($current_page) ?>">
+                                    <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
+                                    <button type="submit" class="search-btn">
                                         <i class="ico ico-search"></i>
-                                    </a>
+                                    </button>
                                 </form>
 
 

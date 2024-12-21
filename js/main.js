@@ -14,23 +14,24 @@ function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const currentDateElement = document.getElementById('currentDate');
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
-    const currentDate = new Date().toLocaleDateString('en-US', options);
-    currentDateElement.textContent = currentDate;
+// document.addEventListener('DOMContentLoaded', () => {
+    
+//     const currentDateElement = document.getElementById('currentDate');
+//     const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
+//     const currentDate = new Date().toLocaleDateString('en-US', options);
+//     currentDateElement.textContent = currentDate;
 
-    // Dropdown interaction
-    const userProfile = document.getElementById('userProfile');
-    userProfile.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userProfile.classList.toggle('active');
-    });
+//     //Dropdown interaction
+//     const userProfile = document.getElementById('userProfile');
+//     userProfile.addEventListener('click', (e) => {
+//         e.stopPropagation();
+//         userProfile.classList.toggle('active');
+//     });
 
-    document.addEventListener('click', () => {
-        userProfile.classList.remove('active');
-    });
-});
+//     document.addEventListener('click', () => {
+//         userProfile.classList.remove('active');
+//     });
+// });
 
 function clearPasswordField(input) {
     if (input.value === '********') {

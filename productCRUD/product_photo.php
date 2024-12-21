@@ -9,11 +9,14 @@ $photo_stm = $_db->prepare('SELECT * FROM product_photo WHERE product_id = ?');
 $photo_stm->execute([$product_id]);
 $photos = $photo_stm->fetchAll();
 
+// Check the number of existing photos
+$photo_count = count($photos);
+
 // Handle photo actions (delete or set default)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_photo'])) {
         $photo_id = req('photo_id');
-        
+
         // Check if the deleted photo is the default
         $photo_stm = $_db->prepare('SELECT default_photo FROM product_photo WHERE product_photo_id = ?');
         $photo_stm->execute([$photo_id]);
@@ -37,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif (isset($_POST['set_default'])) {
         $photo_id = req('photo_id');
-        
+
         // Remove default from all other photos first
         $_db->prepare('UPDATE product_photo SET default_photo = 0 WHERE product_id = ?')->execute([$product_id]);
 
@@ -45,11 +48,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_db->prepare('UPDATE product_photo SET default_photo = 1 WHERE product_photo_id = ?')->execute([$photo_id]);
     }
 
+    if (isset($_POST['add_photo']) && isset($_FILES['product_photos'])) {
+        $product_photos = $_FILES['product_photos'];
+        $errors = [];  // Array to store errors
+        
+        foreach ($product_photos['name'] as $key => $photo_name) {
+            // Check if the file is an image
+            if (!str_starts_with($product_photos['type'][$key], 'image/')) {
+                $errors[] = 'Each photo must be an image.';
+                break;
+            }
+            // Check the file size (1MB max)
+            if ($product_photos['size'][$key] > 1 * 1024 * 1024) {
+                $errors[] = 'Each photo must not exceed 1MB.';
+                break;
+            }
+        }
+    
+        if (!empty($errors)) {
+            echo json_encode(['status' => 'error', 'errors' => $errors]);
+            exit;
+        }
+    
+        // Save photos and get paths
+        $photo_paths = [];
+        foreach ($product_photos['tmp_name'] as $key => $tmp_name) {
+            $photo_filename = save_photos($tmp_name, '../product_gallery');
+            $photo_paths[] = $photo_filename;
+        }
+    
+        // Insert photos into product_photo table
+        $stmt = $_db->prepare("INSERT INTO product_photo (product_photo_id, default_photo, product_id) VALUES (?, ?, ?)");
+    
+        foreach ($photo_paths as $index => $photo_filename) {
+            $stmt->execute([$photo_filename, 0, $product_id]);
+        }
+    
+    }
+
     redirect();
 }
 
 // Function to get the current default photo ID for the product
-function getCurrentDefaultPhotoId($product_id) {
+function getCurrentDefaultPhotoId($product_id)
+{
     global $_db;
     $stmt = $_db->prepare('SELECT product_photo_id FROM product_photo WHERE product_id = ? AND default_photo = 1');
     $stmt->execute([$product_id]);
@@ -209,8 +251,8 @@ function getCurrentDefaultPhotoId($product_id) {
     }
 
 
-        /* Style for the upload form */
-        .add-photo {
+    /* Style for the upload form */
+    .add-photo {
         text-align: center;
         margin: 20px 0;
     }
@@ -220,7 +262,7 @@ function getCurrentDefaultPhotoId($product_id) {
     }
 
     .add-photo button {
-        background-color: #e94e77;
+        background-color:rgb(244, 131, 193);
         color: white;
         padding: 10px 20px;
         border: none;
@@ -229,7 +271,7 @@ function getCurrentDefaultPhotoId($product_id) {
     }
 
     .add-photo button:hover {
-        background-color: #d43f63;
+        background-color:rgb(255, 213, 223);
     }
 </style>
 
@@ -238,15 +280,14 @@ function getCurrentDefaultPhotoId($product_id) {
     <h1>Product Image</h1>
 </header>
 
-<!-- Add the form for uploading a new photo -->
 <div class="add-photo">
-    <h3>Upload a New Photo</h3>
-    <form method="POST" enctype="multipart/form-data">
-    <label for="product_photos">Upload a New Photo</label>
-    <input type="file" name="product_photos[]" multiple>
-        <button type="submit" name="add_photo">Add Photo</button>
+    <form id="add_new_photos_form" method="POST" enctype="multipart/form-data">
+        <label for="product_photos">Upload a New Photo</label>
+        <input type="file" name="product_photos[]" id="add_photos_id" multiple>
+        <button type="submit" name="add_photo" id="upload_button">Add Photo</button>
     </form>
-
+    <!-- Message container -->
+    <p id="photo-message" style="color: red; display: none;"></p>
 </div>
 
 <!-- Photo Gallery Section -->
@@ -275,7 +316,7 @@ function getCurrentDefaultPhotoId($product_id) {
 <div id="popup" class="popup">
     <div class="popup-content">
         <h2>What would you like to do?</h2>
-        
+
         <!-- Form for deleting a photo -->
         <form id="delete-photo-form" method="POST">
             <input type="hidden" name="photo_id" id="delete-photo-id">
@@ -305,6 +346,11 @@ function getCurrentDefaultPhotoId($product_id) {
     </div>
 </div>
 
+
+
+
+
+
 <script>
 let currentPhotoId = null;
 
@@ -320,6 +366,10 @@ function showPopup(photoId, isDefault) {
         document.getElementById('set-default-photo-form').style.display = 'block'; // Show Set as Default form
     }
 
+    // Show the upload form for new photos
+    document.getElementById('add_new_photos_form').style.display = 'block';
+
+    // Open the popup
     document.getElementById('popup').style.display = 'flex';
 }
 
@@ -327,4 +377,38 @@ function showPopup(photoId, isDefault) {
 function closePopup() {
     document.getElementById('popup').style.display = 'none';
 }
-</script>
+
+document.getElementById("add_new_photos_form").addEventListener("submit", function (event) {
+    const fileInput = document.getElementById("add_photos_id");
+    const messageContainer = document.getElementById("photo-message");
+    const currentPhotoCount = <?= $photo_count; ?>; // Dynamically insert current photo count from the server
+    const selectedFilesCount = fileInput.files.length;
+    const maxPhotoCount = 3;
+
+    // Reset message
+    messageContainer.style.display = "none";
+    messageContainer.textContent = "";
+
+    // Case 1: No files selected
+    if (selectedFilesCount === 0) {
+        event.preventDefault();
+        messageContainer.style.display = "block";
+        messageContainer.textContent = "Please select at least one photo before .";
+        
+        return;
+    }
+
+    // Case 2: Exceeding the photo limit
+    if (currentPhotoCount + selectedFilesCount > maxPhotoCount) {
+        event.preventDefault();
+        messageContainer.style.display = "block";
+        messageContainer.textContent = `You can only upload up to ${maxPhotoCount} photos. Please reduce the number of selected files.`;
+        
+        return;
+    }
+
+    // If all checks pass, form submission proceeds
+});
+
+
+</script> 
