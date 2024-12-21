@@ -530,6 +530,7 @@ function getUsersGroupedByYear($year)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+/*
 function getProductSalesByCategory()
 {
     global $_db;
@@ -540,6 +541,21 @@ function getProductSalesByCategory()
         GROUP BY p.category_name
     ");
     $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+*/
+
+function getProductSalesByCategory($year) {
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT p.category_name, SUM(oi.quantity) AS total_sold, r.order_date
+        FROM orderitem oi
+        INNER JOIN product p ON oi.product_id = p.product_id
+        INNER JOIN order_record r ON oi.order_id = r.order_id
+        WHERE YEAR(r.order_date) = ?
+        GROUP BY p.category_name, YEAR(r.order_date)
+    ");
+    $stmt->execute([$year]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 

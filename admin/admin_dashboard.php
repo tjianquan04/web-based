@@ -18,7 +18,7 @@ if (isset($_GET['chartData'])) {
         'orders' => getOrdersGroupedByYear($_GET['year']),
         'sales' => getSalesGroupedByYear($_GET['year']),
         'users' => getUsersGroupedByYear($_GET['year']),
-        'product_categories' => getProductSalesByCategory(), // New data source for pie chart
+        'product_categories' => getProductSalesByCategory($_GET['year']), // New data source for pie chart
         default => [],
     };
 
@@ -166,6 +166,7 @@ if (isset($_GET['chartData'])) {
                 <option value="2024" selected>2024</option>
                 <option value="2023">2023</option>
                 <option value="2022">2022</option>
+                <option value="2021">2021</option>
             </select>
         </div>
         <div class="chart-container">
@@ -173,6 +174,15 @@ if (isset($_GET['chartData'])) {
         </div>
         <!-- Pie Chart Section -->
         <h2>Category Sales Distribution</h2>
+        <div class="chart-controls">
+            <select id="yearPieDropdown">
+                <option value="2024" selected>2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+            </select>
+        </div>
+
         <div class="chart-container">
             <canvas id="pieChart"></canvas>
         </div>
@@ -269,8 +279,8 @@ if (isset($_GET['chartData'])) {
                 });
         };
 
-        function fetchPieChartData() {
-            fetch('/admin/admin_dashboard.php?chartData=1&metric=product_categories')
+        function fetchPieChartData(year) {
+            fetch(`/admin/admin_dashboard.php?chartData=1&metric=product_categories&year=${year}`)
                 .then(response => response.json())
                 .then(data => {
                     const labels = data.map(item => item.category_name);
@@ -284,6 +294,12 @@ if (isset($_GET['chartData'])) {
                     alert('Failed to load chart data. Please try again.');
                 });
         }
+
+        document.getElementById('yearPieDropdown').addEventListener('change', (event) => {
+            const year = event.target.value;
+            fetchPieChartData(year);
+        });
+
 
         document.querySelectorAll('.metric-btn').forEach(button => {
             button.addEventListener('click', () => {
@@ -304,7 +320,7 @@ if (isset($_GET['chartData'])) {
         // Ensure pie chart is fetched separately
         window.onload = () => {
             fetchChartData('users', '2024'); // Default to 'users' metric
-            fetchPieChartData(); // Pie chart data
+            fetchPieChartData('2024'); // Pie chart data
         };
     </script>
 </body>
