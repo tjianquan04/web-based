@@ -7,10 +7,13 @@ auth('Admin', 'Superadmin', 'Product Manager');
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
 updateSessionData($_SESSION['user']->admin_id);
+$lowStockCount = countLowStockProducts();
+$outOfStockCount = countOutOfStockProducts();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +29,7 @@ updateSessionData($_SESSION['user']->admin_id);
         <!-- Sidebar Menu -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Admin Panel</h2>
+                <h2 style="color: azure;">Admin Panel</h2>
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
@@ -81,8 +84,15 @@ updateSessionData($_SESSION['user']->admin_id);
             <header class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
-                    <!-- Notification Icons -->
-                    <i class="fas fa-bell" id="notificationIcon"></i>
+                    <!-- Notification Icon -->
+                    <a href="/admin/admin_notification.php" style="position: relative; text-decoration: none;">
+                        <i class="fas fa-bell" id="notificationIcon"></i>
+                        <?php if ($lowStockCount > 0 || $outOfStockCount > 0): ?>
+                            <span id="notificationCount">
+                                (<?= $lowStockCount + $outOfStockCount ?>)
+                            </span>
+                        <?php endif; ?>
+                    </a>
 
                     <!-- User Profile Section -->
                     <div class="user-profile" id="userProfile" tabindex="0">

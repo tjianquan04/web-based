@@ -3,6 +3,9 @@ require '../_base.php';
 
 auth('Admin', 'Superadmin', 'Product Manager');
 
+$lowStockCount = countLowStockProducts();
+$outOfStockCount = countOutOfStockProducts();
+
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
 updateSessionData($_SESSION['user']->admin_id);
@@ -49,7 +52,7 @@ if (isset($_GET['chartData'])) {
         <!-- Sidebar Menu -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Admin Panel</h2>
+                <h2 style="color: azure;">Admin Panel</h2>
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
@@ -104,8 +107,14 @@ if (isset($_GET['chartData'])) {
             <header class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
-                    <!-- Notification Icons -->
-                    <i class="fas fa-bell" id="notificationIcon"></i>
+                    <a href="/admin/admin_notification.php" style="position: relative; text-decoration: none;">
+                        <i class="fas fa-bell" id="notificationIcon"></i>
+                        <?php if ($lowStockCount > 0 || $outOfStockCount > 0): ?>
+                            <span id="notificationCount">
+                                (<?= $lowStockCount + $outOfStockCount ?>)
+                            </span>
+                        <?php endif; ?>
+                    </a>
 
                     <!-- User Profile Section -->
                     <div class="user-profile" id="userProfile" tabindex="0">

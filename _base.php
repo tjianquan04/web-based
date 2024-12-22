@@ -528,6 +528,48 @@ function getUsersGroupedByYear($year)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getLowStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT product_id, description, stock_quantity
+        FROM product
+        WHERE stock_quantity < 10 AND stock_quantity > 0
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getOutOfStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT product_id, description
+        FROM product
+        WHERE stock_quantity = 0
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+function countOutOfStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("SELECT COUNT(*) FROM product WHERE stock_quantity = 0");
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+
+function countLowStockProducts()
+{
+    global $_db; // Use the global database connection
+    $stmt = $_db->prepare("SELECT COUNT(*) AS total FROM product  WHERE stock_quantity < 10 AND stock_quantity > 0");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total'] ?? 0; // Return the count or 0 if no results
+}
+
 /*
 function getProductSalesByCategory()
 {
