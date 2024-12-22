@@ -14,6 +14,9 @@ function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
+
+
+
 // document.addEventListener('DOMContentLoaded', () => {
     
 //     const currentDateElement = document.getElementById('currentDate');

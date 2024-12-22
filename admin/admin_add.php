@@ -1,7 +1,9 @@
 <?php
 // Include necessary files
 include('_admin_head.php');
+auth('Superadmin');
 
+$_err = []; // Initialize error array
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect form data
@@ -9,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_user->admin_name = req('admin_name');
     $_user->email = req('email');
     $_user->password = req('password');
+    $_user->confirm_password = req('confirm_password');
     $_user->phone_number = req('phone_number');
     $_user->role = req('role');
     $_user->status = req('status');
@@ -16,19 +19,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate required fields
     if (!$_user->admin_name || !$_user->email || !$_user->password) {
-        err('error', 'Admin name, email, and password are required!');
+        $_err['error'] = 'Admin name, email, and password are required!';
     } else {
-        // Call the function to add the admin to the database
-        $result = addAdmin($_user);  // Pass the $_user object to the function
+        // Validate email
+        if (!is_email($_user->email)) {
+            $_err['email_error'] = 'Please enter a valid email address.';
+        } elseif (!is_unique($_user->email, 'admin', 'email')) {
+            $_err['email_error'] = 'This email address is already registered.';
+        }
 
-        if ($result) {
-            temp('AddingSuccess', "Account register successfully");
-            temp('showSwal', true); // Set flag to show SweetAlert
+        // Validate phone number
+        if (!is_phone($_user->phone_number)) {
+            $_err['phone_error'] = 'Phone number must start with 01 and contain 10 or 11 digits.';
+        } elseif (!is_unique($_user->phone_number, 'admin', 'phone_number')) {
+            $_err['phone_error'] = 'This phone number is already registered.';
+        }
+
+        // Validate password
+        if (!is_password($_user->password)) {
+            $_err['password_error'] = 'Password must be at least 8 characters, include at least one uppercase letter, and one special character.';
+        }
+
+        // Check confirm password
+        if ($_user->password !== $_user->confirm_password) {
+            $_err['confirm_password_error'] = 'Password and confirm password do not match.';
+        }
+
+        if (!$_err) {
+            $result = addAdmin($_user);
+
+            if ($result) {
+                temp('AddingSuccess', "Account registered successfully");
+                temp('showSwal', true); // Set flag to show SweetAlert
+            }
         } else {
-            err('error', 'Failed to add admin. The email may already exist.');
+            temp('AddingFail', "Failed to register account. Please try again.");
+            temp('showSwalFail', true); // Set flag to show SweetAlert for failure
+
+            // Save form data for retention
+            $_SESSION['admin_form_data'] = $_user;
         }
     }
 }
+
+$role_value = isset($_user->role) ? $_user->role : 'Admin';
+$status_value = isset($_user->status) ? $_user->status : 'Active';
+
 ?>
 
 
@@ -39,10 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Add Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="/css/edit_admin.css">
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </head>
 
 <body>
@@ -60,34 +97,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Admin Name -->
             <label for="admin_name"><i class="fas fa-user"></i> Admin Name</label>
-            <input type="text" id="admin_name" name="admin_name" placeholder="Enter Name" required>
+            <input type="text" id="admin_name" name="admin_name" placeholder="Enter Name" required >
 
             <!-- Password and Confirm Password Fields -->
             <label for="password"><i class="fas fa-lock"></i> Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter Password" required>
+            <input type="password" id="password" name="password" placeholder="Enter Password" required >
+            <?= isset($_err['password_error']) ? "<p class='error-message'>{$_err['password_error']}</p>" : ''; ?>
 
             <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required >
+            <?= isset($_err['confirm_password_error']) ? "<p class='error-message'>{$_err['confirm_password_error']}</p>" : ''; ?>
 
             <!-- Admin Email -->
             <label for="email"><i class="fas fa-envelope"></i> Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter Email" required>
+            <input type="email" id="email" name="email" placeholder="Enter Email" required >
+            <?= isset($_err['email_error']) ? "<p class='error-message'>{$_err['email_error']}</p>" : ''; ?>
 
             <!-- Phone Number -->
             <label for="phone_number"><i class="fas fa-phone"></i> Phone Number</label>
-            <input type="text" id="phone_number" name="phone_number" placeholder="Enter Phone Number">
+            <input type="text" id="phone_number" name="phone_number" placeholder="Enter Phone Number" >
+            <?= isset($_err['phone_error']) ? "<p class='error-message'>{$_err['phone_error']}</p>" : ''; ?>
 
             <!-- Role -->
             <label for="role"><i class="fas fa-briefcase"></i> Role</label>
             <select id="role" name="role" required>
-                <option value="Admin">Admin</option>
+                <option value="Admin" <?= $role_value == 'Admin' ? 'selected' : ''; ?>>Admin</option>
+                <option value="Product Manager" <?= $role_value == 'Product Manager' ? 'selected' : ''; ?>>Product Manager</option>
             </select>
 
             <!-- Status -->
             <label for="status"><i class="fas fa-check-circle"></i> Status</label>
             <select id="status" name="status" required>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Active" <?= $status_value == 'Active' ? 'selected' : ''; ?>>Active</option>
+                <option value="Inactive" <?= $status_value == 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
             </select>
 
             <!-- Form Buttons -->
@@ -105,6 +147,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } ?>
     </div>
 
+    <script>
+        // Auto uppercase admin_name input
+        document.getElementById('admin_name').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+
     <?php if (temp('showSwal')): ?>
         <script>
             // Display swal() popup with the registration success message
@@ -112,6 +161,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 .then(function() {
                     window.location.href = 'admin_dashboard.php'; // Redirect after the popup closes
                 });
+        </script>
+    <?php endif; ?>
+
+    <?php if (temp('showSwalFail')): ?>
+        <script>
+            // Display swal() popup with the registration failure message
+            swal("Error", "<?= temp('AddingFail'); ?>", "error");
         </script>
     <?php endif; ?>
 </body>

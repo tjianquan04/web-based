@@ -2,7 +2,7 @@
 <?php
 require '../_base.php';
 
-auth('Admin', 'Superadmin');
+auth('Admin', 'Superadmin', 'Product Manager');
 
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;

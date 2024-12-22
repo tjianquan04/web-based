@@ -205,9 +205,7 @@ function addAdmin($user)
 
     // Default values for other fields
     $admin_id = generateNextAdminId();
-    $role = $user->role ?? 'Admin'; // Default to 'Admin' if no role is provided
     $phone_number = $user->phone_number ?? '-'; // Default to '-' if no phone number is provided
-    $status = $user->status ?? 'Active'; // Default to 'Active' if no status is provided
 
     // Handle photo upload
     if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
@@ -226,10 +224,10 @@ function addAdmin($user)
             $admin_id,
             $user->admin_name,
             $hashed_password,
-            $role,
+            $user->role,
             $user->email,
             $phone_number,
-            $status,
+            $user->status,
             $photo_path
         ]);
     } catch (PDOException $e) {
@@ -840,6 +838,48 @@ function is_exists($value, $table, $field)
 function is_email($value)
 {
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+// Is phone?
+function is_phone($value) {
+    // Ensure it's a string to perform string operations
+    $value = strval($value);
+
+    // Check if the phone number starts with "01"
+    if (strpos($value, "01") !== 0) {
+        return false;
+    }
+
+    // Extract the third digit
+    $thirdDigit = isset($value[2]) ? $value[2] : null;
+
+    // Check length based on the third digit
+    if ($thirdDigit == "1") {
+        return strlen($value) == 11; // Length should be 11 if third digit is 1
+    } else {
+        return strlen($value) == 10; // Length should be 10 otherwise
+    }
+}
+
+//Is password?
+function is_password($value) {
+    // Check if the length is at least 8 characters
+    if (strlen($value) < 8) {
+        return false;
+    }
+
+    // Check if there is at least one special character
+    if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $value)) {
+        return false;
+    }
+
+    // Check if there is at least one uppercase letter
+    if (!preg_match('/[A-Z]/', $value)) {
+        return false;
+    }
+
+    // All conditions are satisfied
+    return true;
 }
 
 // Is money?
