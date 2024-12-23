@@ -18,8 +18,8 @@ if (is_post()) {
 
     if(empty( $new_password)){
         $_err['new_password'] = 'New password is required.';
-    }else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)){
-        $_err['password'] = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, one special symbol, and be at least 8 characters.';
+    }else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $new_password)){
+        $_err['new_password'] = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, one special symbol, and be at least 8 characters.';
     }
 
     if(empty( $confirm_password)){
@@ -30,20 +30,20 @@ if (is_post()) {
 
     if (!$_err) {
             $stm = $_db->prepare('UPDATE member
-                                  SET password = ?
+                                  SET password = SHA1(?)
                                   WHERE member_id = ?');
-            $stm->execute([SHA1($new_password), $memberId]);
+            $stm->execute([$new_password, $memberId]);
         
 
         temp('info','User password updated');
-        redirect('/');
+        redirect('user_profile.php?id='.$memberId);
     }
 }
 
 include '../_head.php';
 ?>
 <script src="../js/main.js"></script>
-<link rel="stylesheet" href="/css/user_profile.css">
+<link rel="stylesheet" href="../css/user_profile.css">
 
 <body>
 <div class="container">
@@ -67,7 +67,7 @@ include '../_head.php';
                 <br>
 
                 <label for="new_password"><strong>New Password</strong></label>
-                <?php html_password('email', 'New password','', 'class="input-field"'); ?>
+                <?php html_password('new_password', 'New password','', 'class="input-field"'); ?>
                 <?= err('new_password') ?>
                 <br>
 

@@ -244,13 +244,17 @@ function validCurrentPassword($password, $member_id){
     
     //get current password from database
     $stmt = $_db->prepare("SELECT password FROM member WHERE member_id = ?");
-    $stmt ->execute($member_id);
-    $current_password = $stmt ->fetch();
+    $stmt ->execute([$member_id]);
+    $s = $stmt ->fetch();
+
+    echo('1. database : '.$s->password);
+    echo('2. current : '.SHA1($password));
+
     
-    if(SHA1($password) != $current_password){
-        return false;
+    if(strcmp(SHA1($password), ($s->password)) == 0){
+        return true;
     }
-    return true;
+    return false;
 }
 
 function getNextUserId()
@@ -634,10 +638,10 @@ function html_search($key,$placeholder = 'Search by name, email, contact', $data
 
 // Demo Accounts:
 // --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
+//bait2173.email@gmail.com    ncom fsil wjzk ptre 
+//aacs3173@gmail.com        xxna ftdu plga hzxl 
+//liaw.casual@gmail.com        buvq yftx klma vezl 
+//liawcv1@gmail.com        pztq znli gpjg tooe
 
 // Initialize and return mail object
 function get_mail() {
@@ -649,10 +653,10 @@ function get_mail() {
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
+    $m->Username = 'liawcv1@gmail.com';
+    $m->Password = 'pztq znli gpjg tooe';
     $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
+    $m->setFrom($m->Username, '😺 Boots Admin');
 
     return $m;
 }

@@ -120,7 +120,7 @@ if (is_post() && (req('form_type') == 'member_details')) {
         $updateAddressStm->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
 
         temp('info', 'Address updated successfully');
-        redirect('/member_management.php');
+        redirect('../admin/member_management.php');
     }
 }
 
