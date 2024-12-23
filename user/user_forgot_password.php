@@ -1,72 +1,63 @@
 <?php
 require '../_base.php'; // Include your database connection and helper functions
 
-// Initialize error array
-$_err = [];
+$_err = []; // Initialize error array
+$cooldownTime = 10 * 60; // Cooldown time in seconds (10 minutes)
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? ''; // Get the email input from the POST request
+    $email = $_POST['email'] ?? ''; // Get the email input
 
     if (empty($email)) {
-        // Email input is empty, show an error
         $_err['empty_error'] = "Please enter your email address.";
     } else {
-        // Call the validEmail function to check if the email exists
-        $user = validUserEmail($email);
-        var_dump($user);
+        $stmt = $_db->prepare('SELECT member_id, email, name, last_email_sent FROM member WHERE email = ?');
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+
         if ($user) {
-            // Proceed to send the email
-            try {
-                // Step 1: Generate a unique token
-                $token = sha1(uniqid() . rand());
+            $currentTime = time();
+            $lastEmailSentTime = $user->last_email_sent ? strtotime($user->last_email_sent) : 0;
 
+            if ($currentTime - $lastEmailSentTime < $cooldownTime) {
+                // Cooldown still active
+                $remainingTime = $cooldownTime - ($currentTime - $lastEmailSentTime);
+                $_err['cooldown_error'] = "You can request a reset email for this address again in " . gmdate("i:s", $remainingTime) . ".";
+            } else {
                 try {
-                    // Step 2a: Delete old tokens for this user
-                    $stmtDelete = $_db->prepare('DELETE FROM `member_token` WHERE member_id = ?');
-                    $stmtDelete->execute([$user->member_id]);
+                    // Step 1: Generate a unique token
+                    $token = sha1(uniqid() . rand());
 
-                    // Step 2b: Insert a new token
-                    $stmtInsert = $_db->prepare('INSERT INTO `member_token` (id, expire, member_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)');
-                    $stmtInsert->execute([$token, $user->member_id]);
-                    
-                    if ($stmtInsert->rowCount() === 0) {
-                        error_log("Insert failed: No rows were affected.");
-                        die("Insert failed: No rows were affected.");
-                    }
-                    
-                } catch (PDOException $e) {
-                    // Log detailed error message for debugging
-                    error_log("Database Error: " . $e->getMessage());
-                    die('Database error: ' . $e->getMessage());
+                    // Step 2: Remove old tokens and insert a new one
+                    $_db->prepare('DELETE FROM member_token WHERE member_id = ?')->execute([$user->member_id]);
+                    $_db->prepare('INSERT INTO member_token (id, expire, member_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)')
+                        ->execute([$token, $user->member_id]);
+
+                    // Step 3: Send the reset email
+                    $resetUrl = base("/user/user_token.php?id=$token");
+                    $mail = get_mail();
+                    $mail->addAddress($user->email, $user->name);
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Reset Password';
+                    $mail->Body = "
+                        <h1>Reset Your Password</h1>
+                        <p>Click the link below to reset your password:</p>
+                        <p><a href='$resetUrl'>$resetUrl</a></p>
+                        <p>This link will expire in 10 minutes.</p>
+                        <p>From, 😺 Admin</p>
+                    ";
+
+                    $mail->send();
+
+                    // Step 4: Update the last email sent time
+                    $_db->prepare('UPDATE member SET last_email_sent = NOW() WHERE member_id = ?')->execute([$user->member_id]);
+
+                    temp('Email', "Email successfully sent!");
+                    temp('showSwal', true); // Show success message
+                } catch (Exception $e) {
+                    $_err['email_error'] = "Failed to send reset email. Please try again later.";
                 }
-
-                // Step 3: Generate the reset URL
-                $resetUrl = base("/user/user_token.php?id=$token");
-
-                // Step 4: Configure and send the email
-                $mail = get_mail();
-                $mail->addAddress($user->email, $user->name);
-                $mail->isHTML(true);
-                $mail->Subject = 'Reset Password';
-                $mail->Body = "
-                    <h1>Reset Your Password</h1>
-                    <p>Click the link below to reset your password:</p>
-                    <p><a href='$resetUrl'>$resetUrl</a></p>
-                    <p>This link will expire in 10 minutes.</p>
-                    <p>From, 😺 Admin</p>
-                ";
-
-                $mail->send();
-
-                // Step 5: Provide feedback to the user
-                temp('Email', "Email successful send !");
-                temp('showSwal', true); // Set flag to show SweetAlert
-            } catch (Exception $e) {
-                // Handle any errors in the email-sending process
-                $_err['email_error'] = "Failed to send reset email. Please try again later." . $e->getMessage();;
             }
         } else {
-            // Email does not exist in the database, show an error
             $_err['email_error'] = "Email address entered does not exist.";
         }
     }
@@ -86,20 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
     <div class="forgot-password-container">
-        <!-- Left Section: Form -->
         <div class="form-container">
-
-            <!-- Back button -->
             <button class="back-button" onclick="history.back()">&larr;</button>
             <h1>Reset your password</h1>
             <p>We will send you an email to reset your password</p>
 
-            <!-- Error Messages -->
             <div class="error-message"><?php err('empty_error'); ?></div>
             <div class="error-message"><?php err('email_error'); ?></div>
-
+            <div class="error-message"><?php err('cooldown_error'); ?></div>
 
             <form action="" method="POST">
                 <div class="form-group">
@@ -112,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
 
-        <!-- Right Section: Image -->
         <div class="image-container">
             <img src="/image/forgot-password.png" alt="Reset Password Image">
         </div>
@@ -120,14 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if (temp('showSwal')): ?>
         <script>
-            // Display swal() popup with the registration success message
             swal("Congrats", "<?= temp('Email'); ?>", "success")
                 .then(function() {
-                    window.location.href = 'login.php'; // Redirect after the popup closes
+                    window.location.href = 'login.php';
                 });
         </script>
     <?php endif; ?>
-
 </body>
 
 </html>
