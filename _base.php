@@ -72,7 +72,7 @@ function validateUser($email, $password)
 
     try {
         // Prepare a statement to fetch the user by email
-        $stm = $_db->prepare("SELECT * FROM `user` WHERE email = ?");
+        $stm = $_db->prepare("SELECT * FROM `member` WHERE email = ?");
         $stm->execute([$email]);
         $user = $stm->fetch();
 
@@ -95,9 +95,9 @@ function validUserEmail($email)
 
     try {
         // Prepare the SQL query to check if the email exists
-        $stmt = $_db->prepare("SELECT * FROM `user` WHERE email = ?");
+        $stmt = $_db->prepare("SELECT * FROM `member` WHERE email = ?");
         $stmt->execute([$email]);
-        $user = $stmt->fetch(); // Fetch the admin record
+        $user = $stmt->fetch(); // Fetch the record
 
         if ($user) {
             return $user;
@@ -519,10 +519,10 @@ function getUsersGroupedByYear($year)
 {
     global $_db;
     $stmt = $_db->prepare("
-        SELECT MONTH(register_time) AS month, COUNT(*) AS total 
-        FROM member 
-        WHERE YEAR(register_time) = ? 
-        GROUP BY MONTH(register_time)
+        SELECT MONTH(register_date) AS month, COUNT(*) AS total 
+        FROM `member`
+        WHERE YEAR(register_date) = ? 
+        GROUP BY MONTH(register_date)
     ");
     $stmt->execute([$year]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

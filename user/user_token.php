@@ -4,14 +4,14 @@ include '../_base.php';
 // ----------------------------------------------------------------------------
 
 // TODO: (1) Delete expired tokens
-$_db->query('DELETE FROM user_token WHERE expire < NOW()');
+$_db->query('DELETE FROM member_token WHERE expire < NOW()');
 
 $id = req('id');
 
 // TODO: (2) Is token id valid?
-if (!is_exists($id, 'user_token', 'id')) {
+if (!is_exists($id, 'member_token', 'id')) {
     temp('info', 'Invalid token. Try again');
-    redirect('user_login');
+    redirect('login.php');
 }
 
 if (is_post()) {
@@ -40,11 +40,11 @@ if (is_post()) {
     if (!$_err) {
         // TODO: Update user (password) based on token id + delete token
         $stm = $_db->prepare('
-            UPDATE user
+            UPDATE `member`
             SET password = SHA1(?)
-            WHERE user_id = ( SELECT user_id FROM user_token WHERE id = ?);
+            WHERE member_id = ( SELECT member_id FROM member_token WHERE id = ?);
 
-            DELETE FROM user_token WHERE id = ?;
+            DELETE FROM member_token WHERE id = ?;
         ');
         $stm->execute([$password, $id, $id]);
 

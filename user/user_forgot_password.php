@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Call the validEmail function to check if the email exists
         $user = validUserEmail($email);
+        var_dump($user);
         if ($user) {
             // Proceed to send the email
             try {
@@ -21,12 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 try {
                     // Step 2a: Delete old tokens for this user
-                    $stmtDelete = $_db->prepare('DELETE FROM `user_token` WHERE user_id = ?');
-                    $stmtDelete->execute([$user->user_id]);
+                    $stmtDelete = $_db->prepare('DELETE FROM `member_token` WHERE member_id = ?');
+                    $stmtDelete->execute([$user->member_id]);
 
                     // Step 2b: Insert a new token
-                    $stmtInsert = $_db->prepare('INSERT INTO `user_token` (id, expire, user_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)');
-                    $stmtInsert->execute([$token, $user->user_id]);
+                    $stmtInsert = $_db->prepare('INSERT INTO `member_token` (id, expire, member_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)');
+                    $stmtInsert->execute([$token, $user->member_id]);
+                    
+                    if ($stmtInsert->rowCount() === 0) {
+                        error_log("Insert failed: No rows were affected.");
+                        die("Insert failed: No rows were affected.");
+                    }
+                    
                 } catch (PDOException $e) {
                     // Log detailed error message for debugging
                     error_log("Database Error: " . $e->getMessage());
@@ -38,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Step 4: Configure and send the email
                 $mail = get_mail();
-                $mail->addAddress($user->email, $user->user_name);
+                $mail->addAddress($user->email, $user->name);
                 $mail->isHTML(true);
                 $mail->Subject = 'Reset Password';
                 $mail->Body = "
