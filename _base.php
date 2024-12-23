@@ -241,13 +241,17 @@ function validCurrentPassword($password, $member_id){
     
     //get current password from database
     $stmt = $_db->prepare("SELECT password FROM member WHERE member_id = ?");
-    $stmt ->execute($member_id);
-    $current_password = $stmt ->fetch();
+    $stmt ->execute([$member_id]);
+    $s = $stmt ->fetch();
+
+    echo('1. database : '.$s->password);
+    echo('2. current : '.SHA1($password));
+
     
-    if(SHA1($password) != $current_password){
-        return false;
+    if(strcmp(SHA1($password), ($s->password)) == 0){
+        return true;
     }
-    return true;
+    return false;
 }
 
 function getNextUserId()
@@ -832,7 +836,7 @@ function get_mail()
     $m->Username = 'aacs3173@gmail.com';
     $m->Password = 'xxna ftdu plga hzxl';
     $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
+    $m->setFrom($m->Username, '😺 Boots Admin');
 
     return $m;
 }
