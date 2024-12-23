@@ -14,14 +14,14 @@ if (isset($_GET['id'])) {
     $stm->execute([$admin_id]);
 
     // Set a flash message to inform the user that the deletion was successful
-    temp('DeleteSucess', "Account delete successfully");
+    temp('DeleteSuccess', "Account delete successfully");
     temp('showSwal', true); // Set flag to show SweetAlert
 }
 ?>
 <?php if (temp('showSwal')): ?>
     <script>
         // Display swal() popup with the registration success message
-        swal("Congrats", "<?= temp('AddingSuccess'); ?>", "success")
+        swal("Congrats", "<?= temp('DeleteSuccess'); ?>", "success")
             .then(function() {
                 window.location.href = 'admin_management.php'; // Redirect after the popup closes
             });

@@ -1,18 +1,18 @@
-<script src="../js/main.js"></script>
+<script src="../js/main.js" async defer></script>
 <?php
 require '../_base.php';
 
-//auth('Admin', 'Superadmin');
+auth('Admin', 'Superadmin', 'Product Manager');
 
 // Get admin role
 $admin_role = $_SESSION['role'] ?? NULL;
 updateSessionData($_SESSION['user']->admin_id);
+$lowStockCount = countLowStockProducts();
+$outOfStockCount = countOutOfStockProducts();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
-
 
 <head>
     <meta charset="UTF-8">
@@ -29,17 +29,20 @@ updateSessionData($_SESSION['user']->admin_id);
         <!-- Sidebar Menu -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Admin Panel</h2>
+                <h2 style="color: azure;">Admin Panel</h2>
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
                 <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
-                <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
-                <ul id="product-menu" class="submenu">
-                    <li><a href="product_index.php">Add Product</a></li>
-                    <li><a href="#">Manage Inventory</a></li>
-                </ul>
+                <!-- Only Product Manager can see this section -->
+                <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
+                    <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
+                    <ul id="product-menu" class="submenu">
+                        <li><a href="product_index.php">Add Product</a></li>
+                        <li><a href="#">Manage Inventory</a></li>
+                    </ul>
+                <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
@@ -81,9 +84,15 @@ updateSessionData($_SESSION['user']->admin_id);
             <header class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
-                    <!-- Email and Notification Icons -->
-                    <i class="fas fa-envelope" id="emailIcon"></i>
-                    <i class="fas fa-bell" id="notificationIcon"></i>
+                    <!-- Notification Icon -->
+                    <a href="/admin/admin_notification.php" style="position: relative; text-decoration: none;">
+                        <i class="fas fa-bell" id="notificationIcon"></i>
+                        <?php if ($lowStockCount > 0 || $outOfStockCount > 0): ?>
+                            <span id="notificationCount">
+                                (<?= $lowStockCount + $outOfStockCount ?>)
+                            </span>
+                        <?php endif; ?>
+                    </a>
 
                     <!-- User Profile Section -->
                     <div class="user-profile" id="userProfile" tabindex="0">
@@ -103,3 +112,4 @@ updateSessionData($_SESSION['user']->admin_id);
             </header>
         </main>
     </div>
+</body>

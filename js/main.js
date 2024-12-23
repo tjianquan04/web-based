@@ -1,3 +1,4 @@
+
 console.log('JavaScript loaded successfully');
 
 function toggleMenu(menuId) {
@@ -13,24 +14,25 @@ function clearForm() {
     document.getElementById('addAdminForm').reset();
 }
 
-// document.addEventListener('DOMContentLoaded', () => {
-    
-//     const currentDateElement = document.getElementById('currentDate');
-//     const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
-//     const currentDate = new Date().toLocaleDateString('en-US', options);
-//     currentDateElement.textContent = currentDate;
 
-//     //Dropdown interaction
-//     const userProfile = document.getElementById('userProfile');
-//     userProfile.addEventListener('click', (e) => {
-//         e.stopPropagation();
-//         userProfile.classList.toggle('active');
-//     });
+document.addEventListener('DOMContentLoaded', () => {
 
-//     document.addEventListener('click', () => {
-//         userProfile.classList.remove('active');
-//     });
-// });
+    const currentDateElement = document.getElementById('currentDate');
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
+    const currentDate = new Date().toLocaleDateString('en-US', options);
+    currentDateElement.textContent = currentDate;
+
+    //Dropdown interaction
+    const userProfile = document.getElementById('userProfile');
+    userProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userProfile.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => {
+        userProfile.classList.remove('active');
+    });
+});
 
 function clearPasswordField(input) {
     if (input.value === '********') {
@@ -56,10 +58,10 @@ $(() => {
     $('[delete-confirm]').on('click', e => {
         // Check for either address_id or member_id
         const Id = e.target.dataset.addressId || e.target.dataset.memberId;
-    
+
         // Customize the confirmation message
         const text = `Are you sure you want to delete ${Id}?`;
-    
+
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -144,3 +146,4 @@ function showSlides() {
     // Set a timeout to move to the next slide
     setTimeout(showSlides, 4000); // Change image every 2 seconds
 }
+

@@ -4,7 +4,7 @@ include('_admin_head.php');
 require_once '../lib/SimplePager.php';
 
 //Superadmin
-auth('Admin', 'Superadmin');
+auth('Product Manager', 'Superadmin');
 
 $page = req('page', 1);
 $p = new SimplePager("SELECT * FROM product ", [], 10, $page);

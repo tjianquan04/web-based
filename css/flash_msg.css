@@ -61,3 +61,13 @@
 #info.success i {
     color: white; /* White icon color */
 }
+
+
+#info.error {
+    background-color: #F44336; /* Red background for errors */
+    border-color: #D32F2F; /* Darker red border */
+}
+
+#info.error i {
+    color: white; /* White icon color */
+}

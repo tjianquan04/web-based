@@ -77,7 +77,7 @@ function validateUser($email, $password)
         $user = $stm->fetch();
 
         // Check if user exists and password matches
-        if ($user&& $user->password === sha1($password)) {
+        if ($user && $user->password === sha1($password)) {
             return $user; // Return the user object if credentials are valid
         } else {
             return false; // Return false if credentials are invalid
@@ -99,10 +99,9 @@ function validUserEmail($email)
         $stmt->execute([$email]);
         $user = $stmt->fetch(); // Fetch the admin record
 
-        if($user){
+        if ($user) {
             return $user;
-        }
-        else{
+        } else {
             return false;
         }
     } catch (PDOException $e) {
@@ -121,7 +120,7 @@ function validateAdmin($admin_id, $password)
         $stm = $_db->prepare("SELECT * FROM `admin` WHERE admin_id = ?");
         $stm->execute([$admin_id]);
         $admin = $stm->fetch(); // Fetch the admin record
-        
+
         // Check if admin exists and password matches
         if ($admin && $admin->password === sha1($password)) {
             // Return the admin object with role information if credentials are valid
@@ -146,10 +145,9 @@ function validAdminEmail($email)
         $stmt->execute([$email]);
         $admin = $stmt->fetch(); // Fetch the admin record
 
-        if($admin){
+        if ($admin) {
             return $admin;
-        }
-        else{
+        } else {
             return false;
         }
     } catch (PDOException $e) {
@@ -159,7 +157,8 @@ function validAdminEmail($email)
     }
 }
 
-function updateSessionData($admin_id) {
+function updateSessionData($admin_id)
+{
     global $_db;
 
     $stm = $_db->prepare('SELECT * FROM admin WHERE admin_id = ?');
@@ -206,9 +205,7 @@ function addAdmin($user)
 
     // Default values for other fields
     $admin_id = generateNextAdminId();
-    $role = $user->role ?? 'Admin'; // Default to 'Admin' if no role is provided
     $phone_number = $user->phone_number ?? '-'; // Default to '-' if no phone number is provided
-    $status = $user->status ?? 'Active'; // Default to 'Active' if no status is provided
 
     // Handle photo upload
     if ($user->photo && str_starts_with($user->photo->type, 'image/')) {
@@ -227,10 +224,10 @@ function addAdmin($user)
             $admin_id,
             $user->admin_name,
             $hashed_password,
-            $role,
+            $user->role,
             $user->email,
             $phone_number,
-            $status,
+            $user->status,
             $photo_path
         ]);
     } catch (PDOException $e) {
@@ -260,66 +257,68 @@ function validCurrentPassword($password, $member_id){
 function getNextUserId()
 {
     global $_db;
-    
+
     // get the highest member_id 
     $stmt = $_db->query("SELECT MAX(member_id) AS max_id FROM member");
     $row = $stmt->fetch();
-    
+
     // Get the current highest member_id 
     $max_id = $row->max_id;
-    
+
     // If no records, return M000001
     if ($max_id === null) {
         return 'M000001';
     }
-    
+
     // Extract the numeric part of the current max_id 
     $numeric_part = (int) substr($max_id, 1);
-    
+
     // Increment the numeric part and pad it to 6 digits
     $new_id = 'M' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
-    
+
     return $new_id;
 }
 
 function getNextAddressId()
 {
     global $_db;
-    
+
     // get the highest member_id 
     $stmt = $_db->query("SELECT MAX(address_id) AS max_id FROM address");
     $row = $stmt->fetch();
-    
+
     // Get the current highest member_id 
     $max_id = $row->max_id;
-    
+
     // If no records, return M000001
     if ($max_id === null) {
         return 'A000001';
     }
-    
+
     // Extract the numeric part of the current max_id 
     $numeric_part = (int) substr($max_id, 1);
-    
+
     // Increment the numeric part and pad it to 6 digits
     $new_id = 'A' . str_pad($numeric_part + 1, 6, '0', STR_PAD_LEFT);
-    
+
     return $new_id;
 }
 
-function getMemberbyId($member_id){
+function getMemberbyId($member_id)
+{
     global $_db;
-    
+
     $stmt = $_db->prepare("SELECT * FROM member where member_id = ? LIMIT 1");
 
     $stmt->execute([$member_id]);
 
     $member = $stmt->fetch(PDO::FETCH_OBJ);
-   
+
     return $member ?: null;
 }
 
-function getAllAddressbyMemberId($memberId){
+function getAllAddressbyMemberId($memberId)
+{
     global $_db;
     $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
     $addressStm->execute([$memberId]);
@@ -328,7 +327,8 @@ function getAllAddressbyMemberId($memberId){
     return $addressArr;
 }
 
-function getAddressbyId($address_id){
+function getAddressbyId($address_id)
+{
     global $_db;
     $addressStm = $_db->prepare('SELECT * FROM address WHERE address_id = ?');
     $addressStm->execute([$address_id]);
@@ -424,6 +424,183 @@ function generateDynamicPagination($pager, $sort, $dir)
     $paginationHTML .= '</div>';
 
     return $paginationHTML;
+}
+
+function getTotalSales()
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Query to calculate the total amount
+        $stmt = $_db->query("SELECT SUM(total_amount) AS total FROM `order_record`");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row as an associative array
+
+        // Check and return the total
+        if ($result && isset($result['total'])) {
+            return (float)$result['total']; // Cast to float for consistent numeric output
+        } else {
+            return 0.0; // Return 0.0 if no result or total is null
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in getTotalSales: " . $e->getMessage());
+        return 0.0; // Return 0.0 on error
+    }
+}
+
+function getTotalOrders()
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Query to count the total orders
+        $stmt = $_db->query("SELECT COUNT(order_id) AS total_orders FROM `order_record`");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row as an associative array
+
+        // Check and return the total orders
+        if ($result && isset($result['total_orders'])) {
+            return (int)$result['total_orders']; // Cast to int for consistent numeric output
+        } else {
+            return 0; // Return 0 if no result or total_orders is null
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in getTotalOrders: " . $e->getMessage());
+        return 0; // Return 0 on error
+    }
+}
+
+function getTotalMembers()
+{
+    global $_db; // Use the database connection defined in _base.php
+
+    try {
+        // Query to count the total members
+        $stmt = $_db->query("SELECT COUNT(member_id) AS total_members FROM `member`");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row as an associative array
+
+        // Check and return the total members
+        if ($result && isset($result['total_members'])) {
+            return (int)$result['total_members']; // Cast to int for consistent numeric output
+        } else {
+            return 0; // Return 0 if no result or total_members is null
+        }
+    } catch (PDOException $e) {
+        // Log the error and handle gracefully
+        error_log("Database error in getTotalMembers: " . $e->getMessage());
+        return 0; // Return 0 on error
+    }
+}
+
+//Fetch the GroupBy data 
+function getOrdersGroupedByYear($year)
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT MONTH(order_date) AS month, COUNT(*) AS total 
+        FROM order_record 
+        WHERE YEAR(order_date) = ? 
+        GROUP BY MONTH(order_date)
+    ");
+    $stmt->execute([$year]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getSalesGroupedByYear($year)
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT MONTH(order_date) AS month, SUM(total_amount) AS total 
+        FROM order_record 
+        WHERE YEAR(order_date) = ? 
+        GROUP BY MONTH(order_date)
+    ");
+    $stmt->execute([$year]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getUsersGroupedByYear($year)
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT MONTH(register_time) AS month, COUNT(*) AS total 
+        FROM member 
+        WHERE YEAR(register_time) = ? 
+        GROUP BY MONTH(register_time)
+    ");
+    $stmt->execute([$year]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getLowStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT product_id, description, stock_quantity
+        FROM product
+        WHERE stock_quantity < 10 AND stock_quantity > 0
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getOutOfStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT product_id, description
+        FROM product
+        WHERE stock_quantity = 0
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+function countOutOfStockProducts()
+{
+    global $_db;
+    $stmt = $_db->prepare("SELECT COUNT(*) FROM product WHERE stock_quantity = 0");
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+
+function countLowStockProducts()
+{
+    global $_db; // Use the global database connection
+    $stmt = $_db->prepare("SELECT COUNT(*) AS total FROM product  WHERE stock_quantity < 10 AND stock_quantity > 0");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total'] ?? 0; // Return the count or 0 if no results
+}
+
+/*
+function getProductSalesByCategory()
+{
+    global $_db;
+    $stmt = $_db->query("
+        SELECT p.category_name, SUM(oi.quantity) AS total_sold
+        FROM orderitem oi
+        INNER JOIN product p ON oi.product_id = p.product_id
+        GROUP BY p.category_name
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+*/
+
+function getProductSalesByCategory($year) {
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT p.category_name, SUM(oi.quantity) AS total_sold, r.order_date
+        FROM orderitem oi
+        INNER JOIN product p ON oi.product_id = p.product_id
+        INNER JOIN order_record r ON oi.order_id = r.order_id
+        WHERE YEAR(r.order_date) = ?
+        GROUP BY p.category_name, YEAR(r.order_date)
+    ");
+    $stmt->execute([$year]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 
@@ -550,41 +727,42 @@ function encode($value)
     return htmlentities($value);
 }
 
+// Generate input field
+function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
+    $value = htmlspecialchars($data);
+    $placeholder = encode($placeholder);
+    echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+}
+
 // Generate text input field
 function html_text($key, $placeholder = '', $data = '', $attr = '') {
-    $value = htmlspecialchars($data);
-    echo "<input type='text' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    $value = htmlspecialchars($data); // Prevent XSS by escaping special characters
+    // Create the input field with the value and other attributes
+    html_input('text', $key, $placeholder, $value, $attr);
 }
 
 // Generate password input field
 function html_password($key, $placeholder = '', $data = '', $attr = '') {
-    $value = htmlspecialchars($data);
-    echo "<input type='password' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    html_input('password', $key, $placeholder, $data, $attr);
 }
 
 
 // Generate email input field
 function html_email($key, $placeholder = '', $data = '', $attr = '') {
-    $value = htmlspecialchars($data);
-    echo "<input type='email' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    html_input('email', $key, $placeholder, $data, $attr);
 }
 
 // Generate <input type='number'>
-function html_number($key, $min = '', $max = '', $step = '', $attr = '') {
+function html_number($key, $min = '', $max = '', $step = '', $attr = '')
+{
     $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='number' id='$key' name='$key' value='$value'
                  min='$min' max='$max' step='$step' $attr>";
 }
 
 // Generate <select>
-function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
-
-    $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
-    
-    $defaultOption = $default !== '' 
-        ? "<option value=''>$default</option>" 
-        : "<option value='' disabled selected>- Select One -</option>";
-
+function html_select($key, $items, $default = '- Select One -', $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
     
     echo $defaultOption;
@@ -598,10 +776,12 @@ function html_select($key, $items, $default = '', $attr = '', $currentValue = nu
     echo '</select>';
 }
 
+
 // Generate <input type='checkbox'>
-function html_checkbox($key, $status = 'inactive', $attr = '') {
+function html_checkbox($key, $status = 'inactive', $attr = '')
+{
     $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
-  
+
     echo "<label for='$key'>"; // Add a label for accessibility
     echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
     echo "</label>";
@@ -627,8 +807,7 @@ function html_radios($key, $items, $br = false) {
 
 // Generate search input field
 function html_search($key,$placeholder = 'Search by name, email, contact', $data = "", $attr = '') {
-    $value = htmlspecialchars($data);
-    echo "<input type='search' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    html_input('search', $key, $placeholder, $data, $attr);
 }
 
 
@@ -644,7 +823,8 @@ function html_search($key,$placeholder = 'Search by name, email, contact', $data
 //liawcv1@gmail.com        pztq znli gpjg tooe
 
 // Initialize and return mail object
-function get_mail() {
+function get_mail()
+{
     require_once 'lib/PHPMailer.php';
     require_once 'lib/SMTP.php';
 
@@ -653,8 +833,8 @@ function get_mail() {
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'liawcv1@gmail.com';
-    $m->Password = 'pztq znli gpjg tooe';
+    $m->Username = 'aacs3173@gmail.com';
+    $m->Password = 'xxna ftdu plga hzxl';
     $m->CharSet = 'utf-8';
     $m->setFrom($m->Username, '😺 Boots Admin');
 
@@ -706,18 +886,63 @@ function is_email($value)
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
+// Is phone?
+function is_phone($value) {
+    // Ensure it's a string to perform string operations
+    $value = strval($value);
+
+    // Check if the phone number starts with "01"
+    if (strpos($value, "01") !== 0) {
+        return false;
+    }
+
+    // Extract the third digit
+    $thirdDigit = isset($value[2]) ? $value[2] : null;
+
+    // Check length based on the third digit
+    if ($thirdDigit == "1") {
+        return strlen($value) == 11; // Length should be 11 if third digit is 1
+    } else {
+        return strlen($value) == 10; // Length should be 10 otherwise
+    }
+}
+
+//Is password?
+function is_password($value) {
+    // Check if the length is at least 8 characters
+    if (strlen($value) < 8) {
+        return false;
+    }
+
+    // Check if there is at least one special character
+    if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $value)) {
+        return false;
+    }
+
+    // Check if there is at least one uppercase letter
+    if (!preg_match('/[A-Z]/', $value)) {
+        return false;
+    }
+
+    // All conditions are satisfied
+    return true;
+}
+
 // Is money?
-function is_money($value) {
+function is_money($value)
+{
     return preg_match('/^\-?\d+(\.\d{1,2})?$/', $value);
 }
 
 // Return base url (host + port)
-function base($path = '') {
+function base($path = '')
+{
     return "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]/$path";
 }
 
 // Return local root path
-function root($path = '') {
+function root($path = '')
+{
     return "$_SERVER[DOCUMENT_ROOT]/$path";
 }
 
@@ -726,8 +951,9 @@ function root($path = '') {
 //Product
 
 
-function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
-    $params=[];
+function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
+{
+    $params = [];
     $query = "
         SELECT p.*, pp.product_photo_id
         FROM product p
@@ -735,7 +961,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir) {
         ON p.product_id = pp.product_id AND pp.default_photo = 1
         WHERE 1=1
     ";
-    
+
     if ($category) {
         $query .= " AND p.category_name = ?";
         $params[] = $category;
@@ -790,12 +1016,11 @@ function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'd
     return $stm->fetchAll();
 }
 
-function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '') {
+function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '')
+{
     // Get the selected value (category_id or subcategory_id)
-    $value = encode($GLOBALS[$key] ?? '');  
+    $value = encode($GLOBALS[$key] ?? '');
 
-    // Debug: Log the selected value
-    error_log("Selected value (category or subcategory): $value");
 
     echo "<select id='$key' name='$key' $attr>";
 
@@ -814,7 +1039,7 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
 
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
-        
+
         // Set selected for the main category
         $selected = ($id == $value) ? 'selected' : '';
         error_log("Main category selected: $selected");  // Debug: Check if it's selected
@@ -840,7 +1065,8 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
 
 
 
-function generate_product_id($category_id, $db) {
+function generate_product_id($category_id, $db)
+{
     // Fetch the last product ID in the category
     $stm = $db->prepare('
         SELECT product_id 
@@ -862,7 +1088,8 @@ function generate_product_id($category_id, $db) {
     return $category_id . $new_number;
 }
 
-function generate_photo_id($db) {
+function generate_photo_id($db)
+{
     // Fetch the last product_photo_id
     $stm = $db->prepare('
         SELECT product_photo_id
@@ -939,26 +1166,5 @@ function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions
 }
 
 
-// ============================================================================
-// Global Constants and Variables
-// ============================================================================
 
-$_states = [
-    'Johor' => 'Johor',
-    'Kedah' => 'Kedah',
-    'Kelantan' => 'Kelantan',
-    'Kuala Lumpur' => 'Kuala Lumpur',
-    'Labuan' => 'Labuan',
-    'Malacca' => 'Malacca',
-    'Negeri Sembilan' => 'Negeri Sembilan',
-    'Pahang' => 'Pahang',
-    'Penang' => 'Penang',
-    'Perak' => 'Perak',
-    'Perlis' => 'Perlis',
-    'Putrajaya' => 'Putrajaya',
-    'Sabah' => 'Sabah',
-    'Sarawak' => 'Sarawak',
-    'Selangor' => 'Selangor',
-    'Terengganu' => 'Terengganu'
-];
 
