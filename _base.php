@@ -813,10 +813,10 @@ function html_search($key,$placeholder = 'Search by name, email, contact', $data
 
 // Demo Accounts:
 // --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
+//bait2173.email@gmail.com    ncom fsil wjzk ptre 
+//aacs3173@gmail.com        xxna ftdu plga hzxl 
+//liaw.casual@gmail.com        buvq yftx klma vezl 
+//liawcv1@gmail.com        pztq znli gpjg tooe
 
 // Initialize and return mail object
 function get_mail()
@@ -829,8 +829,8 @@ function get_mail()
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
+    $m->Username = 'aacs3173@gmail.com';
+    $m->Password = 'xxna ftdu plga hzxl';
     $m->CharSet = 'utf-8';
     $m->setFrom($m->Username, '😺 Admin');
 

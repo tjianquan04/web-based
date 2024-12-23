@@ -4,14 +4,30 @@ require '../_base.php'; // Include your database connection and helper functions
 // Initialize error array
 $_err = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Cooldown time in seconds
+$cooldownTime = 5 * 60; // 5 minutes
+
+$lastRequestTime = $_SESSION['last_request_time'] ?? null;
+$currentTime = time();
+$remainingTime = 0;
+
+if ($lastRequestTime) {
+    // Check if the cooldown is still active
+    $remainingTime = max(0, $cooldownTime - ($currentTime - $lastRequestTime));
+    if ($remainingTime === 0) {
+        // Reset the session cooldown if expired
+        unset($_SESSION['last_request_time']);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $remainingTime === 0) {
     $email = $_POST['email'] ?? ''; // Get the email input from the POST request
 
     if (empty($email)) {
         // Email input is empty, show an error
         $_err['empty_error'] = "Please enter your email address.";
     } else {
-        // Call the validEmail function to check if the email exists
+        // Call the validAdminEmail function to check if the email exists
         $admin = validAdminEmail($email);
         if ($admin) {
             // Proceed to send the email
@@ -19,19 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Step 1: Generate a unique token
                 $token = sha1(uniqid() . rand());
 
-                try {
-                    // Step 2a: Delete old tokens for this admin
-                    $stmtDelete = $_db->prepare('DELETE FROM `admin_token` WHERE admin_id = ?');
-                    $stmtDelete->execute([$admin->admin_id]);
+                // Step 2a: Delete old tokens for this admin
+                $stmtDelete = $_db->prepare('DELETE FROM `admin_token` WHERE admin_id = ?');
+                $stmtDelete->execute([$admin->admin_id]);
 
-                    // Step 2b: Insert a new token
-                    $stmtInsert = $_db->prepare('INSERT INTO `admin_token` (id, expire, admin_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)');
-                    $stmtInsert->execute([$token, $admin->admin_id]);
-                } catch (PDOException $e) {
-                    // Log detailed error message for debugging
-                    error_log("Database Error: " . $e->getMessage());
-                    die('Database error: ' . $e->getMessage());
-                }
+                // Step 2b: Insert a new token
+                $stmtInsert = $_db->prepare('INSERT INTO `admin_token` (id, expire, admin_id) VALUES (?, ADDTIME(NOW(), "00:10"), ?)');
+                $stmtInsert->execute([$token, $admin->admin_id]);
 
                 // Step 3: Generate the reset URL
                 $resetUrl = base("/admin/admin_token.php?id=$token");
@@ -51,12 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $mail->send();
 
-                // Step 5: Provide feedback to the user
-                temp('Email', "Email successful send !");
-                temp('showSwal', true); // Set flag to show SweetAlert
+                // Step 5: Set the last request time and provide feedback
+                $_SESSION['last_request_time'] = $currentTime;
+                temp('Email', "Email successfully sent!");
+                temp('showSwal', true); // Set flag to show SweetAlert
             } catch (Exception $e) {
                 // Handle any errors in the email-sending process
-                $_err['email_error'] = "Failed to send reset email. Please try again later." . $e->getMessage();;
+                $_err['email_error'] = "Failed to send reset email. Please try again later.";
             }
         } else {
             // Email does not exist in the database, show an error
@@ -65,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -79,20 +91,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
     <div class="forgot-password-container">
-        <!-- Left Section: Form -->
         <div class="form-container">
-
-            <!-- Back button -->
             <button class="back-button" onclick="history.back()">&larr;</button>
             <h1>Reset your password</h1>
             <p>We will send you an email to reset your password</p>
 
-            <!-- Error Messages -->
             <div class="error-message"><?php err('empty_error'); ?></div>
             <div class="error-message"><?php err('email_error'); ?></div>
-
+            <div class="error-message"><?php err('cooldown_error'); ?></div>
 
             <form action="" method="POST">
                 <div class="form-group">
@@ -100,12 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="email" id="email" name="email" placeholder="Enter your email" required>
                 </div>
                 <div>
-                    <button type="submit" class="email-button">Email me</button>
+                    <button type="submit" id="emailButton" class="email-button">Email me</button>
                 </div>
             </form>
         </div>
 
-        <!-- Right Section: Image -->
         <div class="image-container">
             <img src="/image/forgot-password.png" alt="Reset Password Image">
         </div>
@@ -113,14 +119,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if (temp('showSwal')): ?>
         <script>
-            // Display swal() popup with the registration success message
             swal("Congrats", "<?= temp('Email'); ?>", "success")
                 .then(function() {
-                    window.location.href = 'admin_login.php'; // Redirect after the popup closes
+                    window.location.href = 'admin_login.php';
                 });
         </script>
     <?php endif; ?>
 
+    <?php if ($remainingTime > 0): ?>
+        <script>
+            const cooldownButton = document.getElementById('emailButton');
+            cooldownButton.disabled = true;
+
+            let cooldownTime = <?= $remainingTime ?>;
+
+            function updateCooldown() {
+                if (cooldownTime > 0) {
+                    const minutes = Math.floor(cooldownTime / 60);
+                    const seconds = cooldownTime % 60;
+                    cooldownButton.textContent = `Cooldown: ${minutes}m ${seconds}s`;
+                    cooldownTime--;
+                } else {
+                    cooldownButton.disabled = false;
+                    cooldownButton.textContent = "Email me";
+                }
+            }
+
+            updateCooldown(); // Initial call to set the button state
+            setInterval(updateCooldown, 1000);
+        </script>
+    <?php endif; ?>
 </body>
 
 </html>
