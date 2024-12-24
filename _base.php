@@ -760,10 +760,17 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
                  min='$min' max='$max' step='$step' $attr>";
 }
 
-// Generate <select>
-function html_select($key, $items,  $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
+function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
+
+    $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
+    
+    $defaultOption = $default !== '' 
+        ? "<option value=''>$default</option>" 
+        : "<option value='' disabled selected>- Select One -</option>";
+
     echo "<select id='$key' name='$key' $attr>";
+    
+    echo $defaultOption;
     
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
@@ -964,8 +971,55 @@ $_states = [
     'Putrajaya' => 'Putrajaya',
 ];
 
-//Product
+//wallet
+function getTransactionHistory($member_id){
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT * FROM transaction WHERE member_id = ? 
+    ");
+    $stmt->execute([$member_id]);
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
 
+function getWalletBalanceAfterTransaction($transaction_id, $member_id) {
+    global $_db;
+
+    // Fetch the transaction
+    $stmt = $_db->prepare("SELECT * FROM transaction WHERE member_id = ? AND trans_id = ? AND trans_status = 'Completed'");
+    $stmt->execute([$member_id, $transaction_id]);
+    $transaction = $stmt->fetch(PDO::FETCH_OBJ);  
+
+    // Fetch the current wallet balance
+    $stmt = $_db->prepare("SELECT wallet FROM member WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $user = $stmt->fetch();  
+
+    // Ensure transaction exists and current wallet balance is fetched
+    if ($transaction && $user) {
+        if ($transaction->trans_type === 'Top Up') {
+            $newBalance = $user['wallet'] + $transaction->trans_amount;
+        } else if ($transaction->trans_type === 'Purchase') {
+            $newBalance = $user['wallet'] - $transaction->trans_amount;
+        } else {
+            $newBalance = $user['wallet']; 
+        }
+        return $newBalance;
+    }
+
+    return null;  
+}
+
+function updateWalletBalance($walletBalance, $member_id){
+    global $_db;
+
+    // Fetch the transaction
+    $stmt = $_db->prepare("UPDATE member SET wallet = ? WHERE member_id =? ");
+    $stmt->execute([$walletBalance, $member_id]);
+
+}
+
+
+//Product
 
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 {
@@ -995,7 +1049,7 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 
     $stmt = $db->prepare($query);
     $stmt->execute($params);
-    return $stmt->fetchAll(PDO::FETCH_OBJ);
+    return $stmt->fetchAll();
 }
 
 

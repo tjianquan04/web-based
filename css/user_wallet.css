@@ -1,0 +1,120 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* General Layout */
+.container {
+    display: flex;
+    font-family: Arial, sans-serif;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 20%;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #555;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover,
+.sidebar .active-link {
+    background-color: #ff5e3a;
+    color: #fff;
+}
+
+/* Content Area */
+.content {
+    width: 75%;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 20px; /* Add some space between the wallet and transaction table */
+}
+
+/* Wallet Amount */
+.wallet-amount {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-align: center; /* Center the wallet balance text */
+    background-color: #40be40;
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+}
+
+/* Transaction History */
+.transaction-history {
+    font-size: 16px;
+    color: #333;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.transaction-table th, .transaction-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.transaction-table th {
+    background-color: #f4f4f4;
+    color: #555;
+}
+
+.transaction-table td {
+    background-color: #fff;
+    color: #333;
+}
+
+.transaction-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack sidebar and content for small screens */
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .content {
+        width: 100%;
+    }
+}
