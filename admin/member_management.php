@@ -1,6 +1,6 @@
 <?php
-include '../_base.php';
-include '../_head.php';
+include '_admin_head.php';
+
 // Get the search input
 $searchTerm = req('search') ?? '';
 
@@ -38,7 +38,7 @@ $arr = $p->result;
 
 ?>
 <script src="../js/main.js"></script>
-<link rel="stylesheet" href="../css/member.css">
+<link rel="stylesheet" href="../css/admin_management.css">
 
 <div class="container">
     <form method="get">
@@ -47,7 +47,7 @@ $arr = $p->result;
     </form>
     <div class="top-right">
     </div>
-</div>
+
 
 <table class="table">
     <tr>
@@ -132,7 +132,7 @@ $arr = $p->result;
     $no = ($page - 1) * $pageSize + 1;
 
     foreach ($arr as $s):
-        $rowClass = $s->status ? '' : 'inactive';
+        $rowClass = ($s->status === 'Active') ? '' : 'inactive';
     ?>
         <tr class="<?= $rowClass ?>">
             <td><?= $no++ ?></td>
@@ -140,20 +140,24 @@ $arr = $p->result;
             <td><?= $s->name ?></td>
             <td><?= $s->email ?></td>
             <td><?= $s->contact ?></td>
-            <td><?= $s->status ? 'Active' : 'Inactive' ?></td>
+            <td><?= $s->status ?></td>
             <td>
-                <button data-get="../memberCRUD/view_member_details.php?id=<?= $s->member_id ?>"><i class='fas fa-eye'></i>View</button>
-                <button data-get="../memberCRUD/edit_member_details.php?id=<?= $s->member_id ?>"><i class='fas fa-tools'></i>Edit</button>
-                <button data-post="../memberCRUD/update_member_status.php?id=<?= $s->member_id ?>"
-                    class="block-btn <?= $s->status ? 'block' : 'unblock' ?>">
-                    <?php if ($s->status == true): ?>
-                        <i class="fas fa-user-slash"></i>      
-                    <?php elseif($s->status == false): ?>
-                    <i class="fas fa-user"></i>
-                    <?php endif; ?>
-                    <?= $s->status ? 'Block' : 'Unblock' ?>
-                </button>
-                <button data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
+            
+            <button class= "btn btn-view" data-get="../memberCRUD/view_member_details.php?id=<?= $s->member_id ?>">
+                <i class='fas fa-eye'></i>View
+            </button>
+            <button class= "btn btn-edit" data-get="../memberCRUD/edit_member_details.php?id=<?= $s->member_id ?>">
+                <i class='fas fa-tools'></i>Edit
+            </button>
+            <button data-post="../memberCRUD/update_member_status.php?id=<?= $s->member_id ?>"
+                class="btn  <?= ($s->status === 'Active') ? 'block' : 'unblock' ?>">
+                <?php if ($s->status === 'Active'): ?>
+                    <i class="fas fa-user-slash"></i> Block
+                <?php else: ?>
+                    <i class="fas fa-user"></i> Unblock
+                <?php endif; ?>
+            </button>
+                <button class= "btn btn-delete" data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
             </td>
         </tr>
     <?php endforeach ?>
@@ -162,4 +166,5 @@ $arr = $p->result;
 <?= $p->html("search=$searchTerm") ?>
 <br>
 
+</div>
 </html>

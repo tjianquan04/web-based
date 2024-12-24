@@ -761,11 +761,9 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 }
 
 // Generate <select>
-function html_select($key, $items, $default = '- Select One -', $attr = '') {
+function html_select($key, $items,  $attr = '') {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
-    
-    echo $defaultOption;
     
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
@@ -946,7 +944,25 @@ function root($path = '')
     return "$_SERVER[DOCUMENT_ROOT]/$path";
 }
 
-
+// Global Variable
+$_states = [
+    'Johor' => 'Johor',
+    'Kedah' => 'Kedah',
+    'Kelantan' => 'Kelantan',
+    'Melaka' => 'Melaka',
+    'Negeri Sembilan' => 'Negeri Sembilan',
+    'Pahang' => 'Pahang',
+    'Penang' => 'Penang',
+    'Perak' => 'Perak',
+    'Perlis' => 'Perlis',
+    'Selangor' => 'Selangor',
+    'Terengganu' => 'Terengganu',
+    'Sabah' => 'Sabah',
+    'Sarawak' => 'Sarawak',
+    'Kuala Lumpur' => 'Kuala Lumpur',
+    'Labuan' => 'Labuan',
+    'Putrajaya' => 'Putrajaya',
+];
 
 //Product
 

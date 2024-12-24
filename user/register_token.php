@@ -12,20 +12,20 @@ if (is_post()) {
     $stmt->execute([$tokenId]);
     $getData = $stmt->fetch();
 
-    $userId = $getData['member_id'];
-    $validOTP = $getData['otp_number'];
+    $userId = $getData->member_id;
+    $validOTP = $getData->otp_number;
 
     if(empty($submit_otp)){
-        $_err['otp'] = 'OTP code is required.';
-    }else if ($submit_otp != $validOTP){
-        $_err['otp'] = 'Invalid OTP code. Please try again !';
+        $_err['otp_number'] = 'OTP code is required.';
+    }else if ($submit_otp !== $validOTP){
+        $_err['otp_number'] = 'Invalid OTP code. Please try again !';
     }
 
     if (empty($_err)) {
 
         // Update User Account Status
         $stm = $_db->prepare('UPDATE member SET status = ? WHERE member_id = ?');
-        $stm->execute([1, $userId]);
+        $stm->execute(['Active', $userId]);
 
         // Delete Token
         $stm = $_db->prepare('DELETE FROM register_token WHERE token_id = ?');
@@ -46,8 +46,8 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     $user = $stmt->fetch();
 
     if ($user) {
-        $userId = $user['member_id'];
-        $email = $user['email'];
+        $userId = $user->member_id;
+        $email = $user->email;
         $tokenId = SHA1(uniqid() . rand());
         $otp_num = rand(100000, 999999);
 
@@ -64,10 +64,12 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
         $m->isHTML(true);
         $m->Subject = 'Resend OTP Code';
         $m->Body = "
-            <p>Dear User,</p>
-           <p>
-               Your OTP number is $otp_num. Please activate your account using this OTP number.
-            </p>
+           <p>Dear $user->name,</p>
+            <h1 style='color: green'>Activate Boots Account</h1>
+            <p>
+               Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
+               </p>         
+            <p>From, Boots Admin</p>
             <p>From, Admin</p>
         ";
         $m->send();
@@ -88,7 +90,7 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
             <form method="post" class="form">
                 <input type="hidden" name="token_id" value="<?php echo htmlspecialchars($_GET['token_id'] ?? ''); ?>" />
                 <label for="otp">Enter OTP:</label>
-                <input type="number" name="otp" placeholder="Enter your OTP" required />
+                <input type="text" name="otp" placeholder="Enter your OTP" required />
                 <?php err('otp_number'); ?>
                 <button type="submit">Submit</button>
                 <button type="button" id="resendOtp">Resend OTP</button>

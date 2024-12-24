@@ -37,11 +37,11 @@ if (is_post()) {
 
         // Insert the user into the database
         $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, register_date, status, profile_photo) VALUES (?, ?, ?, ? ,?, ?, ?, ?)");
-        $stmt->execute([$user_id, $name, $email, "-", SHA1($password), $currentDateTime, 0, 'unknown.jpg']);
+        $stmt->execute([$user_id, $name, $email, '-', SHA1($password), $currentDateTime, 'Inactive', 'unknown.jpg']);
 
         // Generate and insert token
         $token_id = SHA1(uniqid() . rand());
-        $otp_num = rand(100000, 999999);
+        $otp_num = ''.rand(100000, 999999);
         $stm = $_db->prepare('
             INSERT INTO register_token (token_id,otp_number, expire, member_id)
             VALUES (?, ?, ADDTIME(NOW(),"00:05"), ?);
@@ -58,14 +58,12 @@ if (is_post()) {
             <p>Dear $name,</p>
             <h1 style='color: green'>Activate Boots Account</h1>
             <p>
-               Your OTP number is $otp_num . Please activate account using the OTP number.
-            </p>
+               Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
+               </p>         
             <p>From, Boots Admin</p>
         ";
         $m->send();
 
-        // Set session message
-        $_SESSION['info_message'] = 'Please check your email to activate your account.';
         redirect('register_token.php?token_id=' . $token_id . '&user_id=' . $user_id);
     }
 }
@@ -78,16 +76,6 @@ include '../_head.php';
 <link rel="stylesheet" href="../css/register.css">
 
 <body>
-    <?php
-    if (!empty($_SESSION['info_message'])) {
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                alert('" . $_SESSION['info_message'] . "');
-            });
-        </script>";
-        unset($_SESSION['info_message']);
-    }
-    ?>
     <main>
         <div class="form-section">
             <div class="form-header">
