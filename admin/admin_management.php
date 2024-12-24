@@ -84,7 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="search-bar-container">
                 <form action="admin_management.php" method="GET">
                     <input type="text" name="search" placeholder="Search by ID, Name, Email, Role..." value="<?= htmlspecialchars($search) ?>" />
-                    <!-- Retain sort and dir parameters during search -->
+
+                    <!-- Hidden fields for sort, dir, and page -->
                     <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
                     <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
                     <input type="hidden" name="page" value="<?= htmlspecialchars($page) ?>">

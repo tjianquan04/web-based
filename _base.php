@@ -381,6 +381,40 @@ function getAdminById($admin_id)
     return $admin ?: null;
 }
 
+function getOrderById($order_id)
+{
+    global $_db; // Assuming PDO for database interaction
+
+    // Prepare SQL query to fetch order details by order_id
+    $stmt = $_db->prepare('SELECT * FROM order_record WHERE order_id = ? LIMIT 1');
+
+    // Execute the query with the given order_id
+    $stmt->execute([$order_id]);
+
+    // Fetch the result as an object
+    $order = $stmt->fetch(PDO::FETCH_OBJ);
+
+    // Return the order object or null if not found
+    return $order;
+}
+
+function getOrderItemsByOrderId($order_id)
+{
+    global $_db; // Assuming $_db is the PDO instance for database interaction
+
+    // Prepare the SQL query to fetch order items by order_id
+    $stmt = $_db->prepare('SELECT * FROM orderitem WHERE order_id = ?');
+
+    // Execute the query with the given order_id
+    $stmt->execute([$order_id]);
+
+    // Fetch the results as an array of objects
+    $order_items = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+    // Return the array of order items or an empty array if no items found
+    return $order_items;
+}
+
 
 function generateDynamicPagination($pager, $sort, $dir, $search)
 {
