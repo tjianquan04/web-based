@@ -8,7 +8,12 @@ if (is_Post()) {
     $member = getMemberbyId($member_id);
     $currentStatus = $member->status;
 
-    $newStatus = $currentStatus ? 0 : 1;
+    if($currentStatus == 'Active'){
+        $newStatus = 'Inactive';
+    }else if($currentStatus == 'Inactive'){
+        $newStatus = "Active";
+    }
+     
 
     $stmt = $_db->prepare("UPDATE member SET status = ? WHERE member_id = ?");
     $stmt->execute([$newStatus, $member_id]);

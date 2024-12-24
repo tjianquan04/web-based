@@ -173,11 +173,12 @@ include '../_head.php';
                 <?= err('password') ?>
                 <br>
 
-                <label for="status"><strong>Status:</strong></label>
+                <label for="status"><strong><i class="fas fa-check-circle"></i>Status:</strong></label>
                 <select id="status" name="status" class="input-field">
-                    <option value="1" <?= $s->status == 1 ? 'selected' : '' ?>>Active</option>
-                    <option value="0" <?= $s->status == 0 ? 'selected' : '' ?>>Inactive</option>
+                <option value="Active" <?= $s->status == 'Active' ? 'selected' : '' ?>>Active</option>
+                <option value="Inactive" <?= $s->status == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
                 </select>
+            
                 <br>
 
                 <button type="submit" class="save-btn">Save Changes</button>
@@ -204,7 +205,7 @@ include '../_head.php';
                         <br>
 
                         <label for="state_<?= $address->address_id ?>"><strong>State:</strong></label>
-                        <?php html_select('state_'.$address->address_id, $_states, '- Select a State -', 'class="input-field"', $address->state) ?>
+                        <?php html_select('state_'.$address->address_id, $_states, 'class="input-field"', $address->state) ?>
                         <?= err('state_'.$address->address_id) ?>
                         <br>
 
