@@ -27,6 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     try {
         $_db->beginTransaction();
 
+          // Delete associated photo if exists
+          $photo_path = '../image/' . $category->category_photo;
+          if (file_exists($photo_path)) {
+              unlink($photo_path);
+          }
+
+          foreach ($products as $product) {
+            // Delete photos from the product_photo table
+            $delete_photos_stm = $_db->prepare('DELETE FROM product_photo WHERE product_id = ?');
+            $delete_photos_stm->execute([$product->product_id]);
+        }
         // Delete associated products
         $delete_products_stm = $_db->prepare('DELETE FROM product WHERE category_id = ?');
         $delete_products_stm->execute([$category_id]);
@@ -35,11 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
         $delete_category_stm = $_db->prepare('DELETE FROM category WHERE category_id = ?');
         $delete_category_stm->execute([$category_id]);
 
-        // Delete associated photo if exists
-        $photo_path = '../image/' . $category->category_photo;
-        if (file_exists($photo_path)) {
-            unlink($photo_path);
-        }
+      
 
         $_db->commit();
 

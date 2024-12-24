@@ -799,6 +799,24 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     echo '</select>';
 }
 
+function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment = null) {
+    $m = get_mail();
+    $m->addAddress($email);
+    $m->Subject = $subject;
+    $m->Body = $body;
+    $m->isHTML($html);
+    if ($attachment) {
+        $m->addAttachment($attachment);
+    }
+
+    if (!$m->send()) {
+        temp('error', 'Failed to send email: ' . $m->ErrorInfo);
+    } else {
+        temp('info', 'Email sent successfully.');
+    }
+}
+
+
 
 
 function generate_product_id($category_id, $db) {

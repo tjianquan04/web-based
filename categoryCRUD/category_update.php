@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="../css/categoryForm.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <?php
 require '../_base.php';
@@ -96,6 +97,8 @@ if (is_post()) {
         // Optionally, if stockAlert is true, handle additional logic like notifications
         if ($stock_alert) {
             // Example: Send notifications to admins about low stock (if required)
+         //   sendStockAlertEmail($adminEmail, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+
         }
 
         // Success or failure message

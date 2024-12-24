@@ -286,17 +286,6 @@ body {
   font-size: 20px;
 }
 
-.discount {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  border-radius: 10%;
-  height: 25px;
-  background-color: var(--pale-orange);
-  font-weight: 700;
-  color: var(--orange);
-}
 
 .prev-price {
   margin: 10px 0 35px 0;
@@ -473,6 +462,41 @@ body {
   background: none;
   cursor: pointer;
 }
+
+.sidenav {
+  width: 130px;
+  position: absolute;
+  margin-top: 100px;
+  z-index: 1;
+  top: 20px;
+  left: 10px;
+  background: transparent;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #000;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #064579;
+}
+
+.menu-content {
+  margin-left: 140px; /* Same width as the sidebar + left position in px */
+  padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
 
 /* Mobile */
 
