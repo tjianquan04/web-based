@@ -13,7 +13,7 @@ if (is_post()) {
         $_err['email'] = 'Email is required.';
     } else if (!preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
         $_err['email'] = 'Invalid email format.';
-    } else if (is_exists($email,'member', 'email')){
+    } else if (is_exists($email, 'member', 'email')) {
         $_err['email'] = 'Email has already exist.';
     }
 
@@ -21,60 +21,93 @@ if (is_post()) {
     if (empty($password)) {
         $_err['password'] = 'Password is required.';
     } else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
-        $_err['password'] = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, one special symbol, and be at least 8 characters.';
+        $_err['password'] = 'Invalid password format. (eg. Aa*12345)';
     }
 
     // Validate Confirm Password
     if (empty($confirmPassword)) {
         $_err['confirm_password'] = 'Confirm password is required.';
-    } else if ($password !== $confirmPassword) {
+    } else if ($password != $confirmPassword) {
         $_err['confirm_password'] = 'Passwords do not match.';
     }
 
-
     if (empty($_err)) {
-        echo "Form submitted successfully!";
-
+        $currentDateTime = date('Y-m-d H:i:s');
         $user_id = getNextUserId();
 
-            // Insert the user into the database
-            $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, wallet,  status, profile_photo) VALUES (?, ?, ?, ? ,?, ?, ?, ?)");
-            $stmt->execute([$user_id, $name, $email, "-", SHA1($password),0, 0, 'unknown.jpg']);
+        // Insert the user into the database
+        $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, register_date, status, profile_photo) VALUES (?, ?, ?, ? ,?, ?, ?, ?)");
+        $stmt->execute([$user_id, $name, $email, "-", SHA1($password), $currentDateTime, 0, 'unknown.jpg']);
 
-            redirect('login.php');
-            exit;
+        // Generate and insert token
+        $token_id = SHA1(uniqid() . rand());
+        $otp_num = rand(100000, 999999);
+        $stm = $_db->prepare('
+            INSERT INTO register_token (token_id,otp_number, expire, member_id)
+            VALUES (?, ?, ADDTIME(NOW(),"00:05"), ?);
+        ');
+        $stm->execute([$token_id, $otp_num, $user_id]);
+
+        // Generate token URL and send email
+        $m = get_mail();
+        $m->addAddress($email, $name);
+        $m->isHTML(true);
+        $m->Subject = 'Verify Boots Account';
+
+        $m->Body = "
+            <p>Dear $name,</p>
+            <h1 style='color: green'>Activate Boots Account</h1>
+            <p>
+               Your OTP number is $otp_num . Please activate account using the OTP number.
+            </p>
+            <p>From, Boots Admin</p>
+        ";
+        $m->send();
+
+        // Set session message
+        $_SESSION['info_message'] = 'Please check your email to activate your account.';
+        redirect('register_token.php?token_id=' . $token_id . '&user_id=' . $user_id);
     }
-
 }
 
 // ----------------------------------------------------------------------------
 $_title = 'Sign Up | Boost.do';
 include '../_head.php';
-
 ?>
+
 <link rel="stylesheet" href="../css/register.css">
 
 <body>
+    <?php
+    if (!empty($_SESSION['info_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                alert('" . $_SESSION['info_message'] . "');
+            });
+        </script>";
+        unset($_SESSION['info_message']);
+    }
+    ?>
     <main>
         <div class="form-section">
             <div class="form-header">
                 <h1>Create an Account</h1>
             </div>
             <form method="post" class="form">
-                <label for="name">Email Address</label>
+                <label for="name">Name :</label>
                 <?php html_text('name', 'e.g. henry', '', 'class="form-control"'); ?>
                 <?php err('name'); ?>
 
-                <label for="email">Email Address</label>
+                <label for="email">Email Address :</label>
                 <?php html_email('email', 'e.g. henry@gmail.com', '', 'class="form-control"'); ?>
                 <?php err('email'); ?>
 
-                <label for="password">Password</label>
-                <?php html_password('password', 'e.g. henry123', '', 'class="form-control" maxlength="60"'); ?>
+                <label for="password">Password :</label>
+                <?php html_password('password', 'e.g. Henry@123', '', 'class="form-control" '); ?>
                 <?php err('password'); ?>
 
-                <label for="confirm_password">Confirm Password</label>
-                <?php html_password('confirm_password', 'Re-enter your password', '', 'class="form-control" maxlength="60"'); ?>
+                <label for="confirm_password">Confirm Password : </label>
+                <?php html_password('confirm_password', 'Re-enter your password', '', 'class="form-control" '); ?>
                 <?php err('confirm_password'); ?>
 
                 <button type="submit">Create Account</button>
@@ -87,5 +120,4 @@ include '../_head.php';
     </main>
 </body>
 
-<?php
-include '../_foot.php';
+<?php include '../_foot.php'; ?>
