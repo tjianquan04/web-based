@@ -768,15 +768,23 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 }
 
 // Generate <select>
-    $value = encode($GLOBALS[$key] ?? '');
-    echo "<select id='$key' name='$key' $attr>";
+function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
 
+    $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
+    
+    $defaultOption = $default !== '' 
+        ? "<option value=''>$default</option>" 
+        : "<option value='' disabled selected>- Select One -</option>";
+
+    echo "<select id='$key' name='$key' $attr>";
+    
+    echo $defaultOption;
     
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'selected' : '';
         echo "<option value='$id' $state>$text</option>";
     }
-
+    
     // Close the select element
     echo '</select>';
 }
