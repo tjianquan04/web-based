@@ -77,22 +77,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body>
     <div class="container">
-    <div class="admin-management-header">
-        <h1>Admin Management</h1>
+        <div class="admin-management-header">
+            <h1>Admin Management</h1>
 
-        <!-- Search Bar -->
-        <div class="search-bar-container">
+            <!-- Search Bar -->
+            <div class="search-bar-container">
                 <form action="admin_management.php" method="GET">
                     <input type="text" name="search" placeholder="Search by ID, Name, Email, Role..." value="<?= htmlspecialchars($search) ?>" />
                     <!-- Retain sort and dir parameters during search -->
                     <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
                     <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
+                    <input type="hidden" name="page" value="<?= htmlspecialchars($page) ?>">
                 </form>
             </div>
 
-        <!-- Total Record -->    
-        <span class="total-record">Total Records of Admin: <?= $total_admins ?></span>
-    </div>
+            <!-- Total Record -->
+            <span class="total-record">Total Records of Admin: <?= $total_admins ?></span>
+        </div>
 
         <!-- Admin Table -->
         <table border="1">
@@ -100,21 +101,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <tr>
                     <th>#</th>
                     <th>
-                        <a href="?sort=admin_id&dir=<?= ($sort == 'admin_id' && $dir == 'asc') ? 'desc' : 'asc' ?>">
+                        <a href="?sort=admin_id&dir=<?= ($sort == 'admin_id' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
                             Admin ID
                             <?php if ($sort == 'admin_id'): ?>
                                 <?php if ($dir == 'asc'): ?>
-                                    <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
+                                    <i class="fas fa-arrow-up arrow-right"></i>
                                 <?php else: ?>
-                                    <i class="fas fa-arrow-down arrow-right"></i> <!-- Down arrow for descending -->
+                                    <i class="fas fa-arrow-down arrow-right"></i>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <i class="fas fa-sort arrow-right"></i> <!-- Default sort icon -->
+                                <i class="fas fa-sort arrow-right"></i>
                             <?php endif; ?>
                         </a>
                     </th>
+
                     <th>
-                        <a href="?sort=admin_name&dir=<?= ($sort == 'admin_name' && $dir == 'asc') ? 'desc' : 'asc' ?>">
+                        <a href="?sort=admin_name&dir=<?= ($sort == 'admin_name' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
                             Admin Name
                             <?php if ($sort == 'admin_name'): ?>
                                 <?php if ($dir == 'asc'): ?>
@@ -128,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                     </th>
                     <th>
-                        <a href="?sort=role&dir=<?= ($sort == 'role' && $dir == 'asc') ? 'desc' : 'asc' ?>">
+                        <a href="?sort=role&dir=<?= ($sort == 'role' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
                             Role
                             <?php if ($sort == 'role'): ?>
                                 <?php if ($dir == 'asc'): ?>
@@ -142,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                     </th>
                     <th>
-                        <a href="?sort=status&dir=<?= ($sort == 'status' && $dir == 'asc') ? 'desc' : 'asc' ?>">
+                        <a href="?sort=status&dir=<?= ($sort == 'status' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
                             Status
                             <?php if ($sort == 'status'): ?>
                                 <?php if ($dir == 'asc'): ?>
@@ -188,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="pagination-container">
             <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
             <div class="pagination">
-                <?= generateDynamicPagination($p, $sort, $dir); ?>
+                <?= generateDynamicPagination($p, $sort, $dir, $search); ?>
             </div>
         </div>
     </div>
