@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/menu.css">
+
 <?php
 require '_base.php';
 
@@ -11,59 +13,69 @@ $dir = req('dir', 'asc');           // Sorting direction
 // Fetch products
 $product = fetchProducts($_db, $category, $category_id, $name, $sort, $dir);
 
+$categoriesStm = $_db->prepare("SELECT * FROM category");
+$categoriesStm->execute();
+$categories = $categoriesStm->fetchAll();
 // ----------------------------------------------------------------------------
 $_title = $category ? "Products in $category" : "Products in Subcategory $category_id";
 include '_head.php';
 ?>
 
-<h1>Products</h1>
+
 
 <?php if (count($product) > 0): ?>
-   
-            <button><a href="?sort=description&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Product Name</a>
-            </button>
-            <button><a href="?sort=product_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Product ID</a>
-            </button>
-            <button>
-            <a href="?sort=unit_price&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&category_name=<?= urlencode($category) ?>&category_id=<?= urlencode($category_id) ?>&name=<?= urlencode($name) ?>">Sort By Price</a>
-            </button>
-  
 
 
-    <div class="product-items">
-    <?php foreach ($product as $p): ?>
-        <!-- single product -->
-        <div class="product">
-            <div class="product-content">
-                <div class="product-img">
-                <a href="product_card.php?product_id=<?= $p->product_id ?>"><img src="/product_gallery/<?= $p->product_photo_id ?>" alt="Product Photo" class="category">
-                    
-                </a>
+    <div class="sidenav">
+        <a href="menu.php">All Products</a>
+        <?php foreach ($categories as $c): ?>
+            <a href="menu.php?category_id=<?= $c->category_id ?>">
+                <?= $c->category_name ?>
+                <?php if (!empty($c->sub_category)): ?>
+                    <br>-<?= $c->sub_category ?>
+                <?php endif ?>
+            </a>
+        <?php endforeach; ?>
+
+
+        
+
+    </div>
+    <div class="menu-content">
+        <div class="product-items">
+            <?php foreach ($product as $p): ?>
+                <!-- single product -->
+                <div class="product">
+                    <div class="product-content">
+                        <div class="product-img">
+                            <a href="product_card.php?product_id=<?= $p->product_id ?>"><img src="/product_gallery/<?= $p->product_photo_id ?>" alt="Product Photo" class="category">
+
+                            </a>
+                        </div>
+
+                    </div>
+                    <div class="product-info">
+                        <div class="product-info-top">
+                            <h2 class="sm-title"><a href="product_card.php?product_id=<?= $p->product_id ?>"><?= $p->description ?></a></h2>
+
+                        </div>
+                        <?= $p->unit_price ?>
+
+                    </div>
+
                 </div>
 
-            </div>
-            <div class="product-info">
-                <div class="product-info-top">
-                    <h2 class="sm-title"><a href="product_card.php?product_id=<?= $p->product_id ?>"><?= $p->description ?></a></h2>
-
-                </div>
-                <?= $p->unit_price ?>
-
-            </div>
-            <div class="off-info">
-                <h2 class="sm-title">25% off</h2>
-            </div>
+            <?php endforeach ?>
         </div>
-
-    <?php endforeach ?>
-</div>
-   
+    </div>
 
 
 <?php else: ?>
     <p>No products found matching your search criteria.</p>
 <?php endif ?>
 
-<?php
-include '_foot.php';
-?>
+
+
+<script>
+
+</script>

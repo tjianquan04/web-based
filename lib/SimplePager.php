@@ -17,12 +17,21 @@ class SimplePager {
 
         // Set [item count]
         $q = preg_replace('/SELECT.+FROM/', 'SELECT COUNT(*) FROM', $query, 1);
+        
         $stm = $_db->prepare($q);
         $stm->execute($params);
         $this->item_count = $stm->fetchColumn();
 
+        // // Set [page count]
+        // $this->page_count = ceil($this->item_count / $this->limit);
+               // Ensure item count is numeric
+        if (!is_numeric($this->item_count)) {
+            $this->item_count = 0; // Default to 0 if not numeric
+        }
+
         // Set [page count]
-        $this->page_count = ceil($this->item_count / $this->limit);
+        $this->page_count = $this->item_count > 0 ? ceil($this->item_count / $this->limit) : 1;
+
 
         // Calculate offset
         $offset = ($this->page - 1) * $this->limit;

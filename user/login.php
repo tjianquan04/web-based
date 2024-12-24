@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_err['empty_error'] = 'Please enter both email and password.';
     } else {
         // Fetch user details by email
-        $stmt = $_db->prepare("SELECT * FROM user WHERE email = ?");
+        $stmt = $_db->prepare("SELECT * FROM `member` WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_err['login_error'] = 'Your account has been locked due to multiple failed login attempts.';
         } elseif ($user->password === sha1($password)) {
             // Successful login, reset login attempts
-            $stmt = $_db->prepare("UPDATE user SET login_attempts = 0 WHERE email = ?");
+            $stmt = $_db->prepare("UPDATE `member` SET login_attempts = 0 WHERE email = ?");
             $stmt->execute([$email]);
 
             // Handle "Remember Me" functionality
@@ -55,12 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_attempts = $user->login_attempts + 1;
 
             // Update login attempts in the database
-            $stmt = $_db->prepare("UPDATE user SET login_attempts = ? WHERE email = ?");
+            $stmt = $_db->prepare("UPDATE `member` SET login_attempts = ? WHERE email = ?");
             $stmt->execute([$new_attempts, $email]);
 
             if ($new_attempts >= 3) {
                 // Lock account if login attempts exceed threshold
-                $stmt = $_db->prepare("UPDATE user SET status = 'Inactive' WHERE email = ?");
+                $stmt = $_db->prepare("UPDATE `member` SET status = 'Inactive' WHERE email = ?");
                 $stmt->execute([$email]);
                 $_err['login_error'] = 'Your account has been locked due to multiple failed login attempts.';
             } else {
