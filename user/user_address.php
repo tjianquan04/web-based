@@ -1,10 +1,10 @@
 <?php
 require '../_base.php';
 
-$memberId = req('id');
+$member = $_SESSION['user'];
+authMember($member);
 
-$s = getMemberbyId($memberId);
-$addressArr = getAllAddressbyMemberId($memberId);
+$addressArr = getAllAddressbyMemberId($member->member_id);
 
 if (is_post()) {
     if (isset($_POST['edit_address'])) {
@@ -31,7 +31,7 @@ if (is_post()) {
         if (!$is_default && !$_err) {
             // Check if another default exists
             $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1 AND address_id != ?');
-            $stmt->execute([$memberId, $address_id]);
+            $stmt->execute([$member->member_id, $address_id]);
             $existingDefault = $stmt->fetchColumn();
 
             if ($is_default && $existingDefault) {
@@ -43,10 +43,11 @@ if (is_post()) {
             $stmt = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
             $stmt->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
             temp('info', 'Address updated successfully.');
-            redirect('/user/user_address.php?id=' . $memberId);
+
+            $addressArr = getAllAddressbyMemberId($member->member_id);
+
         }else{
             temp('info', 'Address updated failed.');
-            redirect('/user/user_address.php?id=' . $memberId);
         }
     }
 
@@ -56,7 +57,7 @@ if (is_post()) {
         $stmt = $_db->prepare('DELETE FROM address WHERE address_id = ?');
         $stmt->execute([$address_id]);
         temp('info', 'Address deleted successfully.');
-        redirect('/user/user_address.php?id=' . $memberId);
+        $addressArr = getAllAddressbyMemberId($member->member_id);
     }
 
     if (isset($_POST['add_address'])) {
@@ -81,7 +82,7 @@ if (is_post()) {
         if (!$is_default && !$_err) {
             // Check if another default exists
             $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1');
-            $stmt->execute([$memberId]);
+            $stmt->execute([$member->member_id]);
             $existingDefault = $stmt->fetchColumn();
 
             if ($is_default && $existingDefault) {
@@ -91,9 +92,10 @@ if (is_post()) {
 
         if (!$_err) {
             $stmt = $_db->prepare('INSERT INTO address (address_id, address_line, state, postal_code, is_default, member_id) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $memberId]);
+            $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $member->member_id]);
             temp('info', 'Address added successfully.');
-            redirect('/user/user_address.php?id=' . $memberId);
+
+            $addressArr = getAllAddressbyMemberId($member->member_id);
         }
     }
 }
@@ -107,17 +109,17 @@ include '../_head.php';
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $s->member_id ?>">Profile</a>
-            <a href="user_address.php?id=<?= $s->member_id ?>" class="active-link">Addresses</a>
-            <a href="user_change_password.php?id=<?= $s->member_id ?>">Change Password</a>
-            <a href="user_wallet.php?id=<?= $s->member_id?>">My Wallet</a>
+            <a href="user_profile.php?id=<?= $member->member_id ?>">Profile</a>
+            <a href="user_address.php?id=<?= $member->member_id ?>">Addresses</a>
+            <a href="user_change_password.php?id=<?= $member->member_id ?>">Change Password</a>
+            <a href="user_wallet.php?id=<?= $member->member_id?>">My Wallet</a>
         </div>
 
         <!-- Address Details Section -->
         <div class="address-details">
             <div class="address-header">
                 <h2>Member Addresses</h2>
-                <button data-get="add_address.php?id=<?= $s->member_id ?>" class="add-btn">Add New Address</button>
+                <button data-get="add_address.php?id=<?= $member->member_id ?>" class="add-btn">Add New Address</button>
             </div>
 
             <div class="address-content">
@@ -130,8 +132,8 @@ include '../_head.php';
                         <div class="address-card <?= $address->is_default ? 'default-address' : '' ?>">
                             <div class="card-header">
                                 <div class="header-info">
-                                    <h4><?= $s->name ?></h4>
-                                    <p><?= $s->contact ?></p>
+                                    <h4><?= $member->name ?></h4>
+                                    <p><?= $member->contact ?></p>
                                 </div>
                                 <div class="header-actions">
                                     <button class="edit-btn" data-address-id="<?= $address->address_id ?>" data-address-line="<?= $address->address_line ?>" data-state="<?= $address->state ?>" data-postal-code="<?= $address->postal_code ?>" data-is-default="<?= $address->is_default ?>">Edit</button>

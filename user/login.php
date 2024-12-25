@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set session data for successful login
             temp('info', 'Successful login');
-            login($user, '../index.php'); // Redirect to dashboard or protected page
+            userLogin($user, '../index.php'); // Redirect to dashboard or protected page
         } else {
             // Increment login attempts
             $new_attempts = $user->login_attempts + 1;

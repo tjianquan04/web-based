@@ -1,10 +1,10 @@
 <?php
 require '../_base.php';
 
-$memberId = req('id');
-$s = getMemberbyId($memberId);
+$member = $_SESSION['user'];
+authMember($member);
 
-$transactions = getTransactionHistory($memberId);
+$transactions = getTransactionHistory($member->member_id);
 
 include '../_head.php';
 ?>
@@ -16,17 +16,17 @@ include '../_head.php';
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $s->member_id?>" style="color: #ff5e3a;">Profile</a>
-            <a href="user_address.php?id=<?= $s->member_id?>">Addresses</a>
-            <a href="user_change_password.php?id=<?= $s->member_id?>">Change Password</a>
-            <a href="user_wallet.php?id=<?= $s->member_id?>">My Wallet</a>
+            <a href="user_profile.php" >Profile</a>
+            <a href="user_address.php">Addresses</a>
+            <a href="user_change_password.php">Change Password</a>
+            <a href="user_wallet.php">My Wallet</a>
         </div>
 
         <!-- Profile Content -->
         <div class="content">
         <!-- Wallet Amount -->
         <div class="wallet-amount">
-            <h3>Wallet Balance: RM <?= $s-> wallet ?></h3>
+            <h3>Wallet Balance: RM <?= $member-> wallet ?></h3>
         </div>
 
         <!-- Transaction History -->

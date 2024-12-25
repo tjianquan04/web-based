@@ -650,6 +650,12 @@ function login($user, $url = '/')
     redirect($url);
 }
 
+function userLogin($user, $url = '/')
+{
+    $_SESSION['user'] = $user;
+    redirect($url);
+}
+
 // Logout user
 function logout($url = '/')
 {
@@ -679,6 +685,19 @@ function auth(...$roles)
     }
 
     redirect('admin_login.php');
+}
+
+function authMember($member){
+
+    if ($member != NULL) {
+            if ($member->status === 'Active') {
+                return;  
+            } else {
+                $_err = 'Your account is inactive. Please contact support.';
+                redirect('login.php');
+            }
+    }
+    redirect('login.php');
 }
 
 // Generate table headers <th>
