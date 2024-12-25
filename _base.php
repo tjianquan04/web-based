@@ -50,7 +50,7 @@ function req($key, $value = null)
 function redirect($url = null)
 {
     $url ??= $_SERVER['REQUEST_URI'];
-    header("Location: $url");
+
     exit();
 }
 
@@ -731,7 +731,7 @@ function encode($value)
 function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
     $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
-    echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    echo "<input type='$type' class='form-select' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
@@ -756,14 +756,20 @@ function html_email($key, $placeholder = '', $data = '', $attr = '') {
 function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='number' id='$key' name='$key' value='$value'
+    echo "<input type='number' class='form-select' id='$key' name='$key' value='$value'
                  min='$min' max='$max' step='$step' $attr>";
 }
 
 // Generate <select>
-function html_select($key, $items, $default = '- Select One -', $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
-    echo "<select id='$key' name='$key' $attr>";
+function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
+
+    $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
+    
+    $defaultOption = $default !== '' 
+        ? "<option value=''>$default</option>" 
+        : "<option value='' disabled selected>- Select One -</option>";
+
+    echo "<select id='$key' name='$key' class='form-select' $attr>";
     
     echo $defaultOption;
     
@@ -783,7 +789,7 @@ function html_checkbox($key, $status = 'inactive', $attr = '')
     $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
 
     echo "<label for='$key'>"; // Add a label for accessibility
-    echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
+    echo "<input type='checkbox' id='$key' name='$key' value='active' class='form-checkbox' $isChecked $attr> ";
     echo "</label>";
 }
 
@@ -796,7 +802,7 @@ function html_radios($key, $items, $br = false) {
     $output = '<div>';
     foreach ($items as $id => $text) {
         $state = ($id == $value) ? 'checked' : ''; 
-        $output .= "<label><input type='radio' id='{$key}_{$id}' name='{$key}' value='{$id}' $state> $text</label>";
+        $output .= "<label><input type='radio' id='{$key}_{$id}' name='{$key}' class='form-radio' value='{$id}' $state> $text</label>";
         if ($br) {
             $output .= '<br>';
         }
@@ -983,38 +989,6 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 }
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc') {
-    $query = "
-        SELECT p.*, pp.photo 
-        FROM product p
-        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = "%$name%";
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stm = $db->prepare($query);
-    $stm->execute($params);
-
-    return $stm->fetchAll();
-}
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '')
 {
@@ -1022,7 +996,7 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     $value = encode($GLOBALS[$key] ?? '');
 
 
-    echo "<select id='$key' name='$key' $attr>";
+    echo "<select id='$key' name='$key' class='form-select' $attr>";
 
     // Default option
     if ($default !== null) {
@@ -1033,16 +1007,12 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     foreach ($categories as $main_category => $data) {
         $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
-        
-        // Debug: Log the category data
-        error_log("Processing category: $main_category (ID: $id)");
 
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
 
         // Set selected for the main category
         $selected = ($id == $value) ? 'selected' : '';
-        error_log("Main category selected: $selected");  // Debug: Check if it's selected
         echo "<option value='$id' $selected $disabled>$main_category</option>";
 
         // Subcategories: If subcategories exist
@@ -1052,8 +1022,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
                 $sub_name = $subcategory['name'];
                 $selected = ($sub_id == $value) ? 'selected' : '';  // Compare with the selected value (subcategory_id)
 
-                // Debug: Log subcategory selection
-                error_log("Subcategory: $sub_name (ID: $sub_id), Selected: $selected");
 
                 echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
             }
@@ -1064,19 +1032,22 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
 }
 
 function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment = null) {
-    $m = get_mail();
-    $m->addAddress($email);
+    $m = get_mail();  // Assume get_mail() returns a PHPMailer instance
+    $m->addAddress($email);  // Add the recipient email address
     $m->Subject = $subject;
     $m->Body = $body;
-    $m->isHTML($html);
+    $m->isHTML($html);  // Set email format to HTML or plain text
+
+    // Attach the image if an attachment is provided
     if ($attachment) {
         $m->addAttachment($attachment);
     }
 
+    // Try sending the email and handle success/failure
     if (!$m->send()) {
-        temp('error', 'Failed to send email: ' . $m->ErrorInfo);
+        error_log('Failed to send email: ' . $m->ErrorInfo);
     } else {
-        temp('info', 'Email sent successfully.');
+        error_log('Email sent successfully.');
     }
 }
 

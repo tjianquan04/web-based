@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+include '_admin_head.php';
 
 // Fetch categories and subcategories
 $categories = $_db->query('SELECT category_id, category_name, sub_category FROM category')->fetchAll();
@@ -35,7 +35,7 @@ if (is_post()) {
 
     $product_photos = $_FILES['product_photos']; // Capture the uploaded photos
 
-    
+
 
     // If no subcategory is selected, set it to null
     if ($sub_category === '') {
@@ -67,10 +67,10 @@ if (is_post()) {
         $product_id = generate_product_id($category_id, $_db);
 
         if ($description == '') {
-            $_err['description'] = 'Required.';
+            $_err['description'] = 'Product description is required.';
         }
         if ($unit_price == '' || !is_numeric($unit_price) || $unit_price < 1.00 || $unit_price > 9999.99) {
-            $_err['unit_price'] = 'Invalid price (1.00 - 9999.99).';
+            $_err['unit_price'] = 'Unit price must be between RM (1.00 and 9999.99.)';
         }
         if ($stock_quantity == '' || !is_numeric($stock_quantity) || $stock_quantity < 10) {
             $_err['stock_quantity'] = 'Minimum stock quantity is 10.';
@@ -144,116 +144,104 @@ if (is_post()) {
             }
 
 
-            temp('info', 'Product added successfully.');
-            redirect('viewProduct.php');
+
+            temp('UpdateSuccess', "Product added successfully.");
+            temp('showSwal', true); // Set flag to show SweetAlert
+
+        } else {
+            temp('AddingFail', "Failed to add product. Please try again.");
+            temp('showSwalFail', true); // Set flag to show SweetAlert for failure
+
         }
-    } else {
-        temp('info', 'Product added failed.');
-        redirect('../index.php');
-        // If there are validation errors, you don't insert the product
-        // You can display error messages or handle it accordingly
     }
 }
 
 // Page setup and rendering
 $_title = 'Product | Insert';
-include '../_head.php';
+
 ?>
 
-<style>
-    /* Form Styling */
-    form {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-        font-family: Arial, sans-serif;
-    }
 
-    form label {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 8px;
-    }
+<link rel="stylesheet" href="/css/flash_msg.css">
+<link rel="stylesheet" href="/css/add_product.css">
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    form input,
-    form select,
-    form button {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
 
-    form input:focus,
-    form select:focus,
-    form button:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
+<div class="container">
+    <h1>Insert a new product</h1>
+    <form method="post" class="form" enctype="multipart/form-data" novalidate class="product-form" id="addProductForm">
 
-    form button {
-        background-color: #28a745;
-        color: #fff;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        cursor: pointer;
-    }
-
-    form button:hover {
-        background-color: #218838;
-    }
-
-    form button[type="reset"] {
-        background-color: #dc3545;
-    }
-
-    form button[type="reset"]:hover {
-        background-color: #c82333;
-    }
-
-    .error {
-        color: red;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-</style>
-
-<form method="post" class="form" enctype="multipart/form-data" novalidate>
-    <label for="category_id">Category</label>
-    <?= html_select_with_subcategories('category_id', $grouped_categories) ?>
-    <?= err('category_id') ?>
-
-    <label for="description">Product Description</label>
-    <?= html_text('description') ?>
-    <?= err('description') ?>
-
-    <label for="unit_price">Unit Price</label>
-    <?= html_number('unit_price', 1.00, 9999.99, 1.00) ?>
-    <?= err('unit_price') ?>
-
-    <label for="stock_quantity">Stock Quantity</label>
-    <?= html_number('stock_quantity', 10, 9999, 1) ?>
-    <?= err('stock_quantity') ?>
-
-    <label for="product_photos">Choose multiple photos:</label>
-    <input type="file" name="product_photos[]" multiple>
-    <?= err('product_photos') ?>
+        <label class="upload product-photo" tabindex="0">
+            Choose up to 3 photos:
+            <input type="file" name="product_photos[]" multiple>
+            <img src="" alt="Product Photo" title="Click to upload a new photo" />
+        </label>
 
 
 
-    <section>
-        <button>Submit</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
 
-<?php
-include '../_foot.php';
-?>
+        <?= err('product_photos') ?>
+
+        <label for="category_id">Category</label>
+        <?= html_select_with_subcategories('category_id', $grouped_categories) ?>
+        <?= err('category_id') ?>
+
+        <label for="description">Product Description</label>
+        <?= html_text('description') ?>
+        <?= err('description') ?>
+
+        <label for="unit_price">Unit Price</label>
+        <?= html_number('unit_price', 1.00, 9999.99, 1.00) ?>
+        <?= err('unit_price') ?>
+
+        <label for="stock_quantity">Stock Quantity</label>
+        <?= html_number('stock_quantity', 10, 9999, 1) ?>
+        <?= err('stock_quantity') ?>
+
+
+
+
+        <section>
+            <button>Submit</button>
+            <button type="reset">Reset</button>
+        </section>
+    </form>
+
+    <?php if (isset($error)) {
+        echo "<p class='error-message'>$error</p>";
+    } ?>
+
+    <?php if (temp('showSwal')): ?>
+        <script>
+            // Display swal() popup with the registration success message
+            swal("Congrats", "<?= temp('AddingSuccess'); ?>", "success")
+                .then(function() {
+                    window.location.href = 'product_index.php'; // Redirect after the popup closes
+                });
+        </script>
+    <?php endif; ?>
+
+    <?php if (temp('showSwalFail')): ?>
+        <script>
+            // Display swal() popup with the registration failure message
+            swal("Error", "<?= temp('AddingFail'); ?>", "error");
+        </script>
+    <?php endif; ?>
+</div>
+
+<script>
+    document.querySelector('input[type="file"]').addEventListener('change', function(event) {
+        const files = event.target.files;
+        const imgPreview = document.querySelector('label.upload img');
+
+        if (files && files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imgPreview.src = e.target.result; // Set the preview image
+            };
+            reader.readAsDataURL(files[0]);
+        }
+    });
+</script>

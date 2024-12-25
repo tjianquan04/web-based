@@ -3,7 +3,7 @@ include('_admin_head.php');
 require_once '../lib/SimplePager.php';
 
 // Superadmin authentication
-auth('Superadmin');
+auth('Superadmin','Admin','Product Manager');
 
 // Sanitize and validate the sort and direction parameters
 $valid_columns = ['admin_id', 'admin_name', 'role', 'status'];  // List of valid columns for sorting
