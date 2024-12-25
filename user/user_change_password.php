@@ -54,7 +54,6 @@ include '../_head.php';
             <a href="user_address.php?id=<?= $s->member_id?>">Addresses</a>
             <a href="user_change_password.php?id=<?= $s->member_id?>">Change Password</a>
             <a href="user_wallet.php?id=<?= $s->member_id?>">My Wallet</a>
-            <a href="user_top_up.php?id=<?= $s->member_id?>">Top Up</a>
         </div>
 
         <!-- Profile Content -->

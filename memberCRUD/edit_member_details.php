@@ -14,8 +14,6 @@ if (is_post() && (req('form_type') == 'member_details')) {
     $password  = req('password');
     $status    = req('status');
     $file      = get_file('photo');
-    $currentPhoto = req('current_photo');
-
 
     // Validate Name
     if (empty($name)) {
@@ -44,18 +42,10 @@ if (is_post() && (req('form_type') == 'member_details')) {
         }
     }
 
-    //Validate photo file
-    $photo = $currentPhoto; // Default to current photo
-    if ($file && $file->error !== UPLOAD_ERR_NO_FILE) { 
-        // New file uploaded, validate it
-        if (!str_starts_with($file->type, 'image/')) {
-            $_err['photo'] = 'Must be an image.';
-        } else if ($file->size > 1 * 1024 * 1024) {
-            $_err['photo'] = 'Maximum 1MB.';
-        } else {
-            // Save new photo and update path
-            $photo = save_photo($file, 'photos');
-        }
+    //Handle photo upload
+    if ($file && str_starts_with($file->type, 'image/')) {
+        $photo_path = save_photo($file, '../photos');
+        $photo = $photo_path; 
     }
 
     if (!$_err) {
@@ -130,50 +120,55 @@ include '../_head.php';
 <link rel="stylesheet" href="../css/edit_member.css">
 
 <body>
-    <div class="profile-container">
+    <div class="container">
         <div class="member-details">
             <h2>Member Details</h2>
 
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" class="profile-form">
                 <input type="hidden" name="form_type" value="member_details">
 
-                <label for="id"><strong>Member ID: </strong></label>
-                <p id="id"><?= $s->member_id ?></p>
-                <br>
-
-                <label for="photo"><strong>Photo:</strong></label><br>
-                <label class="upload" tabindex="0">
+                <label class="upload member-photo" tabindex="0">
                     <?= html_file('photo', 'image/*', 'hidden') ?>
                     <img
                         src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>"
                         alt="Member Photo" title="Click to upload photo" />
                 </label>
-                <input type="hidden" name="current_photo" value="<?= $s->profile_photo ? $s->profile_photo : '' ?>">
                 <?= err('photo') ?>
                 </label>
-                <br>
+                <br> 
 
-                <label for="name"><strong>Name:</strong></label>
+                <h4>Member ID: <?= $s->member_id ?></h4><br>
+            
+
+                <label for="name">Name:</label>
                 <?php html_text('name', 'Enter Name', $s->name, 'class="input-field" maxlength="100" '); ?>
                 <?= err('name') ?>
                 <br>
 
-                <label for="email"><strong>Email:</strong></label>
+                <label for="email">Email:</label>
                 <?php html_email('email', 'Enter Email', $s->email, 'class="input-field"'); ?>
                 <?= err('email') ?>
                 <br>
 
-                <label for="contact"><strong>Contact:</strong></label>
+                <label for="contact">Contact:</label>
                 <?php html_text('contact', 'Enter Contact Number', $s->contact, 'class="input-field"'); ?>
                 <?= err('contact') ?>
                 <br>
 
-                <label for="password"><strong>Password (RESET):</strong></label>
+                <label for="password">Password (RESET):</label>
                 <?php html_password('password', 'Reset Password', '', 'class="input-field"'); ?>
                 <?= err('password') ?>
                 <br>
 
-                <label for="status"><strong><i class="fas fa-check-circle"></i>Status:</strong></label>
+                <label for="wallet">Wallet :</label>
+                <?php html_text('wallet', '', 'RM'.$s->wallet, 'class="input-field" readonly'); ?>
+                <br>
+
+                <label for="registerDate">Registered Date :</label>
+                <?php html_text('registerDate', '', $s->register_date, 'class="input-field" readonly'); ?>
+                <br>
+
+                <label for="status">Status:</label>
                 <select id="status" name="status" class="input-field">
                 <option value="Active" <?= $s->status == 'Active' ? 'selected' : '' ?>>Active</option>
                 <option value="Inactive" <?= $s->status == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
@@ -195,26 +190,26 @@ include '../_head.php';
             <?php else: ?>
 
                 <?php foreach ($addressArr as $address): ?>
-                    <form method="post">
+                    <form method="post" class= "address-form">
                         <input type="hidden" name="form_type" value="address_update">
                         <input type="hidden" name="address_id" value="<?= $address->address_id ?>">
 
-                        <label for="address_line_<?= $address->address_id ?>"><strong>Address:</strong></label>
+                        <label for="address_line_<?= $address->address_id ?>">Address:</label>
                         <?php html_text('address_line_'.$address->address_id, '', $address->address_line, '" class="input-field"'); ?>
                         <?= err('address_line_'.$address->address_id) ?>
                         <br>
 
-                        <label for="state_<?= $address->address_id ?>"><strong>State:</strong></label>
+                        <label for="state_<?= $address->address_id ?>">State:</label>
                         <?php html_select('state_'.$address->address_id, $_states,'', 'class="input-field"', $address->state) ?>
                         <?= err('state_'.$address->address_id) ?>
                         <br>
 
-                        <label for="postal_code_<?= $address->address_id ?>"><strong>Postal Code:</strong></label>
+                        <label for="postal_code_<?= $address->address_id ?>">Postal Code:</label>
                         <?php html_text('postal_code_'.$address->address_id, '', $address->postal_code, '" class="input-field" '); ?>
                         <?= err('postal_code_'.$address->address_id) ?>
                         <br>
 
-                        <label for="is_default_<?= $address->address_id ?>"><strong>Is Default:</strong></label>
+                        <label for="is_default_<?= $address->address_id ?>">Is Default:</label>
                         <select id="is_default_<?= $address->address_id ?>" name="is_default_<?= $address->address_id ?>" class="input-field">
                             <option value="1" <?= $address->is_default == 1 ? 'selected' : '' ?>>TRUE</option>
                             <option value="0" <?= $address->is_default == 0 ? 'selected' : '' ?>>FALSE</option>

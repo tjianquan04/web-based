@@ -110,7 +110,7 @@ include '../_head.php';
             <a href="user_profile.php?id=<?= $s->member_id ?>">Profile</a>
             <a href="user_address.php?id=<?= $s->member_id ?>" class="active-link">Addresses</a>
             <a href="user_change_password.php?id=<?= $s->member_id ?>">Change Password</a>
-            <a href="user_top_up.php?id=<?= $s->member_id ?>">Top Up</a>
+            <a href="user_wallet.php?id=<?= $s->member_id?>">My Wallet</a>
         </div>
 
         <!-- Address Details Section -->

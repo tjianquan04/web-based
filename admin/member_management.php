@@ -33,6 +33,7 @@ $p = new SimplePager($query, $params, 10, $page);
 // Fetch results
 $arr = $p->result;
 
+$total_members = $_db->query("SELECT COUNT(*) FROM member")->fetchColumn();
 
 // ----------------------------------------------------------------------------
 
@@ -46,6 +47,8 @@ $arr = $p->result;
         <button>Search</button>
     </form>
     <div class="top-right">
+        <!-- Total Record -->
+        <span class="total-record">Total:<?= $total_members ?> Records</span>
     <form method="post" id="batch">
        <button formaction="../memberCRUD/insert_records.php">Insert</button>
        <button formaction="../memberCRUD/delete_member.php" delete-confirm id="batch-delete" >Delete</button>
@@ -180,7 +183,9 @@ $arr = $p->result;
     <?php endforeach ?>
 </table>
 <br>
-<?= $p->html("search=$searchTerm") ?>
+<div class="pagination">
+                <?= generateDynamicPagination($p, $sort, $dir, $searchTerm); ?>
+</div>
 <br>
 </div>
 
