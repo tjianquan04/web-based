@@ -43,6 +43,18 @@ img {
     object-fit: cover;
 }
 
+.back-button {
+    text-decoration: none;
+    font-size: 1.5em;
+    color:rgb(0, 0, 0);
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color:rgb(220, 0, 0);
+}
+
 
 form {
     margin-top: 20px;
@@ -56,7 +68,7 @@ label {
 
 
 /* Adjust CSS for form inputs */
-.form-input, .form-select  ,.form-checkbox{
+.form-input, .form-select  ,.form-checkbox, .form-radio{
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -119,18 +131,6 @@ label i {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-}
-
-.back-button {
-    text-decoration: none;
-    font-size: 1.5em;
-    color:rgb(0, 0, 0);
-    margin-right: 10px;
-    transition: color 0.3s ease;
-}
-
-.back-button:hover {
-    color:rgb(220, 0, 0);
 }
 
 section {
