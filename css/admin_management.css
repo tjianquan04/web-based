@@ -161,6 +161,22 @@ table a {
     background-color: #21a01f;
 }
 
+.btn-batch {
+    background-color: #e0a707; /* Match Add Admin button background color */
+    color: white; /* Match text color */
+    padding: 10px 20px; /* Match padding */
+    border-radius: 5px; /* Match border-radius */
+    border: 1px solid #ccc; /* Match border */
+    text-decoration: none; /* Match text decoration */
+    cursor: pointer; /* Match cursor */
+    margin-top: 20px; /* Match top margin */
+}
+
+.btn-batch:hover {
+    background-color: #aa7917; /* Match hover color */
+}
+
+
 form {
     display: flex;
     flex-direction: column;
@@ -183,19 +199,24 @@ label i{
     gap: 10px;
 }
 
-.pagination-container {
+.batch-actions-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Pushes the items to opposite sides */
     align-items: center;
-    margin: 20px 0;
+    margin-top: 20px;
+}
+
+.batch-actions-left {
+    display: flex;
+    gap: 10px; /* Adds spacing between the buttons */
 }
 
 .pagination-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    margin: 20px 0;
 }
+
 
 .pagination {
     display: flex;
