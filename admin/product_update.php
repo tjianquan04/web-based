@@ -1,5 +1,5 @@
 <?php
-require "../_base.php";
+include "../_base.php";
 
 // Retrieve input values
 $product_id = req('product_id');
@@ -13,6 +13,10 @@ $stm->execute([$product_id]);
 $product = $stm->fetch();
 
 $category_id = $product->category_id;
+
+$stm = $_db->prepare('SELECT * FROM category WHERE category_id = ?');
+$stm->execute([$category_id]);
+$category = $stm->fetch();
 
 // Initialize an error array
 $_err = [];
@@ -86,8 +90,6 @@ try {
     $stmt = $_db->prepare('SELECT SUM(stock_quantity) AS total_stock FROM product WHERE category_id = ?');
     $stmt->execute([$category_id]);
     $category_stock = $stmt->fetch();
-
-    
 
     $total_stock_quantity_in_category = $category_stock->total_stock ?? 0;
 

@@ -50,7 +50,7 @@ function req($key, $value = null)
 function redirect($url = null)
 {
     $url ??= $_SERVER['REQUEST_URI'];
-    header("Location: $url");
+
     exit();
 }
 
@@ -769,7 +769,7 @@ function html_input($type, $key, $placeholder = '', $data = '', $attr = '')
 {
     $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
-    echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    echo "<input type='$type' class='form-select' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
@@ -797,7 +797,7 @@ function html_email($key, $placeholder = '', $data = '', $attr = '')
 function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='number' id='$key' name='$key' value='$value'
+    echo "<input type='number' class='form-select' id='$key' name='$key' value='$value'
                  min='$min' max='$max' step='$step' $attr>";
 }
 
@@ -829,7 +829,7 @@ function html_checkbox($key, $status = 'inactive', $attr = '')
     $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
 
     echo "<label for='$key'>"; // Add a label for accessibility
-    echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
+    echo "<input type='checkbox' id='$key' name='$key' value='active' class='form-checkbox' $isChecked $attr> ";
     echo "</label>";
 }
 
@@ -1138,7 +1138,7 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     $value = encode($GLOBALS[$key] ?? '');
 
 
-    echo "<select id='$key' name='$key' $attr>";
+    echo "<select id='$key' name='$key' class='form-select' $attr>";
 
     // Default option
     if ($default !== null) {
@@ -1158,7 +1158,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
 
         // Set selected for the main category
         $selected = ($id == $value) ? 'selected' : '';
-        error_log("Main category selected: $selected");  // Debug: Check if it's selected
         echo "<option value='$id' $selected $disabled>$main_category</option>";
 
         // Subcategories: If subcategories exist
@@ -1168,8 +1167,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
                 $sub_name = $subcategory['name'];
                 $selected = ($sub_id == $value) ? 'selected' : '';  // Compare with the selected value (subcategory_id)
 
-                // Debug: Log subcategory selection
-                error_log("Subcategory: $sub_name (ID: $sub_id), Selected: $selected");
 
                 echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
             }
@@ -1185,15 +1182,18 @@ function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment 
     $m->addAddress($email);
     $m->Subject = $subject;
     $m->Body = $body;
-    $m->isHTML($html);
+    $m->isHTML($html);  // Set email format to HTML or plain text
+
+    // Attach the image if an attachment is provided
     if ($attachment) {
         $m->addAttachment($attachment);
     }
 
+    // Try sending the email and handle success/failure
     if (!$m->send()) {
-        temp('error', 'Failed to send email: ' . $m->ErrorInfo);
+        error_log('Failed to send email: ' . $m->ErrorInfo);
     } else {
-        temp('info', 'Email sent successfully.');
+        error_log('Email sent successfully.');
     }
 }
 
