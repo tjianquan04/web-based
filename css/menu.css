@@ -132,6 +132,8 @@ body {
   display: none;
 }
 
+
+
 .gallery .main-img img.active {
   display: inline-block;
   max-width: 445px;
@@ -259,6 +261,36 @@ body {
   margin: 20px 0 20px 0;
   
 }
+
+/* Ensure the h3 with product name and wishlist icon are aligned inline */
+.content h3.product-name {
+  font-size: 28px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center; /* Aligns items vertically in the center */
+  justify-content: space-between; /* Optional: space between the product name and icon */
+}
+
+/* Style for the wishlist icon */
+.wishlist {
+  margin-left: 10px; /* Add some spacing between the product name and wishlist icon */
+  margin-top: 80px;
+  cursor: pointer;
+}
+
+/* Wishlist icon styles */
+.wishlist .wishlist-icon {
+  font-size: 28px; /* Match the font size of the product name */
+  color: #ff6b6b;
+  transition: color 0.3s ease-in-out;
+}
+
+
+
+.wishlist .wishlist-icon.active {
+  color: #ff6b6b;
+}
+
 
 .content h2 {
   font-size: 25px;

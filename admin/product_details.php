@@ -1,7 +1,6 @@
 <?php
 include '_admin_head.php';
-
-
+auth('Superadmin', 'Product Manager');
 
 // Get the product ID from the query string
 $product_id = req('product_id');
@@ -15,6 +14,8 @@ $product = $stm->fetch();
 $photo_stm = $_db->prepare('SELECT * FROM product_photo WHERE product_id = ?');
 $photo_stm->execute([$product_id]);
 $photos = $photo_stm->fetchAll();
+
+
 
 // Fetch the subcategory from the database based on category_id
 $subcategory_stm = $_db->prepare('SELECT sub_category FROM category WHERE category_id = ?');
@@ -78,13 +79,72 @@ if (!$product) {
         color:rgb(220, 0, 0);
     }
 
+/* Success Message */
+.success-messages {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.success-messages ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.success-messages li {
+    margin-bottom: 5px;
+}
+
+/* Error Message */
+.error-messages {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.error-messages ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.error-messages li {
+    margin-bottom: 5px;
+}
+
+
+
 
 </style>
 <link rel="stylesheet" href="../css/flash_msg.css">
-<link rel="stylesheet" href="../css/view_admin.css">
+<link rel="stylesheet" href="../css/detailsForm.css">
 <script src="../js/main.js"></script>
 
+
+
 <div class="container">
+<?php if (isset($_SESSION['success'])): ?>
+    <div class="success-messages">
+        <ul>
+            <li><?php echo $_SESSION['success']; ?></li>
+        </ul>
+    </div>
+    <?php unset($_SESSION['success']); ?> <!-- Clear the success message after displaying -->
+<?php elseif (isset($_SESSION['errors'])): ?>
+    <div class="error-messages">
+        <ul>
+            <?php foreach ($_SESSION['errors'] as $error): ?>
+                <li><strong>Product updated failed: </strong><?php echo $error; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php unset($_SESSION['errors']); ?> <!-- Clear errors after displaying -->
+<?php endif; ?>
+
+
 <div class="product-details">
         <a href="product_index.php" class="back-button">&larr;</a>
 
@@ -156,6 +216,7 @@ if (!$product) {
                 max="999"
                 required>
             <div id="outOfStockMessage" style="color: red; display: none;">Once stock quantity update to 0, status will be updated to Out Of Stock as well.</div>
+
             <br><br>
             <label for="status">Status:</label>
             <select id="status" name="status">
@@ -167,6 +228,8 @@ if (!$product) {
             <div id="date-section" style="display: none; margin-top: 10px;">
                 <label for="limited-edition-date">Select Date:</label>
                 <input type="date" id="limited-edition-date" name="invalid_date" />
+                <div id="invalidExpMessage" style="color: red; display: none;">Invalid date must be after the current date.</div>
+
             </div>
             <br><br>
             <button type="submit">Save Changes</button>
@@ -221,4 +284,20 @@ if (!$product) {
             outOfStockMessage.style.display = 'none';
         }
     });
+
+    // Check if the selected limited edition date is after the current date
+document.getElementById('limited-edition-date').addEventListener('change', function() {
+    const selectedDate = new Date(this.value);
+    const currentDate = new Date();
+    const invalidExpMessage = document.getElementById('invalidExpMessage');
+
+    // Set the time to 00:00:00 to ignore the time part during comparison
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate <= currentDate) {
+        invalidExpMessage.style.display = 'block';
+    } else {
+        invalidExpMessage.style.display = 'none';
+    }
+});
 </script>

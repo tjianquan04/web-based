@@ -1,5 +1,6 @@
 <?php
 include '../_base.php';
+auth('Superadmin', 'Product Manager');
 
 // Check if category_id is provided
 if (!isset($_GET['category_id'])) {
@@ -38,20 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
             $delete_photos_stm = $_db->prepare('DELETE FROM product_photo WHERE product_id = ?');
             $delete_photos_stm->execute([$product->product_id]);
         }
-        // Delete associated products
-        $delete_products_stm = $_db->prepare('DELETE FROM product WHERE category_id = ?');
-        $delete_products_stm->execute([$category_id]);
+      // Update category status to "Discontinued" and set dateDeleted
+$update_category_stm = $_db->prepare('UPDATE category SET status = "Discontinued", dateDeleted = NOW(), currentStock = 0 WHERE category_id = ?');
+$update_category_stm->execute([$category_id]);
 
-        // Delete the category
-        $delete_category_stm = $_db->prepare('DELETE FROM category WHERE category_id = ?');
-        $delete_category_stm->execute([$category_id]);
-
-      
+// Update the associated products status to "Discontinued" and set dateDeleted
+foreach ($products as $product) {
+    $update_product_stm = $_db->prepare('UPDATE product SET status = "Discontinued", dateDeleted = NOW(), stock_quantity=0 WHERE product_id = ?');
+    $update_product_stm->execute([$product->product_id]);
+}
 
         $_db->commit();
 
         // Redirect with success message
-        temp('info', 'Category successfully deleted.');
+        temp('info', 'Category have been updated to discontinued.');
             redirect('viewCategory.php');
         exit;
     } catch (Exception $e) {
@@ -61,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
 }
 
 $_title = 'Category Management | DELETE';
-include '../_head.php';
+
 ?>
 
 <style>
@@ -241,4 +242,4 @@ include '../_head.php';
             <a href="viewCategory.php" class="link">Cancel</a>
         </form>
     </div>
-<?php include '../_foot.php'; ?>
+

@@ -22,7 +22,7 @@ if (!in_array($sort, $valid_sort_columns)) {
 }
 
 // Base query
-$query = "SELECT * FROM product WHERE status NOT LIKE 'Discontinued'";
+$query = "SELECT * FROM product WHERE status  LIKE 'Discontinued'";
 
 // Append search filters
 $params = [];
@@ -52,10 +52,27 @@ echo "Page Count: " . $p->page_count;
 
 $_title = 'Product | Index';
 ?>
+
+<style>
+    .back-button {
+    text-decoration: none;
+    font-size: 1.5em;
+    color:rgb(0, 0, 0);
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color:rgb(220, 0, 0);
+}
+
+</style>
  <link rel="stylesheet" href="/css/admin_management.css">
 
 
 <div class="container">
+
+<a href="product_index.php" class="back-button">&larr;</a>
 
     <span class="total-record"><?= count($_products) ?> record(s)</span>
 
@@ -71,7 +88,7 @@ $_title = 'Product | Index';
             <th onclick="window.location.href='?sort=stock_quantity&dir=<?= $sort === 'stock_quantity' && $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>&page=<?= $page ?>'">Stock</th>
             <th onclick="window.location.href='?sort=status&dir=<?= $sort === 'status' && $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>&page=<?= $page ?>'">Status</th>
             <th onclick="window.location.href='?sort=dateAdded&dir=<?= $sort === 'dateAdded' && $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>&page=<?= $page ?>'">Date Added</th>
-            <th>Action</th>
+            <th onclick="window.location.href='?sort=dateAdded&dir=<?= $sort === 'dateAdded' && $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>&page=<?= $page ?>'">Date Deleted</th>
         </tr>
     </thead>
     <tbody>
@@ -90,22 +107,14 @@ $_title = 'Product | Index';
                 <td><?= $product->stock_quantity ?></td>
                 <td><?= $product->status ?></td>
                 <td><?= $product->dateAdded ?></td>
-                <td>
-                    <form action="deleteProduct.php" method="POST" style="display: inline;">
-                        <input type="hidden" name="product_id" value="<?= $product->product_id ?>">
-                        <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this product?')">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </form>
-                </td>
+                <td><?= $product->dateDeleted ?></td>
+             
             </tr>
         <?php endforeach; ?>
     </tbody>
     </table>
 
-    <a href="addProduct.php" class="btn btn-add"><i class="fas fa-plus-circle"></i> Add New Product</a>
-    <a href="deletedProduct.php"  class="btn btn-trash"><i class="fa-solid fa-trash-can"></i></a>
-
+   
     <div class="pagination">
     <?= generateDynamicPagination($p, $sort, $dir); ?>
     </div>

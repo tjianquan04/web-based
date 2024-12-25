@@ -1,7 +1,11 @@
-<link rel="stylesheet" href="../css/categoryForm.css">
-
+<link rel="stylesheet" href="/css/flash_msg.css">
+<link rel="stylesheet" href="/css/editForm.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../js/main.js"></script>
 <?php
-include '../_base.php';
+include '_admin_head.php';
+auth('Superadmin', 'Product Manager');
 
 // ----------------------------------------------------------------------------
 
@@ -47,7 +51,7 @@ if (is_post()) {
             // Set default values for currentStock, stockAlert, and Status
         $currentStock = 0; // Default to 0
         $stockAlert = false; // Default to false
-        $status = true; // Default to 'active' (1)
+        $status = 'Active'; 
 
         $stm = $_db->prepare('
             INSERT INTO category (category_id, category_name, sub_category, category_photo, minStock, currentStock, stockAlert, status)
@@ -56,25 +60,25 @@ if (is_post()) {
         $stm->execute([$category_id, $category_name, $sub_category, $photo_path, $minStock, $currentStock, $stockAlert, $status]);
 
 
-            temp('info', 'Category successfully inserted.');
-            redirect('../index.php');
+        temp('UpdateSuccess', "Category is added");
+        temp('showSwal', true); // Set flag to show SweetAlert
         
     }
     else{
-        temp('info', 'Category failed inserted.');
+        temp('EditFail', "Failed to add category. Please try again.");
+            temp('showSwalFail', true); // Set flag to show SweetAlert for failure
     }
 }
 
 // ----------------------------------------------------------------------------
 
 $_title = 'Category | Insert';
-include '../_head.php';
 ?>
 
 
-<p>
-    <button onclick="window.location.href='index.php'">Back to Index</button>
-</p>
+<div class="container">
+
+<a href="product_index.php" class="back-button">&larr;</a>
 
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
     <label for="category_id">Category ID</label>
@@ -105,29 +109,24 @@ include '../_head.php';
         <button type="reset">Reset</button>
     </section>
 </form>
+</div>
+<?php if (temp('showSwal')): ?>
+        <script>
 
-<script>
-  // Photo preview
-  $('label.upload input[type=file]').on('change', e => {
-        const f = e.target.files[0];
-        const img = $(e.target).siblings('img')[0];
+            // Display swal() popup with the success message and redirect after user confirms
+            swal("Congrats", "<?= temp('UpdateSuccess'); ?>", "success")
+                .then(function() {
+                    window.location.href = "viewCategory.php"; // Redirect to the appropriate page
+                });
+        </script>
+    <?php endif; ?>
 
-        if (!img) return;
-
-        img.dataset.src ??= img.src;
-
-        if (f?.type.startsWith('image/')) {
-            img.src = URL.createObjectURL(f);
-        }
-        else {
-            img.src = img.dataset.src;
-            e.target.value = '';
-        }
-    });
-</script>
+    <?php if (temp('showSwalFail')): ?>
+        <script>
+            // Display swal() popup with the registration failure message
+            swal("Error", "<?= temp('EditFail'); ?>", "error");
+        </script>
+    <?php endif; ?>
 
 
-<?php
-include '../_foot.php';
-?>
 
