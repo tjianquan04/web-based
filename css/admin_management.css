@@ -99,6 +99,29 @@ table a {
     border: 1px solid #ccc; 
 }
 
+.table td button.unblock {
+    background-color: #4CAF50; 
+    border: 1px solid #ccc; 
+}
+
+.table td button.unblock:hover {
+    background-color: #45a049; 
+}
+
+.table td button.block {
+    background-color: #dc3545;
+    border: 1px solid #ccc; 
+}
+
+.table td button.block:hover {
+    background-color: #c0392b;
+}
+
+.inactive{
+    background-color: #f5f5f5; 
+    color: #dc3545; 
+}
+
 .btn-delete {
     background-color: #dc3545;
     border: 1px solid #ccc; 

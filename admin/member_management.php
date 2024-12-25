@@ -38,7 +38,7 @@ $arr = $p->result;
 
 ?>
 <script src="../js/main.js"></script>
-<link rel="stylesheet" href="../css/member.css">
+<link rel="stylesheet" href="../css/admin_management.css">
 
 <div class="container">
     <form method="get">
@@ -46,11 +46,25 @@ $arr = $p->result;
         <button>Search</button>
     </form>
     <div class="top-right">
+    <form method="post" id="batch">
+       <button formaction="../memberCRUD/insert_records.php">Insert</button>
+       <button formaction="../memberCRUD/delete_member.php" delete-confirm id="batch-delete" >Delete</button>
+       
+       <div class="batch-update-status">
+        <select class="form-control" name="batch-status" id="batch-status">
+            <option value = '' disabled selected>Select-Status</option>
+            <option value="Active">Active</option>
+            <option value="Iactive">Inactive</option>
+        </select>
+        <button formaction="../memberCRUD/batch_update_status.php" id="batch-update">Update</button>
+       </div>
+    </form> 
     </div>
-</div>
+
 
 <table class="table">
     <tr>
+        <th>#</th>
         <th>No.</th>
         <th>
             <a href="?sort=member_id&dir=<?= ($sort == 'member_id' && $dir == 'asc') ? 'desc' : 'asc' ?>">
@@ -68,7 +82,7 @@ $arr = $p->result;
         </th>
         <th>
             <a href="?sort=name&dir=<?= ($sort == 'name' && $dir == 'asc') ? 'desc' : 'asc' ?>">
-                Member Name
+                Name
                 <?php if ($sort == 'name'): ?>
                     <?php if ($dir == 'asc'): ?>
                         <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
@@ -132,28 +146,35 @@ $arr = $p->result;
     $no = ($page - 1) * $pageSize + 1;
 
     foreach ($arr as $s):
-        $rowClass = $s->status ? '' : 'inactive';
+        $rowClass = ($s->status === 'Active') ? '' : 'inactive';
     ?>
         <tr class="<?= $rowClass ?>">
+            <td>
+                 <input type="checkbox" name="id[]" value="<?= $s->member_id ?>" form="batch">
+            </td>
             <td><?= $no++ ?></td>
             <td><?= $s->member_id ?></td>
             <td><?= $s->name ?></td>
             <td><?= $s->email ?></td>
             <td><?= $s->contact ?></td>
-            <td><?= $s->status ? 'Active' : 'Inactive' ?></td>
+            <td><?= $s->status ?></td>
             <td>
-                <button data-get="../memberCRUD/view_member_details.php?id=<?= $s->member_id ?>"><i class='fas fa-eye'></i>View</button>
-                <button data-get="../memberCRUD/edit_member_details.php?id=<?= $s->member_id ?>"><i class='fas fa-tools'></i>Edit</button>
-                <button data-post="../memberCRUD/update_member_status.php?id=<?= $s->member_id ?>"
-                    class="block-btn <?= $s->status ? 'block' : 'unblock' ?>">
-                    <?php if ($s->status == true): ?>
-                        <i class="fas fa-user-slash"></i>      
-                    <?php elseif($s->status == false): ?>
-                    <i class="fas fa-user"></i>
-                    <?php endif; ?>
-                    <?= $s->status ? 'Block' : 'Unblock' ?>
-                </button>
-                <button data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
+            
+            <button class= "btn btn-view" data-get="../memberCRUD/view_member_details.php?id=<?= $s->member_id ?>">
+                <i class='fas fa-eye'></i>View
+            </button>
+            <button class= "btn btn-edit" data-get="../memberCRUD/edit_member_details.php?id=<?= $s->member_id ?>">
+                <i class='fas fa-tools'></i>Edit
+            </button>
+            <button data-post="../memberCRUD/update_member_status.php?id=<?= $s->member_id ?>"
+                class="btn  <?= ($s->status === 'Active') ? 'block' : 'unblock' ?>">
+                <?php if ($s->status === 'Active'): ?>
+                    <i class="fas fa-user-slash"></i> Block
+                <?php else: ?>
+                    <i class="fas fa-user"></i> Unblock
+                <?php endif; ?>
+            </button>
+                <button class= "btn btn-delete" data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-ids="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
             </td>
         </tr>
     <?php endforeach ?>
@@ -161,5 +182,45 @@ $arr = $p->result;
 <br>
 <?= $p->html("search=$searchTerm") ?>
 <br>
+</div>
 
+<script>
+    $('#batch-delete').on('click', function(e) {
+    // Find all checked checkboxes and collect their values
+    const selectedIds = [];
+    $('input[name="id[]"]:checked').each(function() {
+        selectedIds.push($(this).val());
+    });
+
+    // If there are selected IDs, set them as a comma-separated string in data-member-ids
+    if (selectedIds.length > 0) {
+        $(this).attr('data-member-ids', selectedIds.join(','));
+    } else {
+        // If no IDs are selected, prevent form submission and show an alert
+        alert('Please select at least one member to delete.');
+        e.preventDefault();
+    }
+});
+
+$('#batch-update').on('click', function(e) {
+    // Find all checked checkboxes and collect their values
+    const selectedIds = [];
+    $('input[name="id[]"]:checked').each(function() {
+        selectedIds.push($(this).val());
+    });
+
+    // Get the selected status from the dropdown
+    const selectedStatus = $('#batch-status').val();
+
+    // If there are selected IDs and a valid status is selected, set them as a comma-separated string in data-member-ids and data-status
+    if (selectedIds.length > 0 && selectedStatus) {
+        $(this).attr('data-member-ids', selectedIds.join(','));
+        $(this).attr('data-status', selectedStatus);
+    } else {
+        // If no IDs are selected or no status is selected, prevent form submission and show an alert
+        alert('Please select at least one member and a status to update.');
+        e.preventDefault();
+    }
+});
+</script>
 </html>

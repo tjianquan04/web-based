@@ -130,6 +130,10 @@ body {
     background-color: #f0f0f0;
 }
 
+.default-badge{
+    color: #4CAF50;
+}
+
  /* Overlay */
  .overlay {
     display: none;
@@ -165,6 +169,7 @@ body {
     display: block;
     margin: 10px 0 5px;
   }
+
 
   .popup input, .popup select {
     width: calc(100% - 10px);

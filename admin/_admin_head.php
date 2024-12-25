@@ -46,12 +46,12 @@ $outOfStockCount = countOutOfStockProducts();
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="#">View Orders</a></li>
+                    <li><a href="view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="#">Manage Users</a></li>
+                    <li><a href="member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>

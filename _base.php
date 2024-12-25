@@ -236,19 +236,20 @@ function addAdmin($user)
     }
 }
 
-function validCurrentPassword($password, $member_id){
+function validCurrentPassword($password, $member_id)
+{
     global $_db;
-    
+
     //get current password from database
     $stmt = $_db->prepare("SELECT password FROM member WHERE member_id = ?");
-    $stmt ->execute([$member_id]);
-    $s = $stmt ->fetch();
+    $stmt->execute([$member_id]);
+    $s = $stmt->fetch();
 
-    echo('1. database : '.$s->password);
-    echo('2. current : '.SHA1($password));
+    echo ('1. database : ' . $s->password);
+    echo ('2. current : ' . SHA1($password));
 
-    
-    if(strcmp(SHA1($password), ($s->password)) == 0){
+
+    if (strcmp(SHA1($password), ($s->password)) == 0) {
         return true;
     }
     return false;
@@ -380,8 +381,42 @@ function getAdminById($admin_id)
     return $admin ?: null;
 }
 
+function getOrderById($order_id)
+{
+    global $_db; // Assuming PDO for database interaction
 
-function generateDynamicPagination($pager, $sort, $dir)
+    // Prepare SQL query to fetch order details by order_id
+    $stmt = $_db->prepare('SELECT * FROM order_record WHERE order_id = ? LIMIT 1');
+
+    // Execute the query with the given order_id
+    $stmt->execute([$order_id]);
+
+    // Fetch the result as an object
+    $order = $stmt->fetch(PDO::FETCH_OBJ);
+
+    // Return the order object or null if not found
+    return $order;
+}
+
+function getOrderItemsByOrderId($order_id)
+{
+    global $_db; // Assuming $_db is the PDO instance for database interaction
+
+    // Prepare the SQL query to fetch order items by order_id
+    $stmt = $_db->prepare('SELECT * FROM orderitem WHERE order_id = ?');
+
+    // Execute the query with the given order_id
+    $stmt->execute([$order_id]);
+
+    // Fetch the results as an array of objects
+    $order_items = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+    // Return the array of order items or an empty array if no items found
+    return $order_items;
+}
+
+
+function generateDynamicPagination($pager, $sort, $dir, $search)
 {
     $currentPage = $pager->page;
     $totalPages = $pager->page_count;
@@ -389,35 +424,35 @@ function generateDynamicPagination($pager, $sort, $dir)
     // Start the pagination container
     $paginationHTML = '<div class="pagination">';
 
-    // Add "First" link with sort and dir parameters
+    // Add "First" link with sort, dir, and search parameters
     if ($currentPage > 1) {
-        $paginationHTML .= '<a href="?page=1&sort=' . $sort . '&dir=' . $dir . '">&laquo; First</a>';
+        $paginationHTML .= '<a href="?page=1&sort=' . htmlspecialchars($sort) . '&dir=' . htmlspecialchars($dir) . '&search=' . urlencode($search) . '">&laquo; First</a>';
     }
 
-    // Add "Previous" link with sort and dir parameters
+    // Add "Previous" link with sort, dir, and search parameters
     if ($currentPage > 1) {
-        $paginationHTML .= '<a href="?page=' . ($currentPage - 1) . '&sort=' . $sort . '&dir=' . $dir . '">&lt;</a>';
+        $paginationHTML .= '<a href="?page=' . ($currentPage - 1) . '&sort=' . htmlspecialchars($sort) . '&dir=' . htmlspecialchars($dir) . '&search=' . urlencode($search) . '">&lt;</a>';
     }
 
-    // Show previous, current, and next pages, with sort and dir parameters
+    // Show previous, current, and next pages, with sort, dir, and search parameters
     for ($i = max(1, $currentPage - 1); $i <= min($totalPages, $currentPage + 1); $i++) {
         if ($i == $currentPage) {
             // Highlight the current page
             $paginationHTML .= '<span class="active">' . $i . '</span>';
         } else {
-            // Link to other pages, with sort and dir parameters
-            $paginationHTML .= '<a href="?page=' . $i . '&sort=' . $sort . '&dir=' . $dir . '">' . $i . '</a>';
+            // Link to other pages, with sort, dir, and search parameters
+            $paginationHTML .= '<a href="?page=' . $i . '&sort=' . htmlspecialchars($sort) . '&dir=' . htmlspecialchars($dir) . '&search=' . urlencode($search) . '">' . $i . '</a>';
         }
     }
 
-    // Add "Next" link with sort and dir parameters
+    // Add "Next" link with sort, dir, and search parameters
     if ($currentPage < $totalPages) {
-        $paginationHTML .= '<a href="?page=' . ($currentPage + 1) . '&sort=' . $sort . '&dir=' . $dir . '">&gt;</a>';
+        $paginationHTML .= '<a href="?page=' . ($currentPage + 1) . '&sort=' . htmlspecialchars($sort) . '&dir=' . htmlspecialchars($dir) . '&search=' . urlencode($search) . '">&gt;</a>';
     }
 
-    // Add "Last" link with sort and dir parameters
+    // Add "Last" link with sort, dir, and search parameters
     if ($currentPage < $totalPages) {
-        $paginationHTML .= '<a href="?page=' . $totalPages . '&sort=' . $sort . '&dir=' . $dir . '">Last &raquo;</a>';
+        $paginationHTML .= '<a href="?page=' . $totalPages . '&sort=' . htmlspecialchars($sort) . '&dir=' . htmlspecialchars($dir) . '&search=' . urlencode($search) . '">Last &raquo;</a>';
     }
 
     // Close the pagination container
@@ -425,6 +460,7 @@ function generateDynamicPagination($pager, $sort, $dir)
 
     return $paginationHTML;
 }
+
 
 function getTotalSales()
 {
@@ -589,7 +625,8 @@ function getProductSalesByCategory()
 }
 */
 
-function getProductSalesByCategory($year) {
+function getProductSalesByCategory($year)
+{
     global $_db;
     $stmt = $_db->prepare("
         SELECT p.category_name, SUM(oi.quantity) AS total_sold, r.order_date
@@ -728,27 +765,31 @@ function encode($value)
 }
 
 // Generate input field
-function html_input($type, $key, $placeholder = '', $data = '', $attr = '') {
+function html_input($type, $key, $placeholder = '', $data = '', $attr = '')
+{
     $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
     echo "<input type='$type' class='form-select' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
-function html_text($key, $placeholder = '', $data = '', $attr = '') {
+function html_text($key, $placeholder = '', $data = '', $attr = '')
+{
     $value = htmlspecialchars($data); // Prevent XSS by escaping special characters
     // Create the input field with the value and other attributes
     html_input('text', $key, $placeholder, $value, $attr);
 }
 
 // Generate password input field
-function html_password($key, $placeholder = '', $data = '', $attr = '') {
+function html_password($key, $placeholder = '', $data = '', $attr = '')
+{
     html_input('password', $key, $placeholder, $data, $attr);
 }
 
 
 // Generate email input field
-function html_email($key, $placeholder = '', $data = '', $attr = '') {
+function html_email($key, $placeholder = '', $data = '', $attr = '')
+{
     html_input('email', $key, $placeholder, $data, $attr);
 }
 
@@ -760,7 +801,6 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
                  min='$min' max='$max' step='$step' $attr>";
 }
 
-// Generate <select>
 function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
 
     $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
@@ -769,7 +809,7 @@ function html_select($key, $items, $default = '', $attr = '', $currentValue = nu
         ? "<option value=''>$default</option>" 
         : "<option value='' disabled selected>- Select One -</option>";
 
-    echo "<select id='$key' name='$key' class='form-select' $attr>";
+    echo "<select id='$key' name='$key' $attr>";
     
     echo $defaultOption;
     
@@ -795,14 +835,15 @@ function html_checkbox($key, $status = 'inactive', $attr = '')
 
 
 
-function html_radios($key, $items, $br = false) {
+function html_radios($key, $items, $br = false)
+{
 
     $value = isset($_POST[$key]) ? htmlspecialchars($_POST[$key]) : ($GLOBALS[$key] ?? '');
-    
+
     $output = '<div>';
     foreach ($items as $id => $text) {
-        $state = ($id == $value) ? 'checked' : ''; 
-        $output .= "<label><input type='radio' id='{$key}_{$id}' name='{$key}' class='form-radio' value='{$id}' $state> $text</label>";
+        $state = ($id == $value) ? 'checked' : '';
+        $output .= "<label><input type='radio' id='{$key}_{$id}' name='{$key}' value='{$id}' $state> $text</label>";
         if ($br) {
             $output .= '<br>';
         }
@@ -812,7 +853,8 @@ function html_radios($key, $items, $br = false) {
 }
 
 // Generate search input field
-function html_search($key,$placeholder = 'Search by name, email, contact', $data = "", $attr = '') {
+function html_search($key, $placeholder = 'Search by name, email, contact', $data = "", $attr = '')
+{
     html_input('search', $key, $placeholder, $data, $attr);
 }
 
@@ -893,7 +935,8 @@ function is_email($value)
 }
 
 // Is phone?
-function is_phone($value) {
+function is_phone($value)
+{
     // Ensure it's a string to perform string operations
     $value = strval($value);
 
@@ -914,7 +957,8 @@ function is_phone($value) {
 }
 
 //Is password?
-function is_password($value) {
+function is_password($value)
+{
     // Check if the length is at least 8 characters
     if (strlen($value) < 8) {
         return false;
@@ -952,10 +996,75 @@ function root($path = '')
     return "$_SERVER[DOCUMENT_ROOT]/$path";
 }
 
+// Global Variable
+$_states = [
+    'Johor' => 'Johor',
+    'Kedah' => 'Kedah',
+    'Kelantan' => 'Kelantan',
+    'Melaka' => 'Melaka',
+    'Negeri Sembilan' => 'Negeri Sembilan',
+    'Pahang' => 'Pahang',
+    'Penang' => 'Penang',
+    'Perak' => 'Perak',
+    'Perlis' => 'Perlis',
+    'Selangor' => 'Selangor',
+    'Terengganu' => 'Terengganu',
+    'Sabah' => 'Sabah',
+    'Sarawak' => 'Sarawak',
+    'Kuala Lumpur' => 'Kuala Lumpur',
+    'Labuan' => 'Labuan',
+    'Putrajaya' => 'Putrajaya',
+];
+
+//wallet
+function getTransactionHistory($member_id){
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT * FROM transaction WHERE member_id = ? 
+    ");
+    $stmt->execute([$member_id]);
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+function getWalletBalanceAfterTransaction($transaction_id, $member_id) {
+    global $_db;
+
+    // Fetch the transaction
+    $stmt = $_db->prepare("SELECT * FROM transaction WHERE member_id = ? AND trans_id = ? AND trans_status = 'Completed'");
+    $stmt->execute([$member_id, $transaction_id]);
+    $transaction = $stmt->fetch(PDO::FETCH_OBJ);  
+
+    // Fetch the current wallet balance
+    $stmt = $_db->prepare("SELECT wallet FROM member WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $user = $stmt->fetch();  
+
+    // Ensure transaction exists and current wallet balance is fetched
+    if ($transaction && $user) {
+        if ($transaction->trans_type === 'Top Up') {
+            $newBalance = $user['wallet'] + $transaction->trans_amount;
+        } else if ($transaction->trans_type === 'Purchase') {
+            $newBalance = $user['wallet'] - $transaction->trans_amount;
+        } else {
+            $newBalance = $user['wallet']; 
+        }
+        return $newBalance;
+    }
+
+    return null;  
+}
+
+function updateWalletBalance($walletBalance, $member_id){
+    global $_db;
+
+    // Fetch the transaction
+    $stmt = $_db->prepare("UPDATE member SET wallet = ? WHERE member_id =? ");
+    $stmt->execute([$walletBalance, $member_id]);
+
+}
 
 
 //Product
-
 
 function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 {
@@ -985,10 +1094,43 @@ function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
 
     $stmt = $db->prepare($query);
     $stmt->execute($params);
-    return $stmt->fetchAll(PDO::FETCH_OBJ);
+    return $stmt->fetchAll();
 }
 
 
+function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
+{
+    $query = "
+        SELECT p.*, pp.photo 
+        FROM product p
+        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
+        WHERE 1=1
+    ";
+
+    $params = [];
+
+    if ($category) {
+        $query .= " AND p.category_name = ?";
+        $params[] = $category;
+    }
+
+    if ($category_id) {
+        $query .= " AND p.category_id = ?";
+        $params[] = $category_id;
+    }
+
+    if ($name) {
+        $query .= " AND p.description LIKE ?";
+        $params[] = "%$name%";
+    }
+
+    $query .= " ORDER BY $sort $dir";
+
+    $stm = $db->prepare($query);
+    $stm->execute($params);
+
+    return $stm->fetchAll();
+}
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '')
 {
@@ -1007,6 +1149,9 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     foreach ($categories as $main_category => $data) {
         $id = $data['id'];  // The category_id
         $has_subcategories = !empty($data['subcategories']);
+
+        // Debug: Log the category data
+        error_log("Processing category: $main_category (ID: $id)");
 
         // Main category: Disable if it has subcategories
         $disabled = $has_subcategories ? 'disabled' : '';
@@ -1031,9 +1176,10 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     echo '</select>';
 }
 
-function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment = null) {
-    $m = get_mail();  // Assume get_mail() returns a PHPMailer instance
-    $m->addAddress($email);  // Add the recipient email address
+function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment = null)
+{
+    $m = get_mail();
+    $m->addAddress($email);
     $m->Subject = $subject;
     $m->Body = $body;
     $m->isHTML($html);  // Set email format to HTML or plain text
@@ -1153,7 +1299,3 @@ function uploadFiles($files, $targetDir = 'product_gallery/', $allowedExtensions
 
     return $results;
 }
-
-
-
-

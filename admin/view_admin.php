@@ -5,7 +5,7 @@
 include('_admin_head.php');
 
 // Ensure that the logged-in user is a superadmin
-auth('Admin', 'Superadmin');
+auth('Admin', 'Superadmin', 'Product Manager');
 
 // Fetch the admin data based on the 'id' passed in the query string
 $admin_id = req('id'); // Get the ID of the admin to view

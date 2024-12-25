@@ -69,7 +69,7 @@ if (isset($_GET['chartData'])) {
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="#">View Orders</a></li>
+                    <li><a href="view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
