@@ -205,7 +205,7 @@ include '../_head.php';
                         <br>
 
                         <label for="state_<?= $address->address_id ?>"><strong>State:</strong></label>
-                        <?php html_select('state_'.$address->address_id, $_states, 'class="input-field"', $address->state) ?>
+                        <?php html_select('state_'.$address->address_id, $_states,'', 'class="input-field"', $address->state) ?>
                         <?= err('state_'.$address->address_id) ?>
                         <br>
 
@@ -223,7 +223,7 @@ include '../_head.php';
                         <br>
 
                         <button type="submit" class="save-btn">Save Changes</button>
-                        <button data-post="delete_address.php?id=<?= $address->address_id ?>" delete-confirm data-address-id="<?= $address->address_id ?>" class="delete-btn">Delete</button>
+                        <button data-post="delete_address.php?id=<?= $address->address_id ?>" delete-confirm data-address-ids="<?= $address->address_id ?>" class="delete-btn">Delete</button>
                     </form>
                     <hr>
                 <?php endforeach; ?>

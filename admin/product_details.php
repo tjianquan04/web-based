@@ -1,21 +1,5 @@
 <?php
-require '../_base.php';
-
-// Check if there's a success message in the session
-if (isset($_SESSION['success'])) {
-    // Display the success message
-    temp('info', $_SESSION['success']); // Use the session message directly
-    unset($_SESSION['success']); // Remove the success message from session
-}
-
-// Check if there are errors in the session
-if (isset($_SESSION['errors'])) {
-    // Loop through each error and display it
-    foreach ($_SESSION['errors'] as $error) {
-        temp('info', "Failed to update the product. Reason : " . $error); // Display each error with a prefix
-    }
-    unset($_SESSION['errors']); // Remove errors from session
-}
+include '_admin_head.php';
 
 
 
@@ -41,137 +25,9 @@ if (!$product) {
     die('Product not found');
 }
 
-
-// Include the header
-include '../_head.php';
 ?>
 
 <style>
-    /* Base styles */
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f8f8;
-        color: #333;
-    }
-
-    /* Header styling */
-    h1,
-    h2,
-    h3 {
-        color: #333;
-    }
-
-    /* Container for the product details */
-    .product-details {
-        width: 80%;
-        max-width: 1200px;
-        margin: 40px auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Product photo gallery */
-    .product-photos {
-        margin-bottom: 30px;
-    }
-
-    .product-photos h3 {
-        font-size: 1.5em;
-        margin-bottom: 15px;
-    }
-
-    .photo-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .product-photo {
-        width: 100%;
-        max-width: 250px;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Product info */
-    .product-info {
-        font-size: 1.1em;
-    }
-
-    .product-info p {
-        margin-bottom: 10px;
-    }
-
-    .product-info strong {
-        color: #555;
-    }
-
-    /* Price and stock quantity */
-    .product-info p strong {
-        font-weight: bold;
-    }
-
-    .product-info p:last-child {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #e94e77;
-        /* Price color */
-    }
-
-    /* Button styling */
-    button {
-        background-color: #e94e77;
-        color: #fff;
-        border: none;
-        padding: 12px 24px;
-        font-size: 1em;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #d43f63;
-    }
-
-    button:focus {
-        outline: none;
-    }
-
-    /* Back button container */
-    a {
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 20px;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .product-details {
-            width: 90%;
-        }
-
-        .photo-gallery {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .product-photo {
-            max-width: 100%;
-        }
-
-        .product-info p {
-            font-size: 1em;
-        }
-    }
-
-
-
     /* Modal styles */
     .modal {
         display: none;
@@ -209,9 +65,29 @@ include '../_head.php';
         text-decoration: none;
         cursor: pointer;
     }
-</style>
 
+     .back-button {
+        text-decoration: none;
+        font-size: 1.5em;
+        color:rgb(0, 0, 0);
+        margin-right: 10px;
+        transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color:rgb(220, 0, 0);
+    }
+
+
+</style>
+<link rel="stylesheet" href="../css/flash_msg.css">
+<link rel="stylesheet" href="../css/view_admin.css">
+<script src="../js/main.js"></script>
+
+<div class="container">
 <div class="product-details">
+        <a href="product_index.php" class="back-button">&larr;</a>
+
     <h1>Product Details</h1>
 
     <div class="product-photos">
@@ -219,29 +95,45 @@ include '../_head.php';
         <?php if ($photos): ?>
             <div class="photo-gallery">
                 <?php foreach ($photos as $photo): ?>
-                    <a href="product_photo.php?product_id=<?= $product->product_id ?>"><img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo"></a>
+                    <a href="product_photo.php?product_id=<?=$product->product_id ?>"><img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo"></a>
                 <?php endforeach; ?>
             </div>
-        <?php else: ?>
-            <p>No photos available for this product.</p>
-        <?php endif; ?>
+            <?php endif; ?>
     </div>
     <div class="product-info">
-        <h2><?= $product->description ?></h2>
-        <p><strong>Product ID:</strong> <?= $product->product_id ?></p>
-        <p><strong>Price:</strong> RM <?= number_format($product->unit_price, 2) ?></p>
-        <p><strong>Stock Quantity:</strong> <?= $product->stock_quantity ?></p>
+        <table>
+        <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Product ID</td>
+                <td class="value"><?= $product->product_id ?></td>
+            </tr>
+            <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Unit Price</td>
+                <td class="value">RM <?= number_format($product->unit_price, 2) ?></td>
+            </tr>
+            <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Stock Quantity</td>
+                <td class="value"><?= $product->stock_quantity ?></td>
+            </tr>
+            <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Category</td>
+                <td class="value"><?= $product->category_name ?></td>
+            </tr>
+            <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Subcategory</td>
+                <td class="value"><?= $subcategory['sub_category'] ?: 'None' ?></td>
+            </tr>
+            <tr>
+                <td class="label"><i class="fas fa-id-card"></i>Status</td>
+                <td class="value"><?= $product->status ?></td>
+            </tr>
 
-        <p><strong>Category:</strong> <?= $product->category_name ?></p>
-        <p><strong>Subcategory:</strong> <?= $subcategory['sub_category'] ?: 'None' ?></p>
-
-        <p><strong>Status:</strong><?= $product->status ?></p>
+        </table>
+       
     </div>
 
 
 </div>
 
-<a href="viewProduct.php"><button>Back</button></a>
 <button id="editBtn">Edit</button>
 
 
@@ -281,10 +173,6 @@ include '../_head.php';
         </form>
     </div>
 </div>
-<?php
-// Include the footer
-include '../_foot.php';
-?>
 
 <script>
     document.getElementById('editBtn').addEventListener('click', function() {

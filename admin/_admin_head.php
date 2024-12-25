@@ -41,7 +41,7 @@ $outOfStockCount = countOutOfStockProducts();
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
                     <ul id="product-menu" class="submenu">
-                        <li><a href="product_index.php">Add Product</a></li>
+                        <li><a href="product_index.php">Product Management</a></li>
                         <li><a href="#">Manage Inventory</a></li>
                     </ul>
                 <?php endif; ?>

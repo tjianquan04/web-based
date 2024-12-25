@@ -1,7 +1,6 @@
 <?php
-include '_admin_head.php';
+require '../_admin_head.php';
 require_once '../lib/SimplePager.php';
-
 
 // Set page number
 $page = req('page', 1);
@@ -51,14 +50,13 @@ echo "Page Count: " . $p->page_count;
 
 $_title = 'Product | Index';
 ?>
- <link rel="stylesheet" href="/css/admin_management.css">
 
 
 <div class="container">
 
-    <span class="total-record"><?= count($_products) ?> record(s)</span>
+<span class="total-record"><?= count($_products) ?> record(s)</span>
 
-    <table>
+<table>
     <thead>
         <tr>
             <th onclick="window.location.href='?sort=product_id&dir=<?= $sort === 'product_id' && $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>&page=<?= $page ?>'">Product ID</th>
@@ -90,6 +88,7 @@ $_title = 'Product | Index';
                 <td><?= $product->status ?></td>
                 <td><?= $product->dateAdded ?></td>
                 <td>
+                    <a href="#" class="btn btn-edit"><i class="fas fa-tools"></i> Edit</a>
                     <form action="deleteProduct.php" method="POST" style="display: inline;">
                         <input type="hidden" name="product_id" value="<?= $product->product_id ?>">
                         <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this product?')">
@@ -100,13 +99,13 @@ $_title = 'Product | Index';
             </tr>
         <?php endforeach; ?>
     </tbody>
-    </table>
+</table>
 
-    <a href="addProduct.php" class="btn btn-add"><i class="fas fa-plus-circle"></i> Add New Product</a>
-    <div class="pagination">
+<a href="addProduct.php" class="btn btn-add"><i class="fas fa-plus-circle"></i> Add New Product</a>
+<div class="pagination">
     <?= generateDynamicPagination($p, $sort, $dir); ?>
-    </div>
+</div>
 </div>
 
 
-
+<?php include '../_foot.php'; ?>
