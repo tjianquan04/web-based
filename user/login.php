@@ -119,7 +119,7 @@ $rememberedPassword = $_COOKIE['remember_user_password'] ?? '';
 
                 <button type="submit" class="btn-signin">Sign in</button>
             </form>
-            <p class="signup-text">Don't have an account? <a href="signup.php">Sign up for free!</a></p>
+            <p class="signup-text">Don't have an account? <a href="register.php">Sign up for free!</a></p>
         </div>
 
         <!-- Right Section: Image -->
