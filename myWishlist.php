@@ -68,21 +68,20 @@ include '_head.php';
 
     .remove-btn {
         text-decoration: none;
-        background-color: #E53935;
-        color: #fff;
+        background-color:transparent;
+        color: #C62828;
         padding: 8px 15px;
-        border-radius: 5px;
         font-size: 14px;
-        transition: background-color 0.3s;
     }
 
     .remove-btn:hover {
-        background-color: #C62828;
+        color: #777;
     }
 
     .remove-btn:active {
-        background-color: #B71C1C;
+        color: #777;
     }
+
 
     .no-items {
         text-align: center;
@@ -100,27 +99,36 @@ include '_head.php';
             <p class="no-items">Your wishlist is empty.</p>
         <?php else: ?>
             <table>
+    <tbody>
+    <?php foreach ($wishlist_items as $item): ?>
+    <tr>
+        <td class="item-image">
+            <?php if ($item['product_photo_id']): ?>
+                <a href="product_card.php?product_id=<?= $item['product_id'] ?>">
+                    <img src="/product_gallery/<?= $item['product_photo_id'] ?>" alt="<?= $item['description'] ?>" />
+                </a>
+            <?php else: ?>
+                <a href="product_card.php?product_id=<?= $item['product_id'] ?>">
+                    <img src="/product_gallery/default.jpg" alt="<?= $item['description'] ?>" />
+                </a>
+            <?php endif; ?>
+        </td>
+        <td>
+            <a href="product_card.php?product_id=<?= $item['product_id'] ?>"><?= $item['description'] ?></a>
+        </td>
+        <td><?= $item['category_name'] ?></td>
+        <td>RM <?= $item['unit_price'] ?></td>
+        <td>
+            <a href="javascript:void(0);" class="remove-btn" data-product-id="<?= $item['product_id'] ?>">
+                <i class="wishlist-icon fa-sharp fa-solid fa-heart" aria-label="Remove from wishlist"></i>
+            </a>
+        </td>
+    </tr>
+<?php endforeach; ?>
 
-                <tbody>
-                    <?php foreach ($wishlist_items as $item): ?>
-                        <tr>
-                            <td class="item-image">
-                                <?php if ($item['product_photo_id']): ?>
-                                    <img src="/product_gallery/<?= $item['product_photo_id'] ?>" alt="<?= $item['description'] ?>" />
-                                <?php else: ?>
-                                    <img src="/product_gallery/default.jpg" alt="<?= $item['description'] ?>" />
-                                <?php endif; ?>
-                            </td>
-                            <td><?= $item['description'] ?></td>
-                            <td><?= $item['category_name'] ?></td>
-                            <td>RM <?= $item['unit_price'] ?></td>
-                            <td>
-                                <!-- <a href="/wishlist-action.php?action=remove&product_id=<?= $item['product_id'] ?>" class="remove-btn">Remove</a> -->
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    </tbody>
+</table>
+
         <?php endif; ?>
     </section>
 </div>
@@ -128,3 +136,44 @@ include '_head.php';
 <?php
 include '_foot.php';
 ?>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault(); // Prevent default link behavior
+            const productId = button.dataset.productId;
+
+            fetch('/wishlist-action.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'remove', // Action for removal
+                    product_id: productId,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the item row from the table
+                    button.closest('tr').remove();
+
+                    // Check if the table is now empty
+                    if (document.querySelectorAll('tbody tr').length === 0) {
+                        document.querySelector('.main').innerHTML =
+                            '<p class="no-items">Your wishlist is empty.</p>';
+                    }
+                } else {
+                    alert(data.error || 'Error removing item.');
+                }
+            })
+            .catch(() => {
+                alert('An unexpected error occurred.');
+            });
+        });
+    });
+});
+
+</script>

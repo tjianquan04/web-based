@@ -37,6 +37,8 @@ include '_head.php';
 <script src="/js/cart.js" defer></script>
 
 <div class="container">
+<a href="menu.php" class="back-button">&larr;</a>
+
     <section class="main">
         <div class="default gallery">
             <div class="main-img">

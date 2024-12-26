@@ -110,7 +110,6 @@ function getCurrentDefaultPhotoId($product_id)
     }
 
     body {
-        font-family: Arial, sans-serif;
         background-color: #fff;
         display: flex;
         flex-direction: column;
@@ -137,13 +136,13 @@ function getCurrentDefaultPhotoId($product_id)
     header .back-button {
         text-decoration: none;
         font-size: 1.5em;
-        color: #e94e77;
+        color:rgb(253, 10, 10);
         margin-right: 10px;
         transition: color 0.3s ease;
     }
 
     header .back-button:hover {
-        color: #d43f63;
+        color:rgb(0, 0, 0);
     }
 
     header h1 {
@@ -197,12 +196,12 @@ function getCurrentDefaultPhotoId($product_id)
     .cover-photo-message {
         display: none;
         position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: rgba(234, 234, 234, 0.7);
+        top: 200px;
+        left: 150px;
+        opacity: 0.5;
+        background-color: white;
         color: black;
         padding: 10px;
-        border-radius: 5px;
         font-size: 16px;
         text-align: center;
     }
@@ -263,8 +262,8 @@ function getCurrentDefaultPhotoId($product_id)
     }
 
     .add-photo button {
-        background-color:rgb(244, 131, 193);
-        color: white;
+        background-color:transparent;
+        color: black;
         padding: 10px 20px;
         border: none;
         border-radius: 5px;
@@ -272,7 +271,7 @@ function getCurrentDefaultPhotoId($product_id)
     }
 
     .add-photo button:hover {
-        background-color:rgb(255, 213, 223);
+        color: #777;
     }
 </style>
 
@@ -392,7 +391,7 @@ document.getElementById("add_new_photos_form").addEventListener("submit", functi
     if (selectedFilesCount === 0) {
         event.preventDefault();
         messageContainer.style.display = "block";
-        messageContainer.textContent = "Please select at least one photo before .";
+        messageContainer.textContent = "Please select at least one photo to add .";
         
         return;
     }
@@ -400,7 +399,7 @@ document.getElementById("add_new_photos_form").addEventListener("submit", functi
     if (currentPhotoCount + selectedFilesCount > maxPhotoCount) {
         event.preventDefault();
         messageContainer.style.display = "block";
-        messageContainer.textContent = `You can only upload up to ${maxPhotoCount} photos. Please reduce the number of selected files.`;
+        messageContainer.textContent = `Maximum ${maxPhotoCount} photos for a product at a time`;
         
         return;
     }

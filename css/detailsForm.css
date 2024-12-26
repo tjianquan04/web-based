@@ -12,19 +12,16 @@
 img {
     max-width: 200px;
     height: auto;
-    border-radius: 50%;
     margin-bottom: 20px;
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Admin Info */
-.admin-info {
+.product-info {
     margin-top: 10px;
 }
 
-/* Table styling for admin info */
 table {
     width: 100%;
     border-collapse: collapse;
