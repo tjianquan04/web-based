@@ -1,3 +1,4 @@
+/* Container to align everything */
 .container {
     margin-left: 280px;
     padding: 20px 20px;
@@ -7,8 +8,8 @@
     margin-right: 20px;
 }
 
-
-.member-photo img {
+/* Admin Photo */
+img {
     max-width: 200px;
     height: auto;
     border-radius: 50%;
@@ -18,10 +19,12 @@
     margin-right: auto;
 }
 
-.member-info {
+/* Admin Info */
+.admin-info {
     margin-top: 10px;
 }
 
+/* Table styling for admin info */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -35,12 +38,12 @@ table td {
 
 .label {
     font-weight: bold;
-    width: 200px;
-    align-items: center;  
+    width: 150px;
+    align-items: center;  /* Align icon and text */
 }
 
 .label i {
-    margin-right: 10px;  
+    margin-right: 10px;  /* Space between icon and label text */
 }
 
 .value {
@@ -48,32 +51,24 @@ table td {
     padding-left: 50px;
 }
 
-
+/* Grey color for the line */
 table td {
     border-bottom: 1px solid #ddd;
 }
 
-
+/* Remove bottom border for the last row */
 table tr:last-child td {
     border-bottom: none;
 }
 
-.no-address {
-    padding: 20px;
-    border: 2px dashed #ff4d4d;
-    border-radius: 8px;
-    background-color: #ffe6e6;
-    text-align: center;
-    font-size: 16px;
-    color: #d43f3f;
+.back-button {
+    text-decoration: none;
+    font-size: 1.5em;
+    color: #e94e77;
+    margin-right: 10px;
+    transition: color 0.3s ease;
 }
 
-
-.address {
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+.back-button:hover {
+    color: #d43f63;
 }

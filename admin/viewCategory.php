@@ -1,7 +1,8 @@
 <?php
-include '../_admin_head.php';
-require_once '../../lib/SimplePager.php';
+include '_admin_head.php';
+require_once '../lib/SimplePager.php';
 
+auth('Superadmin', 'Product Manager');
 
 // Set page number
 $page = req('page', 1);
@@ -14,7 +15,7 @@ $sort = req('sort', 'category_name'); // Default sorting field
 $dir = req('dir', 'asc'); // Default sorting direction
 
 // Base query
-$query = 'SELECT * FROM category';
+$query = "SELECT * FROM category WHERE status NOT LIKE 'Discontinued'";
 
 // Append search filters
 $params = [];
@@ -53,7 +54,7 @@ $_title = 'Category Management';
 
 <div class="container">
 
-<p><?= count($_categories) ?> record(s)</p>
+<p><?= count($_categories) ?> record(s)</p> 
 
 <table>
     <thead>
@@ -98,42 +99,13 @@ $_title = 'Category Management';
     </tbody>
 </table>
 
-<a href="category_insert.php"><button>Add new category</button></a>
+<a href="category_insert.php"  class="btn btn-add"><i class="fas fa-plus-circle">Add new category</a>
+<a href="deletedCategory.php"  class="btn btn-trash"><i class="fa-solid fa-trash-can"></i></a>
+
 <div class="pagination">
     <?= generateDynamicPagination($p, $sort, $dir); ?>
 </div>
 
-<!-- Popup Modal -->
-<div class="popup-overlay" id="categoryPopup">
-    <div class="popup">
-        <!-- Close Button (X) -->
-        <span class="popup-close" onclick="closeCategoryPopup()">&times;</span>
 
-        <h3>Category Details</h3>
-        <p><strong>Category ID:</strong> <span id="popupCategoryID"></span></p>
-        <p><strong>Category Name:</strong> <span id="popupCategoryName"></span></p>
-        <p><strong>Subcategory:</strong> <span id="popupSubCategory"></span></p>
-        <p><strong>Photo:</strong></p>
-        <img src="" id="popupCategoryPhoto" alt="Category Photo" class="category-photo" style="width: 150px; height: auto;">
-    </div>
-</div>
 
 </div>
-<!-- <script>
-    function showCategoryDetails(categoryID, categoryName, subCategory, categoryPhoto) {
-        // Set the values in the popup
-        document.getElementById('popupCategoryID').textContent = categoryID;
-        document.getElementById('popupCategoryName').textContent = categoryName;
-        document.getElementById('popupSubCategory').textContent = subCategory;
-        document.getElementById('popupCategoryPhoto').src = "../image/" + categoryPhoto;
-
-        // Show the popup
-        document.getElementById('categoryPopup').style.display = 'block';
-    }
-
-    function closeCategoryPopup() {
-        // Hide the popup
-        document.getElementById('categoryPopup').style.display = 'none';
-    }
-</script> -->
-

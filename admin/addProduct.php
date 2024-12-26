@@ -1,8 +1,9 @@
 <?php
 include '_admin_head.php';
 
+auth('Superadmin', 'Product Manager');
 // Fetch categories and subcategories
-$categories = $_db->query('SELECT category_id, category_name, sub_category FROM category')->fetchAll();
+$categories = $_db->query('SELECT * FROM category WHERE status NOT LIKE "Discontinued"')->fetchAll();
 
 $grouped_categories = [];
 foreach ($categories as $cat) {
@@ -170,6 +171,8 @@ $_title = 'Product | Insert';
 
 
 <div class="container">
+<a href="product_index.php" class="back-button">&larr;</a>
+
     <h1>Insert a new product</h1>
     <form method="post" class="form" enctype="multipart/form-data" novalidate class="product-form" id="addProductForm">
 

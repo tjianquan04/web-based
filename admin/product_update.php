@@ -1,6 +1,7 @@
 <?php
 include "../_base.php";
 
+auth('Superadmin', 'Product Manager');
 // Retrieve input values
 $product_id = req('product_id');
 $unit_price = req('unit_price');
@@ -30,30 +31,22 @@ if ($stock_quantity === '' || !is_numeric($stock_quantity) || $stock_quantity < 
 }
 
 if ($status == 'LimitedEdition' && $invalid_date !== null) {
-    if (!strtotime($invalid_date)) {
+    $invalid_date_object = DateTime::createFromFormat('Y-m-d', $invalid_date);
+    if (!$invalid_date_object) {
         $_err['invalid_date'] = 'Invalid date format.';
     } else {
-        $stmt = $_db->prepare('SELECT dateAdded FROM product WHERE product_id = ?');
-        $stmt->execute([$product_id]);
-        $product = $stmt->fetch();
+        $added_date_object = new DateTime($product->dateAdded);
+        $current_date_object = new DateTime();
 
-        if ($product) {
-            $added_date = $product->dateAdded;
-            $invalid_date_timestamp = strtotime($invalid_date);
-            $added_date_timestamp = strtotime($added_date);
-            $current_date_timestamp = time();
-
-            if ($invalid_date_timestamp <= $added_date_timestamp) {
-                $_err['invalid_date'] = 'Invalid date must be after the product added date.';
-            }
-            if ($invalid_date_timestamp <= $current_date_timestamp) {
-                $_err['invalid_date'] = 'Invalid date must be after the current date.';
-            }
-        } else {
-            $_err['product'] = 'Product not found.';
+        if ($invalid_date_object <= $added_date_object) {
+            $_err['invalid_date'] = 'Invalid date must be after the product added date.';
+        }
+        if ($invalid_date_object <= $current_date_object) {
+            $_err['invalid_date'] = 'Invalid date must be after the current date.';
         }
     }
 }
+
 
 if (!empty($_err)) {
     $_SESSION['errors'] = $_err;
@@ -112,11 +105,13 @@ try {
         header("Location: product_details.php?product_id=$product_id");
         exit;
     }
-} catch (Exception $e) {
+}catch (Exception $e) {
     $_db->rollBack();
-    $_err['exception'] = 'An error occurred: ' . $e->getMessage();
+    error_log("[ERROR] Product update failed: " . $e->getMessage());
+    $_err['exception'] = 'An unexpected error occurred. Please try again later.';
     $_SESSION['errors'] = $_err;
     header("Location: product_details.php?product_id=$product_id");
     exit;
 }
+
 ?>

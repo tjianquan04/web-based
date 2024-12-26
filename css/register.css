@@ -1,36 +1,61 @@
-body {
-    background: url('/image/badminton_bg2.jpeg') no-repeat center center fixed; 
-    background-size: cover; 
-    margin: 0; 
-    font-family: Arial, sans-serif; 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-main {
+/* Container */
+.login-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80vh; 
-    padding: 20px;
-}
-
-.form-section {
-    background: rgba(255, 255, 255, 0.9); 
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 500px; 
-    padding: 20px;
     width: 100%;
-    margin: 2em auto;
+    max-width: 1200px;
+    margin: 100px auto; /* Center the container */
+    background: rgba(255, 255, 255, 0.9); /* White container with transparency */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    height: 90vh;
 }
 
-.form-section .form-header h1 {
-    margin-bottom: 30px;
-    margin-top: 20px;
+/* Left Side: Login Form */
+.form-container {
+    flex: 2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+    margin: 50px; /* Ensure a white background for the form */
+}
+
+.form-container h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
     color: #333;
-    font-size: 24px;
-    text-align: center;
 }
 
+.form-container p {
+    color: #555;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    width: 100%; /* Ensure inputs adjust to the container */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%; /* Input field width */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 .form-section .link-container {
     display: flex;
     justify-content: center;  
@@ -39,60 +64,90 @@ main {
     gap: 5px;
 }
 
-.form-section .link-container a {
-    color: #007bff;
-    text-decoration: none;
+.signIn-text {
+    text-align: center;
+    margin-top: 20px;
+    color: #555;
+    width: 100%; /* Match the width of inputs and buttons */
 }
 
-.form-section .link-container a:hover {
+.signIn-text a {
+    color: #ff5a5f;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signIn-text a:hover {
     text-decoration: underline;
 }
 
-.form-section form label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    margin-left: 10%;
-    font-size: 0.95em;
-}
-
-.form-section form .form-control {
-    width: 75%;  
-    padding: 12px; 
-    margin: 5px 0 10px 10%; 
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-}
-
-.form-section form .form-control:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.form-section form button {
-    width: 80%; 
-    padding: 12px;
-    font-size: 1.1em;
-    margin-top: 15px;
-    margin-left: 10%;
-    background: #f5b041;
-    color: #fff;
+.btn-signup {
+    width: 100%; 
+    padding: 10px;
+    background-color: #ff5a5f;
+    color: white;
     border: none;
     border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
+    margin-bottom: 15px;
 }
 
-.form-section form button:hover {
-    background: #e67e22;
+.btn-signup:hover {
+    background-color: #e74c3c;
 }
 
-.form-section .error-message {
+
+.form-container .error-message {
     color: red;
     font-size: 0.85em;
     margin-top: 5px; 
-    margin-bottom: 30px;
-    margin-left: 10%; 
-    width: 75%; 
+    margin-bottom: 30px; 
+    width: 100%; 
+}
+
+.slideshow-container {
+    flex: 3; /* Takes up the remaining space on the right side */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;  
+    height: 90vh; 
+    background: #f9f9f9;
+    position: relative; 
+    padding: 0;
+}
+
+/* Slides */
+.mySlides {
+    display: none;
+    width: 100%; 
+    height: 100%; 
+    position: absolute; /* Position slides over each other */
+    padding: 0;
+}
+
+.mySlides img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* Ensures the image scales to cover the container */
+    object-position: center; /* Centers the image within the container */
+    margin: 0; 
+    padding: 0; 
+}
+
+/* Fading animation */
+.fade {
+    animation-name: fade;
+    animation-duration: 2.5s;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0.4;
+    }
+    to {
+        opacity: 1;
+    }
 }

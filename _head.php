@@ -12,7 +12,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
-    <link rel="stylesheet" href="/css/category.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cms.cdn.91app.com.my/cms/common/iconFonts/v1.1.13/nine1/nine1.css">
@@ -37,6 +36,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                         <li class="right">
                             <a href="/cart.php"><i class="ico ico-shopping"></i></a>
+                            <a href="/myWishlist.php"><i class="fa-solid fa-heart-circle-check"></i></a>
                         </li>
                     </ul>
                 </div>

@@ -701,6 +701,12 @@ function login($user, $url = '/')
     redirect($url);
 }
 
+function userLogin($user, $url = '/')
+{
+    $_SESSION['user'] = $user;
+    redirect($url);
+}
+
 // Logout user
 function logout($url = '/')
 {
@@ -730,6 +736,19 @@ function auth(...$roles)
     }
 
     redirect('admin_login.php');
+}
+
+function authMember($member){
+
+    if ($member != NULL) {
+            if ($member->status === 'Active') {
+                return;  
+            } else {
+                $_err = 'Your account is inactive. Please contact support.';
+                redirect('login.php');
+            }
+    }
+    redirect('login.php');
 }
 
 // Generate table headers <th>
@@ -1117,71 +1136,8 @@ function updateWalletBalance($walletBalance, $member_id){
 
 //Product
 
-function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
-{
-    $params = [];
-    $query = "
-        SELECT p.*, pp.product_photo_id
-        FROM product p
-        LEFT JOIN product_photo pp 
-        ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = '%' . $name . '%';
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    return $stmt->fetchAll();
-}
 
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
-{
-    $query = "
-        SELECT p.*, pp.photo 
-        FROM product p
-        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = "%$name%";
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stm = $db->prepare($query);
-    $stm->execute($params);
-
-    return $stm->fetchAll();
-}
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '')
 {

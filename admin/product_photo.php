@@ -1,6 +1,7 @@
 <?php
 require '../_base.php';
 
+auth('Superadmin', 'Product Manager');
 // Get the product ID from the query string
 $product_id = req('product_id');
 
@@ -276,7 +277,7 @@ function getCurrentDefaultPhotoId($product_id)
 </style>
 
 <header>
-    <a href="product_details.php" class="back-button">&larr;</a>
+<a href="product_details.php?product_id=<?= $product_id ?>" class="back-button">&larr;</a>
     <h1>Product Image</h1>
 </header>
 
@@ -385,11 +386,9 @@ document.getElementById("add_new_photos_form").addEventListener("submit", functi
     const selectedFilesCount = fileInput.files.length;
     const maxPhotoCount = 3;
 
-    // Reset message
     messageContainer.style.display = "none";
     messageContainer.textContent = "";
 
-    // Case 1: No files selected
     if (selectedFilesCount === 0) {
         event.preventDefault();
         messageContainer.style.display = "block";
@@ -398,7 +397,6 @@ document.getElementById("add_new_photos_form").addEventListener("submit", functi
         return;
     }
 
-    // Case 2: Exceeding the photo limit
     if (currentPhotoCount + selectedFilesCount > maxPhotoCount) {
         event.preventDefault();
         messageContainer.style.display = "block";
@@ -407,7 +405,6 @@ document.getElementById("add_new_photos_form").addEventListener("submit", functi
         return;
     }
 
-    // If all checks pass, form submission proceeds
 });
 
 

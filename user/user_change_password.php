@@ -1,9 +1,8 @@
 <?php
 require '../_base.php';
 
-$memberId = req('id');
-
-$s = getMemberbyId($memberId);
+$member = $_SESSION['user'];
+authMember($member);
 
 if (is_post()) {
     $current_password = req('current_password');
@@ -12,7 +11,7 @@ if (is_post()) {
 
     if(empty( $current_password)){
         $_err['current_password'] = 'Current password is required.';
-    }else if (!validCurrentPassword($current_password, $memberId)){
+    }else if (!validCurrentPassword($current_password, $member->member_id)){
         $_err['current_password'] = 'Current password is invalid.';
     }
 
@@ -32,11 +31,10 @@ if (is_post()) {
             $stm = $_db->prepare('UPDATE member
                                   SET password = SHA1(?)
                                   WHERE member_id = ?');
-            $stm->execute([$new_password, $memberId]);
+            $stm->execute([$new_password, $member->member_id]);
         
 
         temp('info','User password updated');
-        redirect('user_profile.php?id='.$memberId);
     }
 }
 
@@ -50,11 +48,10 @@ include '../_head.php';
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $s->member_id?>" style="color: #ff5e3a;">Profile</a>
-            <a href="user_address.php?id=<?= $s->member_id?>">Addresses</a>
-            <a href="user_change_password.php?id=<?= $s->member_id?>">Change Password</a>
-            <a href="user_wallet.php?id=<?= $s->member_id?>">My Wallet</a>
-            <a href="user_top_up.php?id=<?= $s->member_id?>">Top Up</a>
+            <a href="user_profile.php">Profile</a>
+            <a href="user_address.php">Addresses</a>
+            <a href="user_change_password.php">Change Password</a>
+            <a href="user_wallet.php">My Wallet</a>
         </div>
 
         <!-- Profile Content -->

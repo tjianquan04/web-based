@@ -1,5 +1,6 @@
 <?php
-require '../_base.php';
+
+include '../admin/_admin_head.php';
 
 $memberId = req('id');
 
@@ -16,46 +17,64 @@ $addressStm = $_db->prepare('SELECT * FROM address WHERE member_id = ?');
 $addressStm->execute([$memberId]);
 $addressArr = $addressStm->fetchAll();
 
-include '../_head.php';
+
 ?>
 
 <link rel="stylesheet" href="../css/view_member.css">
 
 <body>
-    <div class="profile-container">
-        <h2>Member Details</h2>
+    <div class="container">
+        <h2>Member Profile</h2>
         <div class="profile-details">
+            <div class="member-photo">
             <img src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>" alt="Profile Photo">
-            <div class="details">
-                <h4>Member ID: <?= $s->member_id ?></h4>
-                <p><strong>Name:</strong> <?= $s->name ?></p>
-                <p><strong>Email:</strong> <?= $s->email ?></p>
-                <p><strong>Contact:</strong> <?= $s->contact ?></p>
-                <p><strong>Status:</strong> 
-                    <span class="<?= $s->status == 1 ? 'status-active' : 'status-inactive' ?>">
-                        <?= $s->status == 1 ? 'Active' : 'Inactive' ?>
-                    </span>
-                </p>
+            </div>
+            <div class="member-info">
+                <table>
+                    <tr>
+                    <td class="label"><i class="fas fa-id-card"></i>Member ID</td>
+                    <td class="value"><?= $s->member_id ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fas fa-user"></i>Name</td>
+                    <td class="value"><?= $s->name ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fas fa-envelope"></i>Email</td>
+                    <td class="value"><?= $s->email ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fas fa-phone"></i>Contact</td>
+                    <td class="value"><?= $s->contact ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fa fa-credit-card"></i>Wallet</td>
+                    <td class="value">RM <?= $s->wallet ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fa fa-calendar"></i>Registered Date</td>
+                    <td class="value"><?= $s->register_date ?></td>
+                    </tr>
+                    <tr>
+                    <td class="label"><i class="fas fa-check-circle"></i>Status</td>
+                    <td class="value"><?= $s->status ?></td>
+                    </tr>
+                </table>
             </div>
         </div>
         <br>
-        <div class="address-container">
-            <h2>Member Addresses</h2>
+        <h2>Member Addresses</h2>
             <?php foreach ($addressArr as $address): ?>
                 <div class="address <?= $address->is_default ? 'default-address' : '' ?>">
-                    <p><strong>Address:</strong> <?= $address->address_line ?></p>
-                    <p><strong>State:</strong> <?= $address->state?></p>
-                    <p><strong>Postal Code:</strong> <?= $address->postal_code ?></p>
+                    <p><strong>Address ID:</strong> <?= $address->address_id ?></p>
+                    <p><strong>Address:</strong> <?= $address->address_line . ', ' . $address->postal_code . ', ' . $address->state ?></p>
                     <?php if ($address->is_default): ?>
                         <p style="color: green;">(Default Address)</p>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
-        </div>
+
+    <button class="go-back" onclick="redirect('../admin/member_management.php')">Go Back</button>
     </div>
-    <button class="go-back" onclick="window.history.back()">Go Back</button>
 </body>
 
-<?php
-include '../_foot.php';
-?>
