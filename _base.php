@@ -610,6 +610,57 @@ function countLowStockProducts()
     return $result['total'] ?? 0; // Return the count or 0 if no results
 }
 
+function batchUpdate($selected_ids, $role = null, $status = null) {
+    global $_db;
+
+    $query = "UPDATE admin SET ";
+    $params = [];
+    $setClauses = [];
+
+    if ($role) {
+        $setClauses[] = "`role` = :role";
+        $params[':role'] = $role;
+    }
+
+    if ($status) {
+        $setClauses[] = "`status` = :status";
+        $params[':status'] = $status;
+    }
+
+    $query .= implode(", ", $setClauses);
+    $query .= " WHERE `admin_id` IN (" . implode(", ", $selected_ids) . ")";
+
+    try {
+        $_db->prepare($query)->execute($params);
+        return "Batch update successful.";
+    } catch (Exception $e) {
+        return "Error updating records: " . $e->getMessage();
+    }
+}
+
+function batchDelete($ids) {
+    try {
+        global $_db;
+        
+        // Create placeholders for ID IN clause
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        
+        // Construct SQL query
+        $sql = "DELETE FROM admin WHERE admin_id IN ($placeholders)";
+        
+        // Execute the query
+        $stmt = $_db->prepare($sql);
+        $stmt->execute($ids);
+
+        return "Batch delete completed successfully.";
+    } catch (PDOException $e) {
+        return "Error: " . $e->getMessage();
+    }
+}
+
+
+
+
 /*
 function getProductSalesByCategory()
 {
