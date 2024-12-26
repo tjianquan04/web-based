@@ -913,6 +913,27 @@ function html_select($key, $items, $default = '', $attr = '', $currentValue = nu
     echo '</select>';
 }
 
+function filter_select($id, $name, $options, $default = '', $attributes = '', $selectedValue = null) {
+
+    $currentValue = htmlspecialchars($selectedValue ?? '');
+    
+    // Start the select element
+    echo "<select id='$id' name='$name' $attributes>";
+    
+    // Add the default option
+    echo $default !== '' 
+        ? "<option value=''>$default</option>" 
+        : "<option value='' disabled selected>- Select One -</option>";
+    
+    // Add the options
+    foreach ($options as $value => $label) {
+        $isSelected = $value == $currentValue ? 'selected' : '';
+        echo "<option value='" . htmlspecialchars($value) . "' $isSelected>" . htmlspecialchars($label) . "</option>";
+    }
+    
+    echo "</select>";
+}
+
 
 // Generate <input type='checkbox'>
 function html_checkbox($key, $status = 'inactive', $attr = '')
@@ -1111,7 +1132,7 @@ $_states = [
 function getTransactionHistory($member_id){
     global $_db;
     $stmt = $_db->prepare("
-        SELECT * FROM transaction WHERE member_id = ? 
+        SELECT * FROM transactions WHERE member_id = ? 
     ");
     $stmt->execute([$member_id]);
     return $stmt->fetchAll(PDO::FETCH_OBJ);
