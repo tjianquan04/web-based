@@ -3,28 +3,35 @@ include('_admin_head.php');
 require_once '../lib/SimplePager.php';
 
 // Superadmin authentication
-auth('Superadmin','Admin','Product Manager');
+auth('Superadmin', 'Admin', 'Product Manager');
 
 // Sanitize and validate the sort and direction parameters
-$valid_columns = ['admin_id', 'admin_name', 'role', 'status'];  // List of valid columns for sorting
-$valid_dirs = ['asc', 'desc'];  // Valid directions
+$valid_columns = ['admin_id', 'admin_name', 'role', 'status']; // List of valid columns for sorting
+$valid_dirs = ['asc', 'desc']; // Valid directions
 
-// Retrieve sort and direction from query parameters or use defaults
-$sort = in_array(req('sort'), $valid_columns) ? req('sort') : 'admin_id';  // Default to 'admin_id'
-$dir = in_array(req('dir'), $valid_dirs) ? req('dir') : 'asc';  // Default to 'asc'
+$sort = in_array(req('sort'), $valid_columns) ? req('sort') : 'admin_id';
+$dir = in_array(req('dir'), $valid_dirs) ? req('dir') : 'asc';
 
-// Set page number
 $page = req('page', 1);
-
-// Search logic
 $search = req('search', ''); // Capture the search term
 $search_query = '';
 $params = []; // Query parameters for prepared statements
 
 if (!empty($search)) {
-    // Append the search condition
     $search_query = " AND (admin_id LIKE :search OR admin_name LIKE :search OR email LIKE :search OR role LIKE :search)";
     $params[':search'] = '%' . $search . '%'; // Add wildcard search term
+}
+
+// Process Batch Actions
+// Process Batch Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $selected_ids = $_POST['selected'] ?? [];
+
+    if (!empty($selected_ids)) {
+        $message = batchDelete($selected_ids);
+    } else {
+        $message = "No selected admins for batch delete.";
+    }
 }
 
 // Integrate search query into the final query
@@ -36,10 +43,7 @@ $p = new SimplePager(
 );
 
 $admins = $p->result;
-
-// Get total number of admins (excluding 'superadmin')
 $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superadmin'")->fetchColumn();
-
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +54,6 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Management</title>
     <link rel="stylesheet" href="/css/admin_management.css">
-    <script src="/js/swal.js"></script>
 </head>
 
 <body>
@@ -75,12 +78,12 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
         </div>
 
         <!-- Admin Table -->
-        <form id="batchForm" action="batch_action.php" method="POST">
+        <form method="POST" action="admin_management.php">
             <table border="1">
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="selectAll" /></th>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>
                             <a href="?sort=admin_id&dir=<?= ($sort == 'admin_id' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
                                 Admin ID
@@ -95,10 +98,48 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
                                 <?php endif; ?>
                             </a>
                         </th>
-
-                        <th>Admin Name</th>
-                        <th>Role</th>
-                        <th>Status</th>
+                        <th>
+                            <a href="?sort=admin_name&dir=<?= ($sort == 'admin_name' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Admin Name
+                                <?php if ($sort == 'admin_name'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <i class="fas fa-sort arrow-right"></i>
+                                <?php endif; ?>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=role&dir=<?= ($sort == 'role' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Role
+                                <?php if ($sort == 'role'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <i class="fas fa-sort arrow-right"></i>
+                                <?php endif; ?>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=status&dir=<?= ($sort == 'status' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Status
+                                <?php if ($sort == 'status'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <i class="fas fa-sort arrow-right"></i>
+                                <?php endif; ?>
+                            </a>
+                        </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -132,7 +173,9 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
             <div class="batch-actions-container">
                 <div class="batch-actions-left">
                     <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
-                    <button type="button" id="batchActionBtn" class="btn btn-batch">Batch Action</button>
+                    <div class="batch-actions-container">
+                        <button type="submit" id="batchDeleteBtn" class="btn btn-delete" onclick='return confirm("Are you sure you want to delete the selected admins?");'> - Batch Delete</button>
+                    </div>
                 </div>
                 <div class="pagination-container">
                     <div class="pagination">
@@ -140,64 +183,29 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
                     </div>
                 </div>
             </div>
-
         </form>
-
-
-    </div>
-
-    <!-- Batch Action Modal -->
-    <div id="batchModal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Batch Actions</h2>
-            <form action="batch_process.php" method="POST">
-                <input type="hidden" name="selected_ids" id="selectedIds" />
-                <div>
-                    <label for="batchRole">Update Role:</label>
-                    <input type="text" id="batchRole" name="role" />
-                </div>
-                <div>
-                    <label for="batchStatus">Update Status:</label>
-                    <input type="text" id="batchStatus" name="status" />
-                </div>
-                <button type="submit" name="action" value="update">Update</button>
-                <button type="submit" name="action" value="delete">Batch Delete</button>
-            </form>
-        </div>
     </div>
 
     <script>
-        // Handle "Select All" checkbox
-        document.getElementById('selectAll').addEventListener('change', function() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectAllCheckbox = document.getElementById('selectAll');
             const checkboxes = document.querySelectorAll('input[name="selected[]"]');
-            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+
+            selectAllCheckbox.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+            });
+
+            document.getElementById('batchDeleteBtn').addEventListener('click', (event) => {
+                const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+                if (selectedCount === 0) {
+                    event.preventDefault(); // Prevent form submission
+                    alert("No selected records for deletion.");
+                }
+            });
         });
-
-        // Handle Batch Action button
-        document.getElementById('batchActionBtn').addEventListener('click', function() {
-            const selected = Array.from(document.querySelectorAll('input[name="selected[]"]:checked'));
-
-            if (selected.length === 0) {
-                showSwal('No selected record', 'error');
-                return;
-            }
-
-            const selectedIds = selected.map(input => input.value).join(',');
-            document.getElementById('selectedIds').value = selectedIds;
-
-            document.getElementById('batchModal').classList.remove('hidden');
-        });
-
-        // Close modal logic
-        document.querySelector('.modal .close').addEventListener('click', function() {
-            document.getElementById('batchModal').classList.add('hidden');
-        });
-
-        function showSwal(message, type) {
-            // Replace with your Swal implementation
-            alert(`${type.toUpperCase()}: ${message}`);
-        }
     </script>
+
 </body>
 
 </html>

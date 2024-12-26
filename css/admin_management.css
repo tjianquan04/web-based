@@ -172,6 +172,24 @@ table a {
     margin-top: 20px; /* Match top margin */
 }
 
+#batchDeleteBtn {
+    background-color: #dc3545;
+    border: 1px solid #ccc;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+#batchDeleteBtn:hover {
+    background-color: #c82333; /* Darker red for hover */
+    border-color: #bbb;
+}
+
 .btn-batch:hover {
     background-color: #aa7917; /* Match hover color */
 }
@@ -293,5 +311,91 @@ label i{
     max-width: 100%; /* Keep it within the container */
     box-sizing: border-box; /* Include padding in total width */
 }
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.6); /* Black background with opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 10% from top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 50%; /* Adjust modal width */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.modal-content label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.modal-content select,
+.modal-content input[type="radio"] {
+    margin: 5px 0 15px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 
 
