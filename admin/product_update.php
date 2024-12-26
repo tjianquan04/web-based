@@ -60,12 +60,16 @@ try {
     $update_stm = $_db->prepare('UPDATE product SET unit_price = ?, stock_quantity = ?, status = ? WHERE product_id = ?');
     $updateProduct = $update_stm->execute([$unit_price, $stock_quantity, $status, $product_id]);
 
+
     // Determine the value of invalidDate based on status and invalid_date
     $invalidDateValue = null; // Default to null
 
     if ($status == 'LimitedEdition' && $invalid_date !== null) {
         $invalidDateValue = $invalid_date;  // Set to the provided invalid_date if conditions are met
     }
+ 
+
+
 
     // Update the product with the determined invalidDate value
     $stm = $_db->prepare('UPDATE product SET invalidDate = ? WHERE product_id = ?');

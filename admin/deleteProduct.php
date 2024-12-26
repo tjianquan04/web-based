@@ -5,8 +5,14 @@ include '../_base.php';
 auth('Superadmin', 'Product Manager');
 // ----------------------------------------------------------------------------
 
-if (is_post()) {
-    $product_id = req('product_id');
+
+// Check if category_id is provided
+if (!isset($_GET['product_id'])) {
+    die("Error: No product ID provided.");
+}
+
+$product_id = $_GET['product_id'];
+  
     error_log("Attempting to delete product with ID: $product_id");
 
     // Fetch required data before deleting the product
@@ -69,7 +75,7 @@ if (is_post()) {
         error_log('Failed to update product status. Error: ' . json_encode($updateStatusStm->errorInfo()));
     }
     
-}
+
     
    
 ?>

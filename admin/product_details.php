@@ -191,11 +191,10 @@ if (!$product) {
        
     </div>
 
-
+    <?php if ($product->status !== 'Discontinued'): ?>
+        <button id="editBtn">Edit</button>
+    <?php endif; ?>
 </div>
-
-<button id="editBtn">Edit</button>
-
 
 <div id="editModal" class="modal">
     <div class="modal-content">

@@ -89,22 +89,40 @@ include '_head.php';
                     <span class="current-price">RM <?= $product->unit_price ?></span>
                 </div>
                 <div class="add-to-cart-container">
-                    <div class="counter">
-                        <button class="minus">
-                            <i class="fa-solid fa-minus"></i>
-                        </button>
-                        <span class="count">0</span>
-                        <button class="plus">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-                    <button class="add-to-cart">
-                        <span>
-                            <i class="ico ico-shopping"></i>
-                        </span>
-                        <span>Add to cart</span>
-                    </button>
-                </div>
+    <!-- Counter with minus and plus buttons, always visible -->
+    <div class="counter">
+        <button class="minus" 
+            <?php if ($product->status == 'OutOfStock'): ?> 
+                disabled
+            <?php endif; ?>
+        >
+            <i class="fa-solid fa-minus"></i>
+        </button>
+        <span class="count">0</span>
+        <button class="plus" 
+            <?php if ($product->status == 'OutOfStock'): ?> 
+                disabled
+            <?php endif; ?>
+        >
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Add to cart button -->
+    <button class="add-to-cart" 
+        <?php if ($product->status == 'OutOfStock'): ?> 
+            disabled 
+        <?php endif; ?>
+    >
+        <span>
+            <i class="ico ico-shopping"></i>
+        </span>
+        <span>
+            <?php echo ($product->status == 'OutOfStock') ? 'Out of Stock' : 'Add to cart'; ?>
+        </span>
+    </button>
+</div>
+
             </div>
         </div>
     </section>

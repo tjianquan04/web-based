@@ -16,7 +16,7 @@ $minPrice = req('minPrice', 0);     // Min price
 $maxPrice = req('maxPrice', 10000); // Max price
 
 $params = [];
-$query = "SELECT * FROM product WHERE status NOT LIKE 'Discontinued'";
+$query = "SELECT * FROM product WHERE status NOT LIKE 'Discontinued' AND status NOT LIKE 'Inactive'";
 
 if ($category) {
     $query .= " AND category_name LIKE ?";
@@ -111,8 +111,15 @@ include '_head.php';
                     <div class="product-content">
                         <div class="product-img">
                             <a href="product_card.php?product_id=<?= $p->product_id ?>">
+                            <?php if ($p->status == 'OutOfStock'): ?>
+                <div class="out-of-stock-overlay">
+                    <span>Out of Stock</span>
+                </div>
+            <?php endif; ?>
                                 <img src="/product_gallery/<?= $productPhotos[$p->product_id] ?? 'default.jpg' ?>" alt="Product Photo" class="category">
+                            
                             </a>
+                     
                         </div>
                     </div>
                     <div class="product-info">

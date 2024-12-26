@@ -285,6 +285,21 @@ img.category {
     opacity: 1;
 }
 
+.out-of-stock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+
+    border-radius: 5px;
+    z-index: 1;
+    text-align: center;
+}
+
 
 /* product collection */
 .product-collection{
