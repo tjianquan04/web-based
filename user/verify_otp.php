@@ -65,12 +65,11 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
         $m->Subject = 'Resend OTP Code';
         $m->Body = "
            <p>Dear $user->name,</p>
-            <h1 style='color: green'>Activate Boots Account</h1>
+            <h1 style='color: green'>Activate Boots.Do Account</h1>
             <p>
                Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
                </p>         
-            <p>From, Boots Admin</p>
-            <p>From, Admin</p>
+            <p>From, Boots.Do Admin</p>
         ";
         $m->send();
 
@@ -80,23 +79,31 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     }
 }
 ?>
-
+ <link rel="stylesheet" href="/css/verify_otp.css">
 <body>
-    <main>
-        <div class="form-section">
-            <div class="form-header">
-                <h1>Activate Your Account</h1>
-            </div>
+    <div class="send-otp-container">
+        <div class="form-container">
+            <button class="back-button" onclick="history.back()">&larr;</button>
+            <h1>Activate Your Account</h1>
+            <p>Please check your mailbox to get OTP code</p>
+
             <form method="post" class="form">
                 <input type="hidden" name="token_id" value="<?php echo htmlspecialchars($_GET['token_id'] ?? ''); ?>" />
-                <label for="otp">Enter OTP:</label>
+                
+                <div class="form-group">
+                <label for="otp"><i class="fa fa-lock"></i> OTP Code : </label>
                 <input type="text" name="otp" placeholder="Enter your OTP" required />
                 <?php err('otp_number'); ?>
-                <button type="submit">Submit</button>
-                <button type="button" id="resendOtp">Resend OTP</button>
+                </div>
+
+                <button type="submit" class="form-btn">Submit</button><br>
+                <button type="button" id="resendOtp" class="form-btn">Resend OTP</button>
             </form>
         </div>
-    </main>
+        <div class="image-container">
+            <img src="/image/forgot-password.png" alt="Reset Password Image">
+        </div>
+    </div>
 
     <script>
         document.getElementById('resendOtp').addEventListener('click', function () {

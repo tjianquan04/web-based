@@ -3,28 +3,35 @@ include('_admin_head.php');
 require_once '../lib/SimplePager.php';
 
 // Superadmin authentication
-auth('Superadmin','Admin','Product Manager');
+auth('Superadmin', 'Admin', 'Product Manager');
 
 // Sanitize and validate the sort and direction parameters
-$valid_columns = ['admin_id', 'admin_name', 'role', 'status'];  // List of valid columns for sorting
-$valid_dirs = ['asc', 'desc'];  // Valid directions
+$valid_columns = ['admin_id', 'admin_name', 'role', 'status']; // List of valid columns for sorting
+$valid_dirs = ['asc', 'desc']; // Valid directions
 
-// Retrieve sort and direction from query parameters or use defaults
-$sort = in_array(req('sort'), $valid_columns) ? req('sort') : 'admin_id';  // Default to 'admin_id'
-$dir = in_array(req('dir'), $valid_dirs) ? req('dir') : 'asc';  // Default to 'asc'
+$sort = in_array(req('sort'), $valid_columns) ? req('sort') : 'admin_id';
+$dir = in_array(req('dir'), $valid_dirs) ? req('dir') : 'asc';
 
-// Set page number
 $page = req('page', 1);
-
-// Search logic
 $search = req('search', ''); // Capture the search term
 $search_query = '';
 $params = []; // Query parameters for prepared statements
 
 if (!empty($search)) {
-    // Append the search condition
     $search_query = " AND (admin_id LIKE :search OR admin_name LIKE :search OR email LIKE :search OR role LIKE :search)";
     $params[':search'] = '%' . $search . '%'; // Add wildcard search term
+}
+
+// Process Batch Actions
+// Process Batch Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $selected_ids = $_POST['selected'] ?? [];
+
+    if (!empty($selected_ids)) {
+        $message = batchDelete($selected_ids);
+    } else {
+        $message = "No selected admins for batch delete.";
+    }
 }
 
 // Integrate search query into the final query
@@ -36,33 +43,7 @@ $p = new SimplePager(
 );
 
 $admins = $p->result;
-
-// Get total number of admins (excluding 'superadmin')
 $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superadmin'")->fetchColumn();
-
-
-// Handle POST request for adding admin
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $admin_name = $_POST['admin_name'];
-    $adminEmail = $_POST['adminEmail'];
-    $adminPassword = $_POST['adminPassword'];
-    $confirmPassword = $_POST['confirmPassword'];
-
-    if ($adminPassword !== $confirmPassword) {
-        echo "Passwords do not match!";
-        exit;
-    }
-
-    $result = addAdmin($admin_name, $adminEmail, $adminPassword);
-
-    if ($result) {
-        temp('info', 'Admin added successfully!');
-        redirect('admin_management.php');
-    } else {
-        echo "Failed to add admin!";
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -97,104 +78,134 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <!-- Admin Table -->
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>
-                        <a href="?sort=admin_id&dir=<?= ($sort == 'admin_id' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
-                            Admin ID
-                            <?php if ($sort == 'admin_id'): ?>
-                                <?php if ($dir == 'asc'): ?>
-                                    <i class="fas fa-arrow-up arrow-right"></i>
+        <form method="POST" action="admin_management.php">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>No.</th>
+                        <th>
+                            <a href="?sort=admin_id&dir=<?= ($sort == 'admin_id' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Admin ID
+                                <?php if ($sort == 'admin_id'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <i class="fas fa-arrow-down arrow-right"></i>
+                                    <i class="fas fa-sort arrow-right"></i>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <i class="fas fa-sort arrow-right"></i>
-                            <?php endif; ?>
-                        </a>
-                    </th>
-
-                    <th>
-                        <a href="?sort=admin_name&dir=<?= ($sort == 'admin_name' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
-                            Admin Name
-                            <?php if ($sort == 'admin_name'): ?>
-                                <?php if ($dir == 'asc'): ?>
-                                    <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=admin_name&dir=<?= ($sort == 'admin_name' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Admin Name
+                                <?php if ($sort == 'admin_name'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <i class="fas fa-arrow-down arrow-right"></i> <!-- Down arrow for descending -->
+                                    <i class="fas fa-sort arrow-right"></i>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <i class="fas fa-sort arrow-right"></i> <!-- Default sort icon -->
-                            <?php endif; ?>
-                        </a>
-                    </th>
-                    <th>
-                        <a href="?sort=role&dir=<?= ($sort == 'role' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
-                            Role
-                            <?php if ($sort == 'role'): ?>
-                                <?php if ($dir == 'asc'): ?>
-                                    <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=role&dir=<?= ($sort == 'role' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Role
+                                <?php if ($sort == 'role'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <i class="fas fa-arrow-down arrow-right"></i> <!-- Down arrow for descending -->
+                                    <i class="fas fa-sort arrow-right"></i>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <i class="fas fa-sort arrow-right"></i> <!-- Default sort icon -->
-                            <?php endif; ?>
-                        </a>
-                    </th>
-                    <th>
-                        <a href="?sort=status&dir=<?= ($sort == 'status' && $dir == 'asc') ? 'desc' : 'asc' ?> &search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
-                            Status
-                            <?php if ($sort == 'status'): ?>
-                                <?php if ($dir == 'asc'): ?>
-                                    <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=status&dir=<?= ($sort == 'status' && $dir == 'asc') ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>&page=<?= htmlspecialchars($page) ?>">
+                                Status
+                                <?php if ($sort == 'status'): ?>
+                                    <?php if ($dir == 'asc'): ?>
+                                        <i class="fas fa-arrow-up arrow-right"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-arrow-down arrow-right"></i>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <i class="fas fa-arrow-down arrow-right"></i> <!-- Down arrow for descending -->
+                                    <i class="fas fa-sort arrow-right"></i>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <i class="fas fa-sort arrow-right"></i> <!-- Default sort icon -->
-                            <?php endif; ?>
-                        </a>
-                    </th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if ($admins && is_array($admins)) {
-                    $num = ($page - 1) * 10 + 1; // Start numbering from 1
-                    foreach ($admins as $row) {
-                        echo "<tr>
-                    <td>" . $num++ . "</td>
-                    <td>" . htmlspecialchars($row->admin_id) . "</td>
-                    <td>" . htmlspecialchars($row->admin_name) . "</td>
-                    <td>" . htmlspecialchars($row->role) . "</td>
-                    <td>" . htmlspecialchars($row->status) . "</td>
-                    <td>
-                        <a href='view_admin.php?id=" . $row->admin_id . "' class='btn btn-view'><i class='fas fa-eye'></i>View</a>
-                        <a href='edit_admin.php?id=" . $row->admin_id . "' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
-                        <a href='delete_admin.php?id=" . $row->admin_id . "' class='btn btn-delete' onclick='return confirm(\"Are you sure you want to delete this admin?\");'><i class='fas fa-trash-alt'></i>Delete</a>
-                    </td>
-                </tr>";
+                            </a>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if ($admins && is_array($admins)) {
+                        $num = ($page - 1) * 10 + 1; // Start numbering from 1
+                        foreach ($admins as $row) {
+                            echo "<tr>
+                            <td><input type='checkbox' name='selected[]' value='" . htmlspecialchars($row->admin_id) . "' /></td>
+                            <td>" . $num++ . "</td>
+                            <td>" . htmlspecialchars($row->admin_id) . "</td>
+                            <td>" . htmlspecialchars($row->admin_name) . "</td>
+                            <td>" . htmlspecialchars($row->role) . "</td>
+                            <td>" . htmlspecialchars($row->status) . "</td>
+                            <td>
+                                <a href='view_admin.php?id=" . $row->admin_id . "' class='btn btn-view'>View</a>
+                                <a href='edit_admin.php?id=" . $row->admin_id . "' class='btn btn-edit'>Edit</a>
+                                <a href='delete_admin.php?id=" . $row->admin_id . "' class='btn btn-delete' onclick='return confirm(\"Are you sure you want to delete this admin?\");'><i class='fas fa-trash-alt'></i>Delete</a>
+                            </td>
+                        </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='7'>No admins found.</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='6'>No admins found.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                    ?>
+                </tbody>
+            </table>
 
-
-        <!-- Button to Add New Admin and pagination-->
-        <div class="pagination-container">
-            <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
-            <div class="pagination">
-                <?= generateDynamicPagination($p, $sort, $dir, $search); ?>
+            <!-- Buttons for Batch Action -->
+            <div class="batch-actions-container">
+                <div class="batch-actions-left">
+                    <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
+                    <div class="batch-actions-container">
+                        <button type="submit" id="batchDeleteBtn" class="btn btn-delete" onclick='return confirm("Are you sure you want to delete the selected admins?");'> - Batch Delete</button>
+                    </div>
+                </div>
+                <div class="pagination-container">
+                    <div class="pagination">
+                        <?= generateDynamicPagination($p, $sort, $dir, $search); ?>
+                    </div>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="selected[]"]');
+
+            selectAllCheckbox.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+            });
+
+            document.getElementById('batchDeleteBtn').addEventListener('click', (event) => {
+                const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+                if (selectedCount === 0) {
+                    event.preventDefault(); // Prevent form submission
+                    alert("No selected records for deletion.");
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>

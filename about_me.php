@@ -1,9 +1,10 @@
 <?php
-require '../_base.php';
-include '../_head.php';
+require '_base.php';
+include '_head.php';
+$_title = 'About Me | Boost.do';
 ?>
-<link rel="stylesheet" href="../css/about_me.css">
-<script type="module" src="../js/map.js"></script>
+<link rel="stylesheet" href="css/about_me.css">
+<script type="module" src="js/map.js"></script>
 
 <body>
 
@@ -37,4 +38,4 @@ include '../_head.php';
     </div>
 </body>
 <?php
-include '../_foot.php';
+include '_foot.php';

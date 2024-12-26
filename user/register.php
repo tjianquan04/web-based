@@ -1,5 +1,6 @@
 <?php
 require '../_base.php';
+$_title = 'Register | Boost.do';
 // ----------------------------------------------------------------------------
 
 if (is_post()) {
@@ -56,15 +57,15 @@ if (is_post()) {
 
         $m->Body = "
             <p>Dear $name,</p>
-            <h1 style='color: green'>Activate Boots Account</h1>
+            <h1 style='color: green'>Activate Boots.Do Account</h1>
             <p>
                Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
                </p>         
-            <p>From, Boots Admin</p>
+            <p>From, Boots.Do Admin</p>
         ";
         $m->send();
 
-        redirect('register_token.php?token_id=' . $token_id . '&user_id=' . $user_id);
+        redirect('verify_otp.php?token_id=' . $token_id);
     }
 }
 
@@ -77,34 +78,54 @@ include '../_head.php';
 
 <body>
     <main>
-        <div class="form-section">
-            <div class="form-header">
+    <body>
+    <div class="login-container">
+        <div class="form-container">
                 <h1>Create an Account</h1>
-            </div>
             <form method="post" class="form">
+                <div class="form-group">
                 <label for="name">Name :</label>
                 <?php html_text('name', 'e.g. henry', '', 'class="form-control"'); ?>
                 <?php err('name'); ?>
+                </div>
 
+                <div class="form-group">
                 <label for="email">Email Address :</label>
                 <?php html_email('email', 'e.g. henry@gmail.com', '', 'class="form-control"'); ?>
                 <?php err('email'); ?>
+                </div>
 
+                <div class="form-group">
                 <label for="password">Password :</label>
                 <?php html_password('password', 'e.g. Henry@123', '', 'class="form-control" '); ?>
                 <?php err('password'); ?>
+                </div>
 
+                <div class="form-group">
                 <label for="confirm_password">Confirm Password : </label>
                 <?php html_password('confirm_password', 'Re-enter your password', '', 'class="form-control" '); ?>
                 <?php err('confirm_password'); ?>
-
-                <button type="submit">Create Account</button>
+                </div>
+                
+                <button type="submit" class="btn-signup">Sign Up</button>
             </form>
-            <div class="link-container">
-                <span>Have an account?</span>
-                <a href="/user/login.php">Log in here</a>
+            <p class="signIn-text">Already have an account? <a href="login.php">Log in here</a></p>
+        </div>
+
+        <div class="slideshow-container">
+            <div class="mySlides fade">
+                <img src="../image/badminton_shop.png" alt="Image 1">
+            </div>
+
+            <div class="mySlides fade">
+                <img src="../image/badminton_shop1.png" alt="Image 2">
+            </div>
+
+            <div class="mySlides fade">
+                <img src="../image/badminton_shop2.png" alt="Image 3">
             </div>
         </div>
+    </div>
     </main>
 </body>
 
