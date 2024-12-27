@@ -133,7 +133,7 @@ include '_head.php';
 include '_foot.php';
 ?>
 
-<!-- <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         // Attach click event listeners to all wishlist icons
         document.querySelectorAll('.wishlist-icon').forEach(icon => {
@@ -170,4 +170,4 @@ include '_foot.php';
             });
         });
     });
-</script> -->
+</script>
