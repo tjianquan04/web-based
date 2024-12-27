@@ -6,7 +6,11 @@ if (is_post()) {
     $postalCode = $_POST['postal_code'];
     $state = $_POST['state'];
     $addressId = 'A000021'; //need replace
-    $memberId = 'M000001'; //need replace
+
+    $member = $_SESSION['user'];
+    authMember($member);
+    $id =  $member->member_id;
+    
     $isDefault = 0;
 
     $stmt = $_db->prepare(

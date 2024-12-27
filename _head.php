@@ -24,7 +24,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <style>
     .dropdown-content {
         display: none;
-        margin-top: 30px;
+        margin-top: 25px;
         position: absolute;
         background-color: #f9f9f9;
         min-width: 160px;

@@ -1,10 +1,9 @@
 <?php
-
-//use Stripe\Climate\Order;
-
 require '_base.php';
 
-$id = "M000001";
+$member = $_SESSION['user'];
+authMember($member);
+$id =  $member->member_id;
 $stm = $_db->prepare(
     'SELECT *
     FROM member
@@ -133,7 +132,8 @@ include '_head.php';
                             on orderitem.product_id = product.product_id
                             INNER JOIN product_photo
                             on product_photo.product_id = product.product_id
-                            where orderitem.order_id = ?'
+                            where orderitem.order_id = ?
+                            AND product_photo.default_photo = 1'
                             );
                             $stm->execute([$arrAll->order_id]);
                             $orderItem_arr = $stm->fetchAll();
@@ -142,7 +142,7 @@ include '_head.php';
                             ?>
                                 <tr>
                                     <td class="item_info">
-                                        <label class="upload"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                                        <label class="upload"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                                         <?= $item_arr->description ?>
                                     </td>
                                     <td class="item_qtyPrice">
@@ -199,7 +199,8 @@ include '_head.php';
                             on orderitem.product_id = product.product_id
                             INNER JOIN product_photo
                             on product_photo.product_id = product.product_id
-                            where orderitem.order_id = ?'
+                            where orderitem.order_id = ?
+                            AND product_photo.default_photo = 1'
                                 );
                                 $stm->execute([$arrShip->order_id]);
                                 $orderItem_arr = $stm->fetchAll();
@@ -208,7 +209,7 @@ include '_head.php';
                                 ?>
                                     <tr>
                                         <td class="item_info">
-                                            <label class="upload"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                                            <label class="upload"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                                             <?= $item_arr->description ?>
                                         </td>
                                         <td class="item_qtyPrice">
@@ -281,7 +282,8 @@ include '_head.php';
                             on orderitem.product_id = product.product_id
                             INNER JOIN product_photo
                             on product_photo.product_id = product.product_id
-                            where orderitem.order_id = ?'
+                            where orderitem.order_id = ?
+                            AND product_photo.default_photo = 1'
                                 );
                                 $stm->execute([$arrReceive->order_id]);
                                 $orderItem_arr = $stm->fetchAll();
@@ -290,7 +292,7 @@ include '_head.php';
                                 ?>
                                     <tr>
                                         <td class="item_info">
-                                            <label class="upload"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                                            <label class="upload"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                                             <?= $item_arr->description ?>
                                         </td>
                                         <td class="item_qtyPrice">
@@ -353,7 +355,8 @@ include '_head.php';
                             on orderitem.product_id = product.product_id
                             INNER JOIN product_photo
                             on product_photo.product_id = product.product_id
-                            where orderitem.order_id = ?'
+                            where orderitem.order_id = ?
+                            AND product_photo.default_photo = 1'
                                 );
                                 $stm->execute([$arrCompleted->order_id]);
                                 $orderItem_arr = $stm->fetchAll();
@@ -362,7 +365,7 @@ include '_head.php';
                                 ?>
                                     <tr>
                                         <td class="item_info">
-                                            <label class="upload"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                                            <label class="upload"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                                             <?= $item_arr->description ?>
                                         </td>
                                         <td class="item_qtyPrice">
@@ -424,7 +427,8 @@ include '_head.php';
                                     on orderitem.product_id = product.product_id
                                     INNER JOIN product_photo
                                     on product_photo.product_id = product.product_id
-                                    where orderitem.order_id = ?'
+                                    where orderitem.order_id = ?
+                                    AND product_photo.default_photo = 1'
                                 );
                                 $stm->execute([$arrCompleted->order_id]);
                                 $orderItem_arr = $stm->fetchAll();
@@ -439,7 +443,7 @@ include '_head.php';
                                     </tr>
                                     <tr>
                                         <td class="order-rating-table-product">
-                                            <label class="rate-product-photo"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                                            <label class="rate-product-photo"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                                             <?= $item_arr->description ?>
                                         </td>
                                     </tr>
@@ -519,6 +523,3 @@ include '_head.php';
         <?php } ?>
     </div>
 </div>
-
-<?php
-include '_foot.php';

@@ -59,6 +59,7 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
 <body>
     <div class="container">
         <div class="admin-management-header">
+
             <h1>Admin Management</h1>
 
             <!-- Search Bar -->

@@ -78,7 +78,7 @@ $_title = 'Category | Insert';
 
 <div class="container">
 
-<a href="viewCategory.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 
 <form method="post" class="form" enctype="multipart/form-data" novalidate>
     <label for="category_id">Category ID</label>

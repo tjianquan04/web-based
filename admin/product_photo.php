@@ -276,7 +276,7 @@ function getCurrentDefaultPhotoId($product_id)
 </style>
 
 <header>
-<a href="product_details.php?product_id=<?= $product_id ?>" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
     <h1>Product Image</h1>
 </header>
 

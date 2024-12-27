@@ -15,7 +15,10 @@ if (is_post()) {
     $amount = filter_var($_POST['totalAmount'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $orderStatus = 'shipping';  //pending, shipping, completed, cancelled
     $currentDateTime = (new DateTime('now'))->format('Y-m-d H:i:s');
-    $memberId = 'M000001'; //need replace
+    //$memberId = 'M000001'; //need replace
+    $member = $_SESSION['user'];
+    authMember($member);
+    $id =  $member->member_id;
 
     $paymentMethod = $_POST['payment_method'];
     $paymentStatus = 'completed';
@@ -182,14 +185,3 @@ if (is_post()) {
     header('Location: order_record.php?section=.orderRecord-right-toship');
     exit;
 }
-
-
-// include '_head.php';
-// 
-?>
-
-// <p>total: <?= $amount ?></p>
-// <p>id: <?= count($orderItemIds) ?></p>
-// <p><?= $paymentMethod ?></p>
-// <?php
-// include '_foot.php';
