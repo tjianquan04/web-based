@@ -1,43 +1,64 @@
+const mainImages = document.querySelectorAll(".default .main-img img");
+const thumbnails = document.querySelectorAll(".default .thumb-list div");
+const lightboxMainImages = document.querySelectorAll(".lightbox .main-img img");
+const lightboxThumbnails = document.querySelectorAll(
+  ".lightbox .thumb-list div"
+);
+const lightbox = document.querySelector(".lightbox");
+const iconClose = document.querySelector(".icon-close");
+const iconPrev = document.querySelector(".icon-prev");
+const iconNext = document.querySelector(".icon-next");
 
-    const rangeInput = document.querySelectorAll(".range-input input"),
-priceInput = document.querySelectorAll(".price-input input"),
-range = document.querySelector(".slider .progress");
-let priceGap = 1000;
+let currentImageIndex = 0;
 
-priceInput.forEach(input =>{
-    input.addEventListener("input", e =>{
-        let minPrice = parseInt(priceInput[0].value),
-        maxPrice = parseInt(priceInput[1].value);
-        
-        if((maxPrice - minPrice >= priceGap) && maxPrice <= rangeInput[1].max){
-            if(e.target.className === "input-min"){
-                rangeInput[0].value = minPrice;
-                range.style.left = ((minPrice / rangeInput[0].max) * 100) + "%";
-            }else{
-                rangeInput[1].value = maxPrice;
-                range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
-            }
-        }
-    });
+const changeImage = (index, mainImages, thumbnails) => {
+  mainImages.forEach((img) => {
+    img.classList.remove("active");
+  });
+  thumbnails.forEach((thumb) => {
+    thumb.classList.remove("active");
+  });
+
+  mainImages[index].classList.add("active");
+  thumbnails[index].classList.add("active");
+  currentImageIndex = index;
+};
+
+thumbnails.forEach((thumb, index) => {
+  thumb.addEventListener("click", () => {
+    changeImage(index, mainImages, thumbnails);
+  });
 });
 
-rangeInput.forEach(input =>{
-    input.addEventListener("input", e =>{
-        let minVal = parseInt(rangeInput[0].value),
-        maxVal = parseInt(rangeInput[1].value);
-
-        if((maxVal - minVal) < priceGap){
-            if(e.target.className === "range-min"){
-                rangeInput[0].value = maxVal - priceGap
-            }else{
-                rangeInput[1].value = minVal + priceGap;
-            }
-        }else{
-            priceInput[0].value = minVal;
-            priceInput[1].value = maxVal;
-            range.style.left = ((minVal / rangeInput[0].max) * 100) + "%";
-            range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-        }
-    });
+lightboxThumbnails.forEach((thumb, index) => {
+  thumb.addEventListener("click", () => {
+    changeImage(index, lightboxMainImages, lightboxThumbnails);
+  });
 });
 
+mainImages.forEach((img, index) => {
+  img.addEventListener("click", () => {
+    lightbox.classList.add("active");
+    changeImage(index, lightboxMainImages, lightboxThumbnails);
+  });
+});
+
+iconPrev.addEventListener("click", () => {
+  if (currentImageIndex <= 0) {
+    changeImage(mainImages.length - 1, lightboxMainImages, lightboxThumbnails);
+  } else {
+    changeImage(currentImageIndex - 1, lightboxMainImages, lightboxThumbnails);
+  }
+});
+
+iconNext.addEventListener("click", () => {
+  if (currentImageIndex >= mainImages.length - 1) {
+    changeImage(0, lightboxMainImages, lightboxThumbnails);
+  } else {
+    changeImage(currentImageIndex + 1, lightboxMainImages, lightboxThumbnails);
+  }
+});
+
+iconClose.addEventListener("click", () => {
+  lightbox.classList.remove("active");
+});

@@ -33,8 +33,8 @@ include '_head.php';
 <!-- Include necessary CSS and JavaScript -->
 <link rel="stylesheet" type="text/css" media="screen" href="/css/menu.css" />
 <script src="/js/menu.js" defer></script>
-<script src="/js/slider.js" defer></script>
 <script src="/js/cart.js" defer></script>
+<script src="/js/slider.js" defer></script>
 
 <div class="container">
 <a href="menu.php" class="back-button">&larr;</a>

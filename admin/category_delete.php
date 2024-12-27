@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
             $delete_photos_stm->execute([$product->product_id]);
         }
       // Update category status to "Discontinued" and set dateDeleted
-$update_category_stm = $_db->prepare('UPDATE category SET status = "Discontinued", dateDeleted = NOW(), currentStock = 0 WHERE category_id = ?');
+$update_category_stm = $_db->prepare('UPDATE category SET status = "Discontinued", dateDeleted = NOW(), currentStock = 0 , StockAlert = false WHERE category_id = ?');
 $update_category_stm->execute([$category_id]);
 
 // Update the associated products status to "Discontinued" and set dateDeleted
