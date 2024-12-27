@@ -1,6 +1,28 @@
 
 console.log('JavaScript loaded successfully');
 
+$(() => {
+
+    // Photo preview
+    $('label.upload input[type=file]').on('change', e => {
+        const f = e.target.files[0];
+        const img = $(e.target).siblings('img')[0];
+
+        if (!img) return;
+
+        img.dataset.src ??= img.src;
+
+        if (f?.type.startsWith('image/')) {
+            img.src = URL.createObjectURL(f);
+        }
+        else {
+            img.src = img.dataset.src;
+            e.target.value = '';
+        }
+    });
+
+});
+
 function toggleMenu(menuId) {
     const submenu = document.getElementById(menuId);
     if (submenu.style.display === "block") {
@@ -55,4 +77,6 @@ function showSlides() {
     // Set a timeout to move to the next slide
     setTimeout(showSlides, 4000); // Change image every 2 seconds
 }
+
+
 

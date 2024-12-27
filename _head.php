@@ -49,21 +49,12 @@ $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
                                     <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <a href="#hdiashdoasa" onclick="logoutFunction(event);" class="btn btn-logout">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </a>
-
-                                    <form id="logoutForm" action="" method="POST" style="display:none;">
-                                        <button type="submit" name="logout"></button>
+                                    <!-- Logout Form -->
+                                    <form action="" method="POST" style="display:inline;">
+                                        <button type="submit" name="logout" class="btn btn-logout">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </button>
                                     </form>
-
-                                    <?php
-                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                        // Call the logout function
-                                        logout('/user/login.php');
-                                    }
-                                    ?>
-
 
                                 </div>
                             </li>
@@ -122,10 +113,4 @@ $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
                 </div>
             </div>
         </div>
-        <script>
-            function logoutFunction(event) {
-                event.preventDefault(); // Prevent the default action
-                document.getElementById('logoutForm').submit(); // Submit the form
-            }
-        </script>
     </header>
