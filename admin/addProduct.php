@@ -171,15 +171,22 @@ $_title = 'Product | Insert';
 
 
 <div class="container">
-<a href="product_index.php" class="back-button">&larr;</a>
+    <a href="product_index.php" class="back-button">&larr;</a>
 
     <h1>Insert a new product</h1>
     <form method="post" class="form" enctype="multipart/form-data" novalidate class="product-form" id="addProductForm">
 
         <label class="upload product-photo" tabindex="0">
             Choose up to 3 photos:
-            <input type="file" name="product_photos[]" multiple>
-            <img src="" alt="Product Photo" title="Click to upload a new photo" />
+            <input type="file" id="product_photos" name="product_photos[]" multiple>
+            <div id="image-preview-container">
+                <img id="photo1-preview" class="product-photo-preview" style="display:none;" />
+                <img id="photo2-preview" class="product-photo-preview" style="display:none;" />
+                <img id="photo3-preview" class="product-photo-preview" style="display:none;" />
+            </div>
+
+
+            <img id="new-photo-placeholder" src="" alt="Product Photo" title="Click to upload a new photo" class="product-photo-preview" />
         </label>
 
 
@@ -235,16 +242,39 @@ $_title = 'Product | Insert';
 </div>
 
 <script>
-    document.querySelector('input[type="file"]').addEventListener('change', function(event) {
-        const files = event.target.files;
-        const imgPreview = document.querySelector('label.upload img');
+    document.querySelector('#product_photos').addEventListener('change', function(event) {
+        const files = event.target.files; // Get the selected files
+        const previewContainer = document.querySelector('#image-preview-container');
+        const previewImages = previewContainer.querySelectorAll('.product-photo-preview');
+        const newPhotoPlaceholder = document.querySelector('#new-photo-placeholder');
 
-        if (files && files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imgPreview.src = e.target.result; // Set the preview image
-            };
-            reader.readAsDataURL(files[0]);
+        // Clear any previous previews
+        previewImages.forEach(img => img.style.display = 'none');
+
+        // Check if any files were selected
+        if (files && files.length > 0) {
+            // Limit the number of photos to 3 (or any other limit)
+            if (files.length > 3) {
+                alert('You can only select up to 3 photos.');
+                event.target.value = ''; // Clear the file input if more than 3 files are selected
+                return;
+            }
+
+            // Loop through selected files and display each as a preview
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Only show the images that correspond to selected files
+                    if (previewImages[i]) {
+                        previewImages[i].src = e.target.result; // Set the image source to the file data
+                        previewImages[i].style.display = 'inline'; // Make the preview visible
+                    }
+                };
+                reader.readAsDataURL(files[i]);
+            }
+            newPhotoPlaceholder.style.display = 'none';
+
+
         }
     });
 </script>

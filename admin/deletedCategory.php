@@ -9,19 +9,19 @@ $page = req('page', 1);
 
 // ----------------------------------------------------------------------------
 
-$name = req('name'); // Search keyword
 $sort = req('sort', 'category_name'); // Default sorting field
 $dir = req('dir', 'asc'); // Default sorting direction
+$search = req('search', ''); // Capture the search term
+$search_query = '';
+// Base query
+$query = "SELECT * FROM category WHERE status LIKE 'Discontinued'";
 
-// Base query - Now filtering by status 'Discontinued'
-$query = 'SELECT * FROM category WHERE status = "Discontinued"';
-
-// Append search filters if provided
+// Append search filters
 $params = [];
-if ($name) {
-    $query .= ' AND (category_name LIKE ? OR sub_category LIKE ?)';
-    $params[] = "%$name%";
-    $params[] = "%$name%";
+if (!empty($search)) {
+    $search_query = " AND (category_id LIKE :search OR category_name LIKE :search OR sub_category LIKE :search OR Status LIKE :search )";
+    $params[':search'] = '%' . $search . '%';  // Wildcard search term
+    $query .= $search_query;
 }
 
 // Append sorting
@@ -48,35 +48,63 @@ $_title = 'Category Management';
 
 ?>
 
-<style>
-    .back-button {
-    text-decoration: none;
-    font-size: 1.5em;
-    color:rgb(0, 0, 0);
-    margin-right: 10px;
-    transition: color 0.3s ease;
-}
 
-.back-button:hover {
-    color:rgb(220, 0, 0);
-}
 
-</style>
-
-<link rel="stylesheet" href="/css/admin_management.css">
+<link rel="stylesheet" href="/css/product.css">
 
 <div class="container">
 <a href="viewCategory.php" class="back-button">&larr;</a>
+<div class="search-bar-container">
+        <form action="viewCategory.php" method="GET">
+            <input type="text" name="search" placeholder="Search by keyword..." value="<?= htmlspecialchars($search) ?>" />
 
+            <!-- Hidden fields for sort, dir, and page -->
+            <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
+            <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
+            <input type="hidden" name="page" value="<?= htmlspecialchars($page) ?>">
+        </form>
+    </div>
     <p><?= count($_categories) ?> record(s) found</p> 
 
     <table>
         <thead>
             <tr>
                 <th>#</th>
-                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>'">Category ID</th>
-                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&name=<?= urlencode($name) ?>'">Category Name</th>
+                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category ID
+                    <?php if ($sort == 'category_id'): ?>
+                        <?php if ($dir == 'asc'): ?>
+                            <i class="fas fa-arrow-up arrow-right"></i>
+                        <?php else: ?>
+                            <i class="fas fa-arrow-down arrow-right"></i>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <i class="fas fa-sort arrow-right"></i>
+                    <?php endif; ?>
+                </th>
+                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category Name
+                    <?php if ($sort == 'category_name'): ?>
+                        <?php if ($dir == 'asc'): ?>
+                            <i class="fas fa-arrow-up arrow-right"></i>
+                        <?php else: ?>
+                            <i class="fas fa-arrow-down arrow-right"></i>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <i class="fas fa-sort arrow-right"></i>
+                    <?php endif; ?>
+                </th>
                 <th>Subcategory</th>
+          
+                <th onclick="window.location.href='?sort=Status&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Status
+                    <?php if ($sort == 'Status'): ?>
+                        <?php if ($dir == 'asc'): ?>
+                            <i class="fas fa-arrow-up arrow-right"></i>
+                        <?php else: ?>
+                            <i class="fas fa-arrow-down arrow-right"></i>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <i class="fas fa-sort arrow-right"></i>
+                    <?php endif; ?>
+                </th>
                 <th>Date deleted</th>
               
             </tr>
@@ -93,7 +121,8 @@ $_title = 'Category Management';
                     <?php else: ?>
                         <td>-</td>
                     <?php endif; ?>
-
+            
+                    <td><?= $_category->Status ?>
                     <td><?= $_category->dateDeleted ?></td>
 
                    
@@ -104,6 +133,6 @@ $_title = 'Category Management';
     </table>
 
     <div class="pagination">
-        <?= generateDynamicPagination($p, $sort, $dir); ?>
+        <?= generateDynamicPagination($p, $sort, $dir,$search); ?>
     </div>
 </div>

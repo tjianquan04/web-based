@@ -47,6 +47,8 @@ include '_head.php';
                         <div class="product-img">
                             <a href="menu.php?category_id=<?= $cat->category_id ?>">
                                 <img src="/image/<?= htmlspecialchars($cat->category_photo ?: 'default.png') ?>" class="category">
+                            
+                            
                             </a>
                         </div>
                     </div>

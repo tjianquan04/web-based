@@ -23,9 +23,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
     <header>
         <div class="header-container">
-            <div class="container-left">
-                <a href="/index.php"><img src="/image/logo.png"></a>
-            </div>
+        <div class="container-left">
+  <a href="/index.php"><img class="logo-img" src="/image/logo.png"></a>
+</div>
             <div class="container-right">
                 <div class="container-right1">
                     <ul>
@@ -66,6 +66,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <div class="search-wrapper">
                                 <form method="GET" action="<?= htmlspecialchars($current_page) ?>">
                                     <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
+                                    <input type="hidden" name="sort" value="<?= $sort ?>">
+                                    <input type="hidden" name="dir" value="<?= $dir ?>">
                                     <button type="submit" class="search-btn">
                                         <i class="ico ico-search"></i>
                                     </button>
