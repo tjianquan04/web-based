@@ -4,6 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
 $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
+$dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
 
 
 
@@ -106,6 +107,7 @@ $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
                                     <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
                                     <input type="hidden" name="sort" value="<?= $sort ?>">
                                     <input type="hidden" name="dir" value="<?= $dir ?>">
+                                    <input type="hidden" name="page" value="<?= $page ?>">
                                     <button type="submit" class="search-btn">
                                         <i class="ico ico-search"></i>
                                     </button>

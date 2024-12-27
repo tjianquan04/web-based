@@ -162,33 +162,33 @@ if (!$product) {
            
     </div>
     <div class="product-info">
-        <table>
-        <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Product ID</td>
-                <td class="value"><?= $product->product_id ?></td>
-            </tr>
-            <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Unit Price</td>
-                <td class="value">RM <?= number_format($product->unit_price, 2) ?></td>
-            </tr>
-            <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Stock Quantity</td>
-                <td class="value"><?= $product->stock_quantity ?></td>
-            </tr>
-            <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Category</td>
-                <td class="value"><?= $product->category_name ?></td>
-            </tr>
-            <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Subcategory</td>
-                <td class="value"><?= $subcategory['sub_category'] ?: 'None' ?></td>
-            </tr>
-            <tr>
-                <td class="label"><i class="fas fa-id-card"></i>Status</td>
-                <td class="value"><?= $product->status ?></td>
-            </tr>
+    <table>
+    <tr>
+        <td class="label"><i class="fas fa-barcode"></i> Product ID</td>
+        <td class="value"><?= $product->product_id ?></td>
+    </tr>
+    <tr>
+        <td class="label"><i class="fas fa-tags"></i> Unit Price</td>
+        <td class="value">RM <?= number_format($product->unit_price, 2) ?></td>
+    </tr>
+    <tr>
+        <td class="label"><i class="fas fa-boxes"></i> Stock Quantity</td>
+        <td class="value"><?= $product->stock_quantity ?></td>
+    </tr>
+    <tr>
+        <td class="label"><i class="fas fa-layer-group"></i> Category</td>
+        <td class="value"><?= $product->category_name ?></td>
+    </tr>
+    <tr>
+        <td class="label"><i class="fas fa-sitemap"></i> Subcategory</td>
+        <td class="value"><?= $subcategory['sub_category'] ?: 'None' ?></td>
+    </tr>
+    <tr>
+        <td class="label"><i class="fas fa-info-circle"></i> Status</td>
+        <td class="value"><?= $product->status ?></td>
+    </tr>
+</table>
 
-        </table>
        
     </div>
 
