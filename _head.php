@@ -2,24 +2,6 @@
 // Get the current page name dynamically
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Query products with 'LimitedEdition' status and dateAdded within 2 weeks from the current date
-// $stm = $_db->prepare('
-//     SELECT * FROM product 
-//     WHERE status = "LimitedEdition" 
-//     AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
-// ');
-// $stm->execute();
-// $limited = $stm->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-// $stm = $_db->prepare('SELECT * FROM category WHERE StockAlert = 1');  // assuming StockAlert is an integer column
-// $stm->execute();
-// $alertItem = $stm->fetchAll(PDO::FETCH_ASSOC);
-
-// $stm = $_db->prepare('SELECT * FROM product WHERE status = "OutOfStock"');  // assuming StockAlert is an integer column
-// $stm->execute();
-// $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 
 
 

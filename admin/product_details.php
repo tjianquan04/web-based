@@ -147,7 +147,7 @@ if (!$product) {
 
 
 <div class="product-details">
-        <a href="product_index.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 
     <h1>Product Details</h1>
 

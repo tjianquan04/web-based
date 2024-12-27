@@ -1,13 +1,50 @@
 <?php
 require '_base.php';
 
-$stm = $_db->prepare(
-    'UPDATE order_record
-     SET order_status = "delivered"
-     WHERE order_status = "shipping" 
-     AND TIMESTAMPDIFF(DAY, order_date, NOW()) > 3'
-);
-$result = $stm->execute();
+// $stm = $_db->prepare(
+//     'UPDATE order_record
+//      SET order_status = "delivered"
+//      WHERE order_status = "shipping" 
+//      AND TIMESTAMPDIFF(DAY, order_date, NOW()) > 3'
+// );
+// $result = $stm->execute();
+
+
+// Get the member_id securely, e.g., from session
+// session_start();
+// $member_id = $_SESSION['member_id'] ?? null;
+// if (!$member_id) {
+//     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
+//     exit;
+// }
+
+$member_id="M000001";
+
+// // Check if the product is already in the wishlist for the logged-in user
+// $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
+
+$wishlist_stm = $_db->prepare("
+    SELECT p.* 
+    FROM wishlist w
+    JOIN product p ON w.product_id = p.product_id
+    WHERE w.member_id = ? ");
+$wishlist_stm->execute([$member_id]);
+$wishlist_item = $wishlist_stm->fetchAll();
+
+$stm = $_db->prepare("SELECT * FROM product WHERE status LIKE 'LimitedEdition' AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)");
+$stm->execute();
+$feature_product = $stm->fetchAll();
+
+// Use wishlist items if available; otherwise, use featured products
+$product = !empty($wishlist_item) ? $wishlist_item : $feature_product;
+// Fetch default product photos
+$productPhotos = [];
+$photoQuery = "SELECT * FROM product_photo WHERE default_photo = 1";
+$photoStmt = $_db->prepare($photoQuery);
+$photoStmt->execute();
+foreach ($photoStmt->fetchAll() as $photo) {
+    $productPhotos[$photo->product_id] = $photo->product_photo_id;
+}
 
 $_title = 'Home';
 
@@ -111,10 +148,58 @@ img{
 @media only screen and (max-width: 300px) {
   .prev, .next,.text {font-size: 11px}
 }
+
+  /* Featured Products */
+  .featured-products {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .featured-products h2 {
+    margin-bottom: 20px;
+  }
+  
+  .product-grid {
+    display: flex;
+  flex-wrap: wrap; 
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .product-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    width: 200px;
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  .product-card a{
+  text-decoration: none;
+  color: #f2f2f2;
+}
+  .product-card button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .product-card button:hover {
+    background-color: #555;
+  }
+  
 </style>
-  <h1>home</h1>    
-    <a href ="/about_us.php">About Us</a> 
-    <a href ="/user/user_profile.php">Profile</a>
+
 
     <div class="slideshow-container">
 
@@ -147,6 +232,26 @@ img{
   <span class="dot" onclick="currentSlide(2)"></span> 
   <span class="dot" onclick="currentSlide(3)"></span> 
 </div>
+
+<!-- Featured Products -->
+<section class="featured-products">
+    <h2>Featured Products</h2>
+
+    <div class="product-grid">
+      
+        <?php foreach ($product as $p): ?>
+            <div class="product-card">
+                <img src="/product_gallery/<?= htmlspecialchars($productPhotos[$p->product_id] ?? 'default.jpg') ?>" 
+                     alt="<?= htmlspecialchars($p->description) ?>" class="category">
+                <h3><?= htmlspecialchars($p->description) ?></h3>
+                <p><?= htmlspecialchars($p->unit_price) ?></p>
+                <button>
+                    <a href="product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
+                </button>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
 
 <?php
 include '_foot.php';

@@ -18,7 +18,7 @@ $_title = 'Category Details';
 <script src="../js/main.js"></script>
 
 <div class="container">
-<a href="viewCategory.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 
 
     <div class="category-photo">

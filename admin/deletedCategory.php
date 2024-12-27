@@ -53,7 +53,7 @@ $_title = 'Category Management';
 <link rel="stylesheet" href="/css/product.css">
 
 <div class="container">
-<a href="viewCategory.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 <div class="search-bar-container">
         <form action="viewCategory.php" method="GET">
             <input type="text" name="search" placeholder="Search by keyword..." value="<?= htmlspecialchars($search) ?>" />
