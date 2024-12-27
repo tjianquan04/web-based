@@ -1,17 +1,24 @@
 <?php
 require '../_base.php';
 
-
-
-// Check if there are any errors stored in the session
-if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])) {
-    // Display the error messages
-    foreach ($_SESSION['errors'] as $error) {
-        temp('info', "Error:" . $error);
-    }
-    // Clear the errors after displaying them
-    unset($_SESSION['errors']);
+// Check if there's a success message in the session
+if (isset($_SESSION['success'])) {
+    // Display the success message
+    temp('info', $_SESSION['success']); // Use the session message directly
+    unset($_SESSION['success']); // Remove the success message from session
 }
+
+// Check if there are errors in the session
+if (isset($_SESSION['errors'])) {
+    // Loop through each error and display it
+    foreach ($_SESSION['errors'] as $error) {
+        temp('info', "Failed to update the product. Reason : " . $error); // Display each error with a prefix
+    }
+    unset($_SESSION['errors']); // Remove errors from session
+}
+
+
+
 // Get the product ID from the query string
 $product_id = req('product_id');
 
@@ -244,8 +251,8 @@ include '../_head.php';
         <h2>Edit Product Details</h2>
         <form method="POST" action="product_update.php">
             <input type="hidden" name="product_id" value="<?= $product->product_id ?>">
-            <label for="unit_price">Price (RM):</label>
-            <input type="number" step="0.01" id="unit_price" name="unit_price" value="<?= $product->unit_price ?>" required>
+            <label for="unit_price">Unit Price (RM):</label>
+            <input type="number" step="0.01" id="unit_price" name="unit_price" value="<?= $product->unit_price ?>" min="1.00" max="9999.99" required>
             <br><br>
             <label for="stock_quantity">Stock Quantity:</label>
             <input

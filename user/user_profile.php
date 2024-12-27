@@ -1,17 +1,14 @@
 <?php
 require '../_base.php';
 
-$memberId = req('id');
-
-$s = getMemberbyId($memberId);
+$member = $_SESSION['user'];
+authMember($member);
 
 if (is_post()) {
     $name      = req('name');
     $email     = req('email');
     $contact   = req('contact');
     $file      = get_file('photo');
-    $currentPhoto = req('current_photo');
-
 
     // Validate Name
     if (empty($name)) {
@@ -40,31 +37,24 @@ if (is_post()) {
         }
     }
 
-    //Validate photo file
-    $photo = $currentPhoto; // Default to current photo
-    if ($file && $file->error !== UPLOAD_ERR_NO_FILE) { 
-        // New file uploaded, validate it
-        if (!str_starts_with($file->type, 'image/')) {
-            $_err['photo'] = 'Must be an image.';
-        } else if ($file->size > 1 * 1024 * 1024) {
-            $_err['photo'] = 'Maximum 1MB.';
-        } else {
-            // Save new photo and update path
-            $photo = save_photo($file, 'photos');
-        }
+    //Handle photo upload
+    if ($file && str_starts_with($file->type, 'image/')) {
+        $photo_path = save_photo($file, '../photos');
+        $member->profile_photo = $photo_path; 
     }
 
     if (!$_err) {
 
-
-            $stm = $_db->prepare('UPDATE member
+        $stm = $_db->prepare('UPDATE member
                                   SET name = ?, email = ?, contact = ?, profile_photo = ?
                                   WHERE member_id = ?');
-            $stm->execute([$name, $email, $contact, $photo, $memberId]);
-        
+        $stm->execute([$name, $email, $contact, $member->profile_photo, $member->member_id]);
 
-        temp('info','Profile updated');
-        redirect('/');
+        $updatedMember = getMemberbyId($member->member_id);
+        $_SESSION['user'] = $updatedMember;
+        $member = $_SESSION['user'];
+        
+        temp('info', 'User Profile has updated');
     }
 }
 
@@ -74,44 +64,47 @@ include '../_head.php';
 <link rel="stylesheet" href="/css/user_profile.css">
 
 <body>
-<div class="container">
+    <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $s->member_id?>" style="color: #ff5e3a;">Profile</a>
-            <a href="user_address.php?id=<?= $s->member_id?>">Addresses</a>
-            <a href="user_change_password.php?id=<?= $s->member_id?>">Change Password</a>
-            <a href="user_top_up.php?id=<?= $s->member_id?>">Top Up</a>
+            <a href="user_profile.php">Profile</a>
+            <a href="user_address.php">Addresses</a>
+            <a href="user_change_password.php">Change Password</a>
+            <a href="user_wallet.php">My Wallet</a>
         </div>
 
         <!-- Profile Content -->
         <div class="content">
             <h1>Personal Info</h1>
-            <form class="profile-form" method="POST">
+            <form class="profile-form" method="POST" enctype="multipart/form-data">
 
-                <label class="upload" tabindex="0">
-                    <?= html_file('photo', 'image/*', 'hidden') ?>
+                <label class="upload member-photo" tabindex="0">
+                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" />
                     <img
-                        src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>"
-                        alt="Member Photo" title="Click to upload photo" />
+                        src="<?= $member->profile_photo ? '../photos/' . $member->profile_photo : '../photos/unknown.jpg' ?>"
+                        alt="Member Photo"
+                        title="Click to upload new photo" />
                 </label>
-                <input type="hidden" name="current_photo" value="<?= $s->profile_photo ? $s->profile_photo : '' ?>">
-                <?= err('photo') ?>
                 <br>
 
                 <label for="name"><strong>Name</strong></label>
-                <?php html_text('name', '', $s->name, 'class="input-field" maxlength="100" '); ?>
+                <?php html_text('name', '', $member->name, 'class="input-field" maxlength="100" '); ?>
                 <?= err('name') ?>
                 <br>
 
                 <label for="email"><strong>Email</strong></label>
-                <?php html_email('email', '', $s->email, 'class="input-field"'); ?>
+                <?php html_email('email', '', $member->email, 'class="input-field"'); ?>
                 <?= err('email') ?>
                 <br>
 
                 <label for="contact"><strong>Contact</strong></label>
-                <?php html_text('contact', '', $s->contact, 'class="input-field"'); ?>
+                <?php html_text('contact', '', $member->contact, 'class="input-field"'); ?>
                 <?= err('contact') ?>
+                <br>
+
+                <label for="registerDate"><strong>Registered Date</strong></label>
+                <?php html_text('registerDate', '', $member->register_date, 'class="input-field" readonly'); ?>
                 <br>
 
                 <button type="submit">Save</button>

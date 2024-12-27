@@ -56,12 +56,23 @@ $(() => {
 
     // Delete confirmation message
     $('[delete-confirm]').on('click', e => {
-        // Check for either address_id or member_id
-        const Id = e.target.dataset.addressId || e.target.dataset.memberId;
-
-        // Customize the confirmation message
-        const text = `Are you sure you want to delete ${Id}?`;
-
+        const addressIds = e.target.dataset.addressIds; 
+        const memberIds = e.target.dataset.memberIds; 
+    
+        let ids = [];
+        if (addressIds) {
+            ids = ids.concat(addressIds.split(','));
+        }
+        if (memberIds) {
+            ids = ids.concat(memberIds.split(','));
+        }
+    
+        // Generate the confirmation message
+        const text = ids.length > 1
+            ? `Are you sure you want to delete the following IDs: ${ids.join(', ')}?`
+            : `Are you sure you want to delete ${ids[0]}?`;
+    
+        // Show the confirmation dialog
         if (!confirm(text)) {
             e.preventDefault();
             e.stopImmediatePropagation();

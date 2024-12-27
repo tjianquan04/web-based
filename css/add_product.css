@@ -1,0 +1,154 @@
+.container {
+    margin-left: 280px;
+    padding: 20px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-right: 20px;
+}
+
+/* Style for the upload preview image */
+label.upload img {
+    display: block;
+    border: 1px solid #333;
+    width: 200px;
+    height: 200px;
+    object-fit: cover; /* Ensures the image is cropped to fit the dimensions */
+    cursor: pointer;
+    margin: 10px auto; /* Center the image */
+}
+
+/* Hide the file input field (clickable via the label) */
+input[type="file"] {
+    display: none;
+}
+
+/* Product photo display styling */
+img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Optional styling for smaller icons (if needed) */
+.upload img {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight:bolder;
+}
+
+
+/* Adjust CSS for form inputs */
+.form-input, .form-select  ,.form-checkbox{
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Flexbox for label and icon */
+label i {
+    margin-right: 10px;
+}
+
+.btn-submit {
+    background-color: #28a745; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-clear {
+    background-color: #007bff; /* Blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-cancel {
+    background-color: #dc3545; /* Red */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button {
+    text-decoration: none;
+    font-size: 1.5em;
+    color:rgb(0, 0, 0);
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color:rgb(220, 0, 0);
+}
+
+section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+section button {
+    margin-right: 10px;
+}
+
+section button:last-child {
+    margin-right: 0;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 2px;
+}

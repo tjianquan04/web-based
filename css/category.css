@@ -57,6 +57,132 @@ img.category {
     margin: 0.4rem 0;
 }
 
+.sidenav {
+    width: 190px;
+    position: absolute;
+    margin-top: 100px;
+    z-index: 1;
+    top: 20px;
+    left: 10px;
+    background: transparent;
+    overflow-x: hidden;
+    padding: 8px 0;
+  }
+  
+  .sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 15px;
+    color: #000;
+    display: block;
+  }
+  
+  .sidenav a:hover {
+    color: #064579;
+  }
+  
+  .menu-content {
+    margin-left: 180px; /* Same width as the sidebar + left position in px */
+    padding: 0px 10px;
+
+
+  }
+
+  .sidenav .wrapper {
+    width: 100%; /* Ensure it takes up the full width of the sidenav */
+    padding: 6px 8px 6px 16px; /* Padding to ensure content isn't too close to the edges */
+    background-color: #f9f9f9; /* Light background for distinction */
+    margin-top: 15px; /* Add space between categories and price range filter */
+    border-radius: 5px; /* Rounded corners for a more polished look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: flex;
+    flex-wrap: wrap; /* Allow elements to wrap onto new lines if needed */
+}
+
+.price-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ensure the input fields span the full width */
+    margin-bottom: 10px; /* Space below the price input */
+}
+
+.price-input .field {
+    align-items: center;
+    width: 48%; /* Allow some space between the fields */
+    margin-bottom: 10px; /* Margin to separate the fields */
+}
+
+.price-input .field span {
+    margin-right: 5px; /* Space between label and input */
+    font-size: 14px;
+    color: #555;
+}
+
+.price-input input {
+    width: 100%; /* Ensure input fields fill their container */
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.separator {
+    font-size: 16px;
+    color: #555;
+    margin: 0 5px;
+}
+
+.slider {
+    width: 100%;
+    height: 5px;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.slider .progress {
+    width: 0%; /* Adjust the width dynamically with JS based on the slider values */
+    height: 100%;
+    background-color: #f46214;
+    border-radius: 5px;
+}
+
+.range-input {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.range-input input[type="range"] {
+    width: 48%; /* Allow range sliders to take up nearly equal width */
+    height: 5px;
+    background: transparent;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.range-input input[type="range"]::-webkit-slider-runnable-track {
+    background: transparent;
+}
+
+.range-input input[type="range"]::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+    background-color: #f46214;
+    border-radius: 50%;
+    border: 2px solid #f46214;
+    cursor: pointer;
+}
+
+.range-input input[type="range"]:focus {
+    outline: none;
+}
+
+
+
 /* product section */
 .products{
     background: var(--alice-blue);
@@ -72,7 +198,7 @@ img.category {
     position: relative;
 }
 .product-content{
-    background: var(--gray);
+    background:transparent;
     padding: 3rem 0.5rem 2rem 0.5rem;
     cursor: pointer;
 }
@@ -144,7 +270,7 @@ img.category {
 }
 .product-price:first-of-type{
     text-decoration: line-through;
-    color: var(--carribean-green);
+    color:#CCFFFF;
 }
 .product-img img{
     transition: transform 0.6s ease;
@@ -153,25 +279,27 @@ img.category {
     transform: scale(1.1);
 }
 .product:hover .product-img{
-    background: var(--carribean-green);
+    background: #CCFFFF;
 }
 .product:hover .product-btns{
     opacity: 1;
 }
-.off-info .sm-title{
-    background: var(--carribean-green);
-    color: white;
-    display: inline-block;
-    padding: 0.5rem;
+
+.out-of-stock-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+
+    border-radius: 5px;
     z-index: 1;
-    letter-spacing: 3px;
-    cursor: pointer;
+    text-align: center;
 }
+
 
 /* product collection */
 .product-collection{
@@ -224,7 +352,7 @@ img.category {
     font-family: inherit;
 }
 .btn-dark:hover{
-    background: var(--carribean-green);
+    background: #CCFFFF;
 }
 
 

@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+include '../admin/_admin_head.php';
 require_once '../lib/SimplePager.php';
 
 // Set page number
@@ -44,7 +44,7 @@ echo "Page Count: " . $p->page_count;
 // ----------------------------------------------------------------------------
 
 $_title = 'Category Management';
-include '../_head.php';
+
 ?>
 
 <style>

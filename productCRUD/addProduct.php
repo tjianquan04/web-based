@@ -242,16 +242,6 @@ include '../_head.php';
     <?= html_number('stock_quantity', 10, 9999, 1) ?>
     <?= err('stock_quantity') ?>
 
-    <!-- <label for="product_photos">Gallery</label>
-    <input 
-        type="file" 
-        id="product_photos" 
-        name="product_photos[]" 
-        accept="image/*" 
-        multiple 
-        style="display: block; margin-bottom: 10px;"
-    >
-     -->
     <label for="product_photos">Choose multiple photos:</label>
     <input type="file" name="product_photos[]" multiple>
     <?= err('product_photos') ?>

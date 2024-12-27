@@ -49,7 +49,6 @@ if (is_post()) {
 
 
     foreach ($gallery as $photo) {  // Delete associated photo 
-        echo $photo->product_photo_id; // Access each product_photo_id
         // Delete associated photo 
         $photo_path = '../product_gallery/' . $photo->product_photo_id;
         if (file_exists($photo_path)) {
@@ -71,10 +70,6 @@ if (is_post()) {
             WHERE category_id = ?
         ');
         $updateCatStock->execute([$newStockQuantity, $category_id]);
-
-
-
-
 
         temp('info', 'Product deleted successfully');
         error_log("Product with ID $product_id deleted successfully. Stock updated for category $category_id.");

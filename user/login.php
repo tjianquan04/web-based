@@ -6,7 +6,7 @@ require '../_base.php';
 
 // Start the session
 $_title = 'Login | Boost.do';
-include '../_head.php';
+//include '../_head.php';
 
 // Login processing
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set session data for successful login
             temp('info', 'Successful login');
-            login($user, '../index.php'); // Redirect to dashboard or protected page
+            userLogin($user, '../index.php'); // Redirect to dashboard or protected page
         } else {
             // Increment login attempts
             $new_attempts = $user->login_attempts + 1;
@@ -119,7 +119,7 @@ $rememberedPassword = $_COOKIE['remember_user_password'] ?? '';
 
                 <button type="submit" class="btn-signin">Sign in</button>
             </form>
-            <p class="signup-text">Don't have an account? <a href="signup.php">Sign up for free!</a></p>
+            <p class="signup-text">Don't have an account? <a href="register.php">Sign up for free!</a></p>
         </div>
 
         <!-- Right Section: Image -->

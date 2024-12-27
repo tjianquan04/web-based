@@ -1,6 +1,6 @@
 <?php
-include '_admin_head.php';
-
+include '../_base.php';
+include '../_head.php';
 // Get the search input
 $searchTerm = req('search') ?? '';
 
@@ -33,6 +33,7 @@ $p = new SimplePager($query, $params, 10, $page);
 // Fetch results
 $arr = $p->result;
 
+$total_members = $_db->query("SELECT COUNT(*) FROM member")->fetchColumn();
 
 // ----------------------------------------------------------------------------
 
@@ -46,11 +47,27 @@ $arr = $p->result;
         <button>Search</button>
     </form>
     <div class="top-right">
+        <!-- Total Record -->
+        <span class="total-record">Total:<?= $total_members ?> Records</span>
+    <form method="post" id="batch">
+       <button formaction="../memberCRUD/insert_records.php">Insert</button>
+       <button formaction="../memberCRUD/delete_member.php" delete-confirm id="batch-delete" >Delete</button>
+       
+       <div class="batch-update-status">
+        <select class="form-control" name="batch-status" id="batch-status">
+            <option value = '' disabled selected>Select-Status</option>
+            <option value="Active">Active</option>
+            <option value="Iactive">Inactive</option>
+        </select>
+        <button formaction="../memberCRUD/batch_update_status.php" id="batch-update">Update</button>
+       </div>
+    </form> 
     </div>
 
 
 <table class="table">
     <tr>
+        <th>#</th>
         <th>No.</th>
         <th>
             <a href="?sort=member_id&dir=<?= ($sort == 'member_id' && $dir == 'asc') ? 'desc' : 'asc' ?>">
@@ -68,7 +85,7 @@ $arr = $p->result;
         </th>
         <th>
             <a href="?sort=name&dir=<?= ($sort == 'name' && $dir == 'asc') ? 'desc' : 'asc' ?>">
-                Member Name
+                Name
                 <?php if ($sort == 'name'): ?>
                     <?php if ($dir == 'asc'): ?>
                         <i class="fas fa-arrow-up arrow-right"></i> <!-- Up arrow for ascending -->
@@ -135,6 +152,9 @@ $arr = $p->result;
         $rowClass = ($s->status === 'Active') ? '' : 'inactive';
     ?>
         <tr class="<?= $rowClass ?>">
+            <td>
+                 <input type="checkbox" name="id[]" value="<?= $s->member_id ?>" form="batch">
+            </td>
             <td><?= $no++ ?></td>
             <td><?= $s->member_id ?></td>
             <td><?= $s->name ?></td>
@@ -157,14 +177,55 @@ $arr = $p->result;
                     <i class="fas fa-user"></i> Unblock
                 <?php endif; ?>
             </button>
-                <button class= "btn btn-delete" data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-id="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
+                <button class= "btn btn-delete" data-post="../memberCRUD/delete_member.php?id=<?= $s->member_id ?>" delete-confirm data-member-ids="<?= $s->member_id ?>"><i class='fas fa-trash-alt'></i>Delete</button>
             </td>
         </tr>
     <?php endforeach ?>
 </table>
 <br>
-<?= $p->html("search=$searchTerm") ?>
-<br>
-
+<div class="pagination">
+                <?= generateDynamicPagination($p, $sort, $dir, $searchTerm); ?>
 </div>
+<br>
+</div>
+
+<script>
+    $('#batch-delete').on('click', function(e) {
+    // Find all checked checkboxes and collect their values
+    const selectedIds = [];
+    $('input[name="id[]"]:checked').each(function() {
+        selectedIds.push($(this).val());
+    });
+
+    // If there are selected IDs, set them as a comma-separated string in data-member-ids
+    if (selectedIds.length > 0) {
+        $(this).attr('data-member-ids', selectedIds.join(','));
+    } else {
+        // If no IDs are selected, prevent form submission and show an alert
+        alert('Please select at least one member to delete.');
+        e.preventDefault();
+    }
+});
+
+$('#batch-update').on('click', function(e) {
+    // Find all checked checkboxes and collect their values
+    const selectedIds = [];
+    $('input[name="id[]"]:checked').each(function() {
+        selectedIds.push($(this).val());
+    });
+
+    // Get the selected status from the dropdown
+    const selectedStatus = $('#batch-status').val();
+
+    // If there are selected IDs and a valid status is selected, set them as a comma-separated string in data-member-ids and data-status
+    if (selectedIds.length > 0 && selectedStatus) {
+        $(this).attr('data-member-ids', selectedIds.join(','));
+        $(this).attr('data-status', selectedStatus);
+    } else {
+        // If no IDs are selected or no status is selected, prevent form submission and show an alert
+        alert('Please select at least one member and a status to update.');
+        e.preventDefault();
+    }
+});
+</script>
 </html>

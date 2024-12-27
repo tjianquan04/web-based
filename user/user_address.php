@@ -1,17 +1,18 @@
 <?php
 require '../_base.php';
 
-$memberId = req('id');
+$member = $_SESSION['user'];
+authMember($member);
 
-$s = getMemberbyId($memberId);
-$addressArr = getAllAddressbyMemberId($memberId);
+$addressArr = getAllAddressbyMemberId($member->member_id);
 
 if (is_post()) {
     if (isset($_POST['edit_address'])) {
+
         // Handle Edit Address
         $address_id = req('address_id');
         $address_line = req('address_line');
-        $state = req('state');
+        $state = req('stateInput');
         $postal_code = req('postal_code');
         $is_default = req('is_default') ?? 0;
 
@@ -30,7 +31,7 @@ if (is_post()) {
         if (!$is_default && !$_err) {
             // Check if another default exists
             $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1 AND address_id != ?');
-            $stmt->execute([$memberId, $address_id]);
+            $stmt->execute([$member->member_id, $address_id]);
             $existingDefault = $stmt->fetchColumn();
 
             if ($is_default && $existingDefault) {
@@ -42,7 +43,11 @@ if (is_post()) {
             $stmt = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
             $stmt->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
             temp('info', 'Address updated successfully.');
-            redirect('/user/user_address.php?id=' . $memberId);
+
+            $addressArr = getAllAddressbyMemberId($member->member_id);
+
+        }else{
+            temp('info', 'Address updated failed.');
         }
     }
 
@@ -52,16 +57,16 @@ if (is_post()) {
         $stmt = $_db->prepare('DELETE FROM address WHERE address_id = ?');
         $stmt->execute([$address_id]);
         temp('info', 'Address deleted successfully.');
-        redirect('/user/user_address.php?id=' . $memberId);
+        $addressArr = getAllAddressbyMemberId($member->member_id);
     }
 
     if (isset($_POST['add_address'])) {
         $address_id = getNextAddressId();
-        $address_line = req('address_line_'.$address_id);
-        $state = req('state_'.$address_id);
-        $postal_code = req('postal_code_'.$address_id);
-        $is_default = req('is_default_'.$address_id) ?? 0;
-    
+        $address_line = req('address_line');
+        $state = req('add_state');
+        $postal_code = req('postal_code');
+        $is_default = req('is_default') ?? 0;
+
         // Validation
         $_err = [];
         if (empty($address_line)) {
@@ -73,23 +78,24 @@ if (is_post()) {
         if (empty($postal_code) || !preg_match('/^\d{5}$/', $postal_code)) {
             $_err['postal_code'] = 'Postal code must be exactly 5 digits.';
         }
-    
+
         if (!$is_default && !$_err) {
             // Check if another default exists
             $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1');
-            $stmt->execute([$memberId]);
+            $stmt->execute([$member->member_id]);
             $existingDefault = $stmt->fetchColumn();
-    
+
             if ($is_default && $existingDefault) {
                 $_err['is_default'] = 'Only one default address is allowed.';
             }
         }
-    
+
         if (!$_err) {
             $stmt = $_db->prepare('INSERT INTO address (address_id, address_line, state, postal_code, is_default, member_id) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $memberId]);
+            $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $member->member_id]);
             temp('info', 'Address added successfully.');
-            redirect('/user/user_address.php?id=' . $memberId);
+
+            $addressArr = getAllAddressbyMemberId($member->member_id);
         }
     }
 }
@@ -103,17 +109,17 @@ include '../_head.php';
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $s->member_id ?>">Profile</a>
-            <a href="user_address.php?id=<?= $s->member_id ?>" class="active-link">Addresses</a>
-            <a href="user_change_password.php?id=<?= $s->member_id ?>">Change Password</a>
-            <a href="user_top_up.php?id=<?= $s->member_id ?>">Top Up</a>
+            <a href="user_profile.php?id=<?= $member->member_id ?>">Profile</a>
+            <a href="user_address.php?id=<?= $member->member_id ?>">Addresses</a>
+            <a href="user_change_password.php?id=<?= $member->member_id ?>">Change Password</a>
+            <a href="user_wallet.php?id=<?= $member->member_id?>">My Wallet</a>
         </div>
 
         <!-- Address Details Section -->
         <div class="address-details">
             <div class="address-header">
                 <h2>Member Addresses</h2>
-                <button data-get="add_address.php?id=<?= $s->member_id ?>" class="add-btn">Add New Address</button>
+                <button data-get="add_address.php?id=<?= $member->member_id ?>" class="add-btn">Add New Address</button>
             </div>
 
             <div class="address-content">
@@ -126,8 +132,8 @@ include '../_head.php';
                         <div class="address-card <?= $address->is_default ? 'default-address' : '' ?>">
                             <div class="card-header">
                                 <div class="header-info">
-                                    <h4><?= $s->name ?></h4>
-                                    <p><?= $s->contact ?></p>
+                                    <h4><?= $member->name ?></h4>
+                                    <p><?= $member->contact ?></p>
                                 </div>
                                 <div class="header-actions">
                                     <button class="edit-btn" data-address-id="<?= $address->address_id ?>" data-address-line="<?= $address->address_line ?>" data-state="<?= $address->state ?>" data-postal-code="<?= $address->postal_code ?>" data-is-default="<?= $address->is_default ?>">Edit</button>
@@ -149,21 +155,22 @@ include '../_head.php';
         </div>
     </div>
 
+
     <!-- Overlay and Form -->
     <div class="overlay" id="overlay"></div>
     <form method="post" class="popup" id="popupForm">
         <h2>Edit Address</h2>
         <input type="hidden" name="address_id" id="addressIdInput">
-        <label for="addressLineInput">Address Line</label>
-        <input type="text" name="address_line" id="addressLineInput" placeholder="Enter address line">
+        <label for="addressLineInput"><strong>Address Line</strong></label>
+        <input type="text" name="address_line" id="addressLineInput" value="<?= $address_line?>" placeholder="Enter address line">
         <?= err('addressLineInput') ?>
-        <label for="state_<?= $address->address_id ?>"><strong>State:</strong></label>
-        <?php html_select('state_' . $address->address_id, $_states, 'class="input-field"', $address->state) ?>
-        <?= err('state_' . $address->address_id) ?>
-        <label for="postalCodeInput">Postal Code</label>
-        <input type="text" name="postal_code" id="postalCodeInput" placeholder="Enter postal code">
+        <label for="stateInput"><strong>State</strong></label>
+        <?php html_select('stateInput', $_states, '', 'class="input-field"', ''.$address->state) ?>
+        <?= err('stateInput') ?>
+        <label for="postalCodeInput"><strong>Postal Code</strong></label>
+        <input type="text" name="postal_code" id="postalCodeInput" value="<?=$postal_code ?>" placeholder="Enter postal code">
         <?= err('postalCodeInput') ?>
-        <label> Set as Default </label>
+        <label><strong> Set as Default</strong> </label>
         <input type="checkbox" name="is_default" id="defaultCheckbox" value="1">
         <?= err('defaultCheckbox') ?>
 
@@ -179,17 +186,18 @@ include '../_head.php';
     <!-- Overlay and Add Address Form -->
     <div class="overlay" id="addOverlay"></div>
     <form method="post" class="popup" id="addPopupForm">
+
         <h2>Add New Address</h2>
-        <label for="addAddressLineInput">Address Line</label>
+        <label for="addAddressLineInput"><strong>Address Line</strong></label>
         <input type="text" name="address_line" id="addAddressLineInput" placeholder="Enter address line">
         <?= err('addAddressLineInput') ?>
         <label for="addStateSelect"><strong>State:</strong></label>
-        <?php html_select('add_state', $_states, 'class="input-field"') ?>
+        <?php html_select('add_state', $_states, '', 'class="input-field"') ?>
         <?= err('add_state') ?>
-        <label for="addPostalCodeInput">Postal Code</label>
+        <label for="addPostalCodeInput"><strong>Postal Code</strong></label>
         <input type="text" name="postal_code" id="addPostalCodeInput" placeholder="Enter postal code">
         <?= err('addPostalCodeInput') ?>
-        <label> Set as Default </label>
+        <label><strong> Set as Default </strong></label>
         <input type="checkbox" name="is_default" id="addDefaultCheckbox" value="1">
         <?= err('addDefaultCheckbox') ?>
         <button type="submit" name="add_address" class="submit-btn">Add</button>
@@ -197,27 +205,69 @@ include '../_head.php';
     </form>
 
     <script>
-        const overlay = document.getElementById('overlay');
-        const popupForm = document.getElementById('popupForm');
-        const cancelBtn = document.getElementById('cancelBtn');
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('overlay');
+            const popupForm = document.getElementById('popupForm');
+            const cancelBtn = document.getElementById('cancelBtn');
 
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                document.getElementById('addressIdInput_').value = button.dataset.addressId;
-                document.getElementById('addressLineInput_' + button.dataset.addressId).value = addressLine;
-                document.getElementById('stateInput_' + button.dataset.addressId).value = state;
-                document.getElementById('postalCodeInput_' + button.dataset.addressId).value = postalCode;
-                document.getElementById('defaultCheckbox_' + button.dataset.addressId).checked = button.dataset.isDefault == '1';
+            const addOverlay = document.getElementById('addOverlay');
+            const addPopupForm = document.getElementById('addPopupForm');
+            const addCancelBtn = document.getElementById('addCancelBtn');
+            const addAddressButton = document.querySelector('.add-btn');
 
-                overlay.style.display = 'block';
-                popupForm.style.display = 'block';
+            // Edit Button Logic
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    // Get data from button attributes
+                    const addressId = button.dataset.addressId;
+                    const addressLine = button.dataset.addressLine;
+                    const state = button.dataset.state;
+                    const postalCode = button.dataset.postalCode;
+                    const isDefault = button.dataset.isDefault === '1';
+
+                    // Populate form fields
+                    document.getElementById('addressIdInput').value = addressId;
+                    document.getElementById('addressLineInput').value = addressLine;
+                    document.getElementById('stateInput').value = state;
+                    document.getElementById('postalCodeInput').value = postalCode;
+                    document.getElementById('defaultCheckbox').checked = isDefault;
+
+                    // Show popup
+                    overlay.style.display = 'block';
+                    popupForm.style.display = 'block';
+                });
             });
+
+            // Add Address Button Logic
+            addAddressButton.addEventListener('click', () => {
+                addOverlay.style.display = 'block';
+                addPopupForm.style.display = 'block';
+            });
+
+            // Cancel Buttons
+            cancelBtn.addEventListener('click', () => {
+                overlay.style.display = 'none';
+                popupForm.style.display = 'none';
+            });
+
+            addCancelBtn.addEventListener('click', () => {
+                addOverlay.style.display = 'none';
+                addPopupForm.style.display = 'none';
+            });
+
+            // Close Popup on Overlay Click
+            overlay.addEventListener('click', () => {
+                overlay.style.display = 'none';
+                popupForm.style.display = 'none';
+            });
+
+            addOverlay.addEventListener('click', () => {
+                addOverlay.style.display = 'none';
+                addPopupForm.style.display = 'none';
+            });
+
         });
 
-        cancelBtn.addEventListener('click', () => {
-            overlay.style.display = 'none';
-            popupForm.style.display = 'none';
-        });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', () => {
@@ -226,32 +276,6 @@ include '../_head.php';
                     document.getElementById('deleteForm').submit();
                 }
             });
-        });
-
-        overlay.addEventListener('click', () => {
-            overlay.style.display = 'none';
-            popupForm.style.display = 'none';
-        });
-
-        const addOverlay = document.getElementById('addOverlay');
-        const addPopupForm = document.getElementById('addPopupForm');
-        const addCancelBtn = document.getElementById('addCancelBtn');
-        const addAddressButton = document.querySelector('.add-btn');
-
-
-        addAddressButton.addEventListener('click', () => {
-            addOverlay.style.display = 'block';
-            addPopupForm.style.display = 'block';
-        });
-
-        addCancelBtn.addEventListener('click', () => {
-            addOverlay.style.display = 'none';
-            addPopupForm.style.display = 'none';
-        });
-
-        addOverlay.addEventListener('click', () => {
-            addOverlay.style.display = 'none';
-            addPopupForm.style.display = 'none';
         });
     </script>
 </body>

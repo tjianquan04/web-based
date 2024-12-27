@@ -1,4 +1,4 @@
-<script src="../js/main.js" async defer></script>
+
 <?php
 require '../_base.php';
 
@@ -17,9 +17,11 @@ $outOfStockCount = countOutOfStockProducts();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Header</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/admin_head.js"></script>
     <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
 <div id="info"><?= temp('info') ?></div>
@@ -39,7 +41,7 @@ $outOfStockCount = countOutOfStockProducts();
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
                     <ul id="product-menu" class="submenu">
-                        <li><a href="product_index.php">Add Product</a></li>
+                        <li><a href="product_index.php">Product Management</a></li>
                         <li><a href="#">Manage Inventory</a></li>
                     </ul>
                 <?php endif; ?>

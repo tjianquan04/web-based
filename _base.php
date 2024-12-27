@@ -610,6 +610,78 @@ function countLowStockProducts()
     return $result['total'] ?? 0; // Return the count or 0 if no results
 }
 
+function batchUpdate($selected_ids, $role = null, $status = null) {
+    global $_db;
+
+    $query = "UPDATE admin SET ";
+    $params = [];
+    $setClauses = [];
+
+    if ($role) {
+        $setClauses[] = "`role` = :role";
+        $params[':role'] = $role;
+    }
+
+    if ($status) {
+        $setClauses[] = "`status` = :status";
+        $params[':status'] = $status;
+    }
+
+    $query .= implode(", ", $setClauses);
+    $query .= " WHERE `admin_id` IN (" . implode(", ", $selected_ids) . ")";
+
+    try {
+        $_db->prepare($query)->execute($params);
+        return "Batch update successful.";
+    } catch (Exception $e) {
+        return "Error updating records: " . $e->getMessage();
+    }
+}
+
+function batchDelete($ids) {
+    try {
+        global $_db;
+        
+        // Create placeholders for ID IN clause
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        
+        // Construct SQL query
+        $sql = "DELETE FROM admin WHERE admin_id IN ($placeholders)";
+        
+        // Execute the query
+        $stmt = $_db->prepare($sql);
+        $stmt->execute($ids);
+
+        return "Batch delete completed successfully.";
+    } catch (PDOException $e) {
+        return "Error: " . $e->getMessage();
+    }
+}
+
+function batchDeleteProduct($ids) {
+    try {
+        global $_db;
+        
+        // Create placeholders for ID IN clause
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        
+        // Construct SQL query
+        $sql = "DELETE FROM product WHERE product_id IN ($placeholders)";
+        
+        // Execute the query
+        $stmt = $_db->prepare($sql);
+        $stmt->execute($ids);
+
+        return "Batch delete completed successfully.";
+    } catch (PDOException $e) {
+        return "Error: " . $e->getMessage();
+    }
+}
+
+
+
+
+
 /*
 function getProductSalesByCategory()
 {
@@ -650,6 +722,12 @@ function login($user, $url = '/')
     redirect($url);
 }
 
+function userLogin($user, $url = '/')
+{
+    $_SESSION['user'] = $user;
+    redirect($url);
+}
+
 // Logout user
 function logout($url = '/')
 {
@@ -679,6 +757,19 @@ function auth(...$roles)
     }
 
     redirect('admin_login.php');
+}
+
+function authMember($member){
+
+    if ($member != NULL) {
+            if ($member->status === 'Active') {
+                return;  
+            } else {
+                $_err = 'Your account is inactive. Please contact support.';
+                redirect('login.php');
+            }
+    }
+    redirect('login.php');
 }
 
 // Generate table headers <th>
@@ -769,7 +860,7 @@ function html_input($type, $key, $placeholder = '', $data = '', $attr = '')
 {
     $value = htmlspecialchars($data);
     $placeholder = encode($placeholder);
-    echo "<input type='$type' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
+    echo "<input type='$type' class='form-select' id='$key' name='$key' value='$value' placeholder='$placeholder' $attr>";
 }
 
 // Generate text input field
@@ -797,11 +888,10 @@ function html_email($key, $placeholder = '', $data = '', $attr = '')
 function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='number' id='$key' name='$key' value='$value'
+    echo "<input type='number' class='form-select' id='$key' name='$key' value='$value'
                  min='$min' max='$max' step='$step' $attr>";
 }
 
-// Generate <select>
 function html_select($key, $items, $default = '', $attr = '', $currentValue = null) {
 
     $value = encode($currentValue ?? $GLOBALS[$key] ?? '');
@@ -823,6 +913,27 @@ function html_select($key, $items, $default = '', $attr = '', $currentValue = nu
     echo '</select>';
 }
 
+function filter_select($id, $name, $options, $default = '', $attributes = '', $selectedValue = null) {
+
+    $currentValue = htmlspecialchars($selectedValue ?? '');
+    
+    // Start the select element
+    echo "<select id='$id' name='$name' $attributes>";
+    
+    // Add the default option
+    echo $default !== '' 
+        ? "<option value=''>$default</option>" 
+        : "<option value='' disabled selected>- Select One -</option>";
+    
+    // Add the options
+    foreach ($options as $value => $label) {
+        $isSelected = $value == $currentValue ? 'selected' : '';
+        echo "<option value='" . htmlspecialchars($value) . "' $isSelected>" . htmlspecialchars($label) . "</option>";
+    }
+    
+    echo "</select>";
+}
+
 
 // Generate <input type='checkbox'>
 function html_checkbox($key, $status = 'inactive', $attr = '')
@@ -830,7 +941,7 @@ function html_checkbox($key, $status = 'inactive', $attr = '')
     $isChecked = ($status === 'active') ? 'checked' : ''; // Check if the status is 'active'
 
     echo "<label for='$key'>"; // Add a label for accessibility
-    echo "<input type='checkbox' id='$key' name='$key' value='active' $isChecked $attr> ";
+    echo "<input type='checkbox' id='$key' name='$key' value='active' class='form-checkbox' $isChecked $attr> ";
     echo "</label>";
 }
 
@@ -1017,74 +1128,58 @@ $_states = [
     'Putrajaya' => 'Putrajaya',
 ];
 
-//Product
-
-
-function fetchProducts($db, $category, $category_id, $name, $sort, $dir)
-{
-    $params = [];
-    $query = "
-        SELECT p.*, pp.product_photo_id
-        FROM product p
-        LEFT JOIN product_photo pp 
-        ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
-
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
-    }
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = '%' . $name . '%';
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
+//wallet
+function getTransactionHistory($member_id){
+    global $_db;
+    $stmt = $_db->prepare("
+        SELECT * FROM transactions WHERE member_id = ? 
+    ");
+    $stmt->execute([$member_id]);
     return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
 
+function getWalletBalanceAfterTransaction($transaction_id, $member_id) {
+    global $_db;
 
-function fetchProductsWithPhotos($db, $category, $category_id, $name, $sort = 'description', $dir = 'asc')
-{
-    $query = "
-        SELECT p.*, pp.photo 
-        FROM product p
-        LEFT JOIN product_photo pp ON p.product_id = pp.product_id AND pp.default_photo = 1
-        WHERE 1=1
-    ";
+    // Fetch the transaction
+    $stmt = $_db->prepare("SELECT * FROM transaction WHERE member_id = ? AND trans_id = ? AND trans_status = 'Completed'");
+    $stmt->execute([$member_id, $transaction_id]);
+    $transaction = $stmt->fetch(PDO::FETCH_OBJ);  
 
-    $params = [];
+    // Fetch the current wallet balance
+    $stmt = $_db->prepare("SELECT wallet FROM member WHERE member_id = ?");
+    $stmt->execute([$member_id]);
+    $user = $stmt->fetch();  
 
-    if ($category) {
-        $query .= " AND p.category_name = ?";
-        $params[] = $category;
+    // Ensure transaction exists and current wallet balance is fetched
+    if ($transaction && $user) {
+        if ($transaction->trans_type === 'Top Up') {
+            $newBalance = $user['wallet'] + $transaction->trans_amount;
+        } else if ($transaction->trans_type === 'Purchase') {
+            $newBalance = $user['wallet'] - $transaction->trans_amount;
+        } else {
+            $newBalance = $user['wallet']; 
+        }
+        return $newBalance;
     }
 
-    if ($category_id) {
-        $query .= " AND p.category_id = ?";
-        $params[] = $category_id;
-    }
-
-    if ($name) {
-        $query .= " AND p.description LIKE ?";
-        $params[] = "%$name%";
-    }
-
-    $query .= " ORDER BY $sort $dir";
-
-    $stm = $db->prepare($query);
-    $stm->execute($params);
-
-    return $stm->fetchAll();
+    return null;  
 }
+
+function updateWalletBalance($walletBalance, $member_id){
+    global $_db;
+
+    // Fetch the transaction
+    $stmt = $_db->prepare("UPDATE member SET wallet = ? WHERE member_id =? ");
+    $stmt->execute([$walletBalance, $member_id]);
+
+}
+
+
+//Product
+
+
+
 
 function html_select_with_subcategories($key, $categories, $default = '- Select One -', $attr = '')
 {
@@ -1092,7 +1187,7 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
     $value = encode($GLOBALS[$key] ?? '');
 
 
-    echo "<select id='$key' name='$key' $attr>";
+    echo "<select id='$key' name='$key' class='form-select' $attr>";
 
     // Default option
     if ($default !== null) {
@@ -1112,7 +1207,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
 
         // Set selected for the main category
         $selected = ($id == $value) ? 'selected' : '';
-        error_log("Main category selected: $selected");  // Debug: Check if it's selected
         echo "<option value='$id' $selected $disabled>$main_category</option>";
 
         // Subcategories: If subcategories exist
@@ -1122,8 +1216,6 @@ function html_select_with_subcategories($key, $categories, $default = '- Select 
                 $sub_name = $subcategory['name'];
                 $selected = ($sub_id == $value) ? 'selected' : '';  // Compare with the selected value (subcategory_id)
 
-                // Debug: Log subcategory selection
-                error_log("Subcategory: $sub_name (ID: $sub_id), Selected: $selected");
 
                 echo "<option value='$sub_id' $selected>&nbsp;&nbsp;&nbsp;$sub_name</option>";
             }
@@ -1139,15 +1231,18 @@ function sendStockAlertEmail($email, $subject, $body, $html = true, $attachment 
     $m->addAddress($email);
     $m->Subject = $subject;
     $m->Body = $body;
-    $m->isHTML($html);
+    $m->isHTML($html);  // Set email format to HTML or plain text
+
+    // Attach the image if an attachment is provided
     if ($attachment) {
         $m->addAttachment($attachment);
     }
 
+    // Try sending the email and handle success/failure
     if (!$m->send()) {
-        temp('error', 'Failed to send email: ' . $m->ErrorInfo);
+        error_log('Failed to send email: ' . $m->ErrorInfo);
     } else {
-        temp('info', 'Email sent successfully.');
+        error_log('Email sent successfully.');
     }
 }
 

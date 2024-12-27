@@ -3,6 +3,7 @@
 <?php
 require '../_base.php';
 
+
 // Process the form when it's submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admin_id = $_POST['admin_id'] ?? '';

@@ -94,12 +94,21 @@ if (is_post()) {
         $stm->execute([$product_status, $category_id]);
 
 
-        // Optionally, if stockAlert is true, handle additional logic like notifications
-        if ($stock_alert) {
-            // Example: Send notifications to admins about low stock (if required)
-         //   sendStockAlertEmail($adminEmail, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+     // Optionally, if stockAlert is true, handle additional logic like notifications
+if ($stock_alert) {
+    // Retrieve the email address of the Product Manager from the database
+    $query = $_db->prepare('SELECT email FROM admin WHERE role = ?');
+    $query->execute(['Product Manager']);
+    $admin = $query->fetch();
 
-        }
+    // Check if a Product Manager was found
+    if ($admin) {
+        // Send the email to the Product Manager
+        sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+    } else {
+        temp('error', 'No Product Manager found to send email to.');
+    }
+}
 
         // Success or failure message
         if ($update_result) {
@@ -108,6 +117,7 @@ if (is_post()) {
             redirect('ViewCategory.php');
         } else {
             $_err['update'] = 'Failed to update the category. Please try again.';
+            
         }
     }
 }
