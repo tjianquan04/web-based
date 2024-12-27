@@ -127,6 +127,37 @@ body {
     color: red;
   }
 
+  .amount-input {
+    width: 200px;
+    height: 40px;
+    font-size: 18px;
+    text-align: right;
+    padding: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.predefined-amounts {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.amount-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.amount-button:hover {
+    background-color: #0056b3;
+}
+
   /* card details modal css*/
 #cardDetailsModal {
     position: fixed;
