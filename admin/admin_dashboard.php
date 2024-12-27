@@ -84,8 +84,6 @@ if (isset($_GET['chartData'])) {
                     </ul>
                 <?php endif; ?>
 
-                <a href="#"><i class="fas fa-cogs"></i> Settings</a>
-
                 <!-- Logout Form -->
                 <form action="" method="POST" style="display:inline;">
                     <button type="submit" name="logout" class="btn btn-logout">

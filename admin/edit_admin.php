@@ -110,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 <div class="container">
+<button class="back-button" onclick="history.back()">&larr;</button>
     <h1>Edit Profile</h1>
     <form method="POST" enctype="multipart/form-data" class="admin-form" id="addAdminForm">
 

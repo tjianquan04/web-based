@@ -13,7 +13,9 @@ $admin = getAdminById($admin_id);
 ?>
 
 <div class="container">
+<button class="back-button" onclick="history.back()">&larr;</button>
     <h1>Admin Profile</h1>
+    
     
     <!-- Admin Photo -->
     <div class="admin-photo">
