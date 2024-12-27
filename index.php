@@ -18,9 +18,15 @@ require '_base.php';
 //     exit;
 // }
 
-$member = $_SESSION['user'];
-authMember($member);
+
+
+if(!empty($_SESSION)){
+  $member = $_SESSION['user'];
+  authMember($member);
+
 $member_id =  $member->member_id;
+}
+
 
 $updateStatusStm = $_db->prepare("
     UPDATE product 

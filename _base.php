@@ -1123,7 +1123,7 @@ function getWalletBalanceAfterTransaction($transaction_id, $member_id) {
     global $_db;
 
     // Fetch the transaction
-    $stmt = $_db->prepare("SELECT * FROM transaction WHERE member_id = ? AND trans_id = ? AND trans_status = 'Completed'");
+    $stmt = $_db->prepare("SELECT * FROM transactions WHERE member_id = ? AND trans_id = ? AND trans_status = 'Completed'");
     $stmt->execute([$member_id, $transaction_id]);
     $transaction = $stmt->fetch(PDO::FETCH_OBJ);  
 
@@ -1135,11 +1135,11 @@ function getWalletBalanceAfterTransaction($transaction_id, $member_id) {
     // Ensure transaction exists and current wallet balance is fetched
     if ($transaction && $user) {
         if ($transaction->trans_type === 'Top Up') {
-            $newBalance = $user['wallet'] + $transaction->trans_amount;
+            $newBalance = $user->wallet + $transaction->trans_amount;
         } else if ($transaction->trans_type === 'Purchase') {
-            $newBalance = $user['wallet'] - $transaction->trans_amount;
+            $newBalance = $user->wallet - $transaction->trans_amount;
         } else {
-            $newBalance = $user['wallet']; 
+            $newBalance = $user->wallet; 
         }
         return $newBalance;
     }
@@ -1154,6 +1154,32 @@ function updateWalletBalance($walletBalance, $member_id){
     $stmt = $_db->prepare("UPDATE member SET wallet = ? WHERE member_id =? ");
     $stmt->execute([$walletBalance, $member_id]);
 
+}
+
+function generateTopUpID() {
+    // Get the current date in YYYYMMDD format
+    $currentDate = date('Ymd');
+    
+    // Generate a 6-digit random number
+    $randomNumber = mt_rand(100000, 999999);
+
+    // Concatenate "TOP", the date, and the random number
+    $topUpID = "TOP" . $currentDate . $randomNumber;
+
+    return $topUpID;
+}
+
+function generateTransactionId() {
+    // Get the current date in YYYYMMDD format
+    $currentDate = date('Ymd');
+    
+    // Generate a 6-digit random number
+    $randomNumber = mt_rand(100000, 999999);
+
+    // Concatenate "TOP", the date, and the random number
+    $topUpID = "TST" . $currentDate . $randomNumber;
+
+    return $topUpID;
 }
 
 
