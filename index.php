@@ -119,7 +119,7 @@ img{
 
 <div class="mySlides fade">
   <div class="numbertext">2 / 3</div>
-  <img src="product_gallery\638514769327200002c.jpg" style="width:100%">
+  <img src="image\slideshow.jpg" style="width:100%">
   <div class="text">Caption Two</div>
 </div>
 

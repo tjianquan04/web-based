@@ -251,6 +251,8 @@ $_title = 'Product | Index';
                         <td><?= $product->status ?></td>
                         <td><?= $product->dateAdded ?></td>
                         <td>
+                        <a href='product_details.php?product_id=<?= $product->product_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
+
                             <a href="deleteProduct.php?product_id=<?= $product->product_id ?>" class='btn btn-delete'>
                                 <i class="fa-solid fa-xmark"></i>Delete
                             </a>

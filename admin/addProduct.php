@@ -46,7 +46,7 @@ if (is_post()) {
 
     // Fetch the category name and subcategory based on category_id
     $stm = $_db->prepare('
-        SELECT category_name, sub_category
+        SELECT *
         FROM category
         WHERE category_id = ?
     ');
@@ -109,7 +109,7 @@ if (is_post()) {
                 INSERT INTO product (product_id, description, stock_quantity, unit_price, category_name, category_id,status,dateAdded) 
                 VALUES (?, ?, ?, ?, ?, ?,?,CURRENT_TIMESTAMP)
             ');
-            $stm->execute([$product_id, $description, $stock_quantity, $unit_price, $category_name, $category_id, $status]);
+            $stm->execute([$product_id, $description, $stock_quantity, $unit_price, $category_data->category_name, $category_id, $status]);
 
 
             // Fetch current stock for the category
@@ -127,6 +127,54 @@ if (is_post()) {
             WHERE category_id = ?
             ');
             $updateCatStock->execute([$newStockQuantity, $category_id]);
+
+
+            $stock_alert = ($newStockQuantity < $category_data->minStock) ? 1 : 0;
+            // Update the category table with the new stockAlert value
+            $stm = $_db->prepare('
+        UPDATE category
+        SET stockAlert = ?
+        WHERE category_id = ?
+        ');
+            $stm->execute([$stock_alert, $category_id]);
+            if ($stock_alert) {
+                // Retrieve the email address of the Product Manager from the database
+                $query = $_db->prepare('SELECT email FROM admin WHERE role = ?');
+                $query->execute(['Product Manager']);
+                $admin = $query->fetch();
+
+                // Check if a Product Manager was found
+                if ($admin) {
+                    // Send the email to the Product Manager
+                    // Ensure all category data fields are set and valid
+                    $category_id = $category_data->category_id ?? 'Unknown';
+                    $category_name = $category_data->category_name ?? 'Unnamed Category';
+                    $minStock = $category_data->minStock;
+                    $category_photo = $category_data->category_photo ;
+
+                    // Prepare the email content
+                    $emailSubject = 'Low Stock Alert';
+                    $emailMessage = "Current stock is below the minimum threshold.<br>
+                 <strong>Category ID:</strong> {$category_id}<br>
+                 <strong>Category Name:</strong> {$category_name}<br>
+                 <strong>Minimum Stock Required:</strong> {$minStock}";
+
+                    // Specify the photo path (ensure the file exists)
+                    $photoPath = "../image/" . $category_photo;
+
+                    // Send the stock alert email
+                    sendStockAlertEmail(
+                        $admin->email,
+                        $emailSubject,
+                        $emailMessage,
+                        true,
+                        $photoPath
+                    );
+                    
+                } else {
+                    temp('error', 'No Product Manager found to send email to.');
+                }
+            }
 
             // Save photos and get paths
             $photo_paths = [];

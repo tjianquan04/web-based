@@ -10,39 +10,63 @@ $category_id = req('category_id'); // Subcategory
 $name = req('name');               // Search keyword
 $sort = req('sort', 'description'); // Sorting field
 $dir = req('dir', 'asc');           // Sorting direction
-
-
 $minPrice = req('minPrice', 0);     // Min price
 $maxPrice = req('maxPrice', 10000); // Max price
 
-$params = [];
-$query = "SELECT * FROM product WHERE status NOT LIKE 'Discontinued' AND status NOT LIKE 'Inactive'";
 
+$params = [];
+$query = "
+    SELECT p.* 
+    FROM product p
+    LEFT JOIN category c ON p.category_id = c.category_id
+    WHERE p.status NOT LIKE 'Discontinued'
+      AND p.status NOT LIKE 'Inactive'
+";
+
+// Add filters dynamically
 if ($category) {
-    $query .= " AND category_name LIKE ?";
+    $query .= " AND p.category_name LIKE ?";
     $params[] = '%' . $category . '%';
 }
 if ($category_id) {
-    $query .= " AND category_id LIKE ?";
+    $query .= " AND p.category_id LIKE ?";
     $params[] = '%' . $category_id . '%';
 }
 if ($name) {
-    $query .= " AND description LIKE ?";
+    $query .= " AND p.description LIKE ?";
     $params[] = '%' . $name . '%';
 }
-
+if (isset($_GET['newAdded'])) {
+    $query .= " AND p.dateAdded <= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)";
+}
+if (isset($_GET['limited'])) {
+    $query .= " AND p.status = 'LimitedEdition'
+                AND p.invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)";
+}
+if (isset($_GET['oosItem'])) {
+    $query .= " AND p.status = 'OutOfStock'";
+}
+if (isset($_GET['alertItem'])) {
+    $query .= " AND c.StockAlert = 1";
+}
 
 // Add price range filter
-$query .= " AND unit_price BETWEEN ? AND ?";
+$query .= " AND p.unit_price BETWEEN ? AND ?";
 $params[] = $minPrice;
 $params[] = $maxPrice;
 
+// Add sorting
 $query .= " ORDER BY $sort $dir";
 
+// Prepare and execute the query
 $stmt = $_db->prepare($query);
 $stmt->execute($params);
+
 $product = $stmt->fetchAll();
 
+
+
+// }
 // Fetch default product photos
 $productPhotos = [];
 $photoQuery = "SELECT * FROM product_photo WHERE default_photo = 1";

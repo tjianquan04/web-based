@@ -10,11 +10,12 @@ $stm = $_db->prepare('SELECT * FROM product WHERE product_id = ?');
 $stm->execute([$product_id]);
 $product = $stm->fetch();
 
+
+
 // Fetch all photos for the product
 $photo_stm = $_db->prepare('SELECT * FROM product_photo WHERE product_id = ?');
 $photo_stm->execute([$product_id]);
 $photos = $photo_stm->fetchAll();
-
 
 
 // Fetch the subcategory from the database based on category_id
@@ -152,13 +153,13 @@ if (!$product) {
 
     <div class="product-photos">
         <h3>Product Photos</h3>
-        <?php if ($photos): ?>
+        
             <div class="photo-gallery">
                 <?php foreach ($photos as $photo): ?>
                     <a href="product_photo.php?product_id=<?=$product->product_id ?>"><img src="../product_gallery/<?= ($photo->product_photo_id) ?>" alt="Product Photo" class="product-photo"></a>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?>
+           
     </div>
     <div class="product-info">
         <table>
