@@ -92,7 +92,8 @@ include '_head.php';
 </style>
 
 <div class="container">
-<a href="javascript:history.back()" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">
+<i class="fa-solid fa-arrow-left-long"></i></a>
 
     <section class="main">
         <h2>My Wishlist</h2>
