@@ -2,6 +2,12 @@
 // Get the current page name dynamically
 $current_page = basename($_SERVER['PHP_SELF']);
 
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
+$dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +74,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <a href="#" onclick="logoutFunction(event);" class="btn btn-logout">
+                                    <a href="#hdiashdoasa" onclick="logoutFunction(event);" class="btn btn-logout">
                                         <i class="fas fa-sign-out-alt"></i> Logout
                                     </a>
 
@@ -78,8 +84,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <?php
                                     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                        // Call the logout function to handle session and redirection
-                                        logout('login.php');
+                                        // Call the logout function
+                                        logout('/user/login.php');
                                     }
                                     ?>
 
@@ -141,14 +147,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
         </div>
+        <script>
+            function logoutFunction(event) {
+                event.preventDefault(); // Prevent the default action
+                document.getElementById('logoutForm').submit(); // Submit the form
+            }
+        </script>
     </header>
-
-<script>
-function logoutFunction(event) {
-    // Prevent the default action of the link (which is to reload the page)
-    event.preventDefault();
-
-    // Submit the hidden form to trigger the POST request
-    document.getElementById('logoutForm').submit();
-}
-</script>
