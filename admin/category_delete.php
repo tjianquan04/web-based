@@ -200,6 +200,8 @@ $_title = 'Category Management | DELETE';
     </style>
 
 <div class="delete">
+<a href="javascript:history.back()" class="back-button">&larr;</a>
+
         <h2>Confirm Deletion</h2>
         <p>Are you sure you want to delete the following category and its associated products?</p>
 

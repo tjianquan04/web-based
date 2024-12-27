@@ -91,6 +91,8 @@ $_title = $category ? "Products in $category" : "Products in Subcategory $catego
 include '_head.php';
 ?>
 
+<div class="container">
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 
 <div class="sidenav">
     <h4>Products Category</h4>
@@ -163,6 +165,7 @@ include '_head.php';
     <p>No products found matching your search criteria.</p>
 <?php endif ?>
 
+</div>
 </div>
 
 <script>
@@ -255,3 +258,7 @@ function applyPriceFilter(minPrice, maxPrice) {
 
 </script>
 
+
+<?php
+include "_foot.php"
+?>

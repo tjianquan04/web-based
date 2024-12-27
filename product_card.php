@@ -37,7 +37,7 @@ include '_head.php';
 <script src="/js/slider.js" defer></script>
 
 <div class="container">
-<a href="menu.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 
     <section class="main">
         <div class="default gallery">

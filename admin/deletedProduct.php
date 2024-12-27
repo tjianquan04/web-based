@@ -60,7 +60,7 @@ $_title = 'Product | Index';
 
 <div class="container">
 
-<a href="product_index.php" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">&larr;</a>
 <div class="search-bar-container">
                 <form action="deletedProduct.php" method="GET">
                     <input type="text" name="search" placeholder="Search by keyword..." value="<?= htmlspecialchars($search) ?>" />
