@@ -79,8 +79,9 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
            <p>Dear $user->name,</p>
             <h1 style='color: green'>Activate Boots.Do Account</h1>
             <p>
-               Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
-               </p>         
+               Your OTP code is </p><strong>$otp_num</strong><br> 
+               <p>Please activate account using the OTP number. </p>             
+               <p>This OTP code will expire in 5 minutes.</p>         
             <p>From, Boots.Do Admin</p>
         ";
         $m->send();
