@@ -6,7 +6,6 @@
 </footer> -->
 
 
-</body>
 <footer class="footer2">
     <div class="container">
         <a href="#" class="brand">
@@ -37,5 +36,6 @@
         <p>derfreferferf</p>
     </div>
 </footer>
+</body>
 
 </html>
