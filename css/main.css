@@ -59,6 +59,15 @@ ul {
     padding-top: 15px;
 }
 
+.bottom{
+    float: none;
+    padding: 12px 16px;
+    display: block;
+    text-align: left;
+}
+
+
+
 .nav-search-box {
     margin: 0px;
     float: right; 
