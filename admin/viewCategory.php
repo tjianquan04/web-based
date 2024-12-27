@@ -111,6 +111,7 @@ $_title = 'Category Management';
 
 
 <link rel="stylesheet" href="/css/product.css">
+<script src="../js/admin_head.js"></script>
 
 
 <div class="container">
@@ -184,7 +185,7 @@ $_title = 'Category Management';
         <tbody>
             <?php foreach ($_categories as $_category): ?>
                 
-                <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'">
+                <!-- <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'"> -->
                 <td><input type="checkbox" name="selectedIDs[]" value="<?= $_category->category_id ?>" /></td>
 
                     <td><?= $_category->category_id ?>
@@ -204,6 +205,8 @@ $_title = 'Category Management';
 
                     </td>
                     <td>
+                    <a href='category_details.php?category_id=<?= $_category->category_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
+
                         <a href='category_update.php?category_id=<?= $_category->category_id ?>' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
                         <!-- <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete' onclick='return confirm("Are you sure you want to delete this Category?")'> -->
                         <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete'>

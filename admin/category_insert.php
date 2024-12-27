@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="/css/editForm.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../js/main.js"></script>
 <script src="../js/admin_head.js"></script>
 <?php
 include '_admin_head.php';
