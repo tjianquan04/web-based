@@ -58,6 +58,9 @@ include '../_head.php';
             <div class="wallet-amount">
                 <h3>Wallet Balance: RM <?= $member->wallet ?></h3>
             </div>
+            <div class="reload-wallet">
+                <button id="topUpButton" onclick="showAmountForm()">Top Up</button>
+            </div>
 
             <!-- Transaction History -->
             <div class="transaction-history">
@@ -103,6 +106,34 @@ include '../_head.php';
         </div>
     </div>
 </body>
+
+<div id="amountForm" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('amountForm')">&times;</button>
+      <h2>Top Up Amount</h2>
+      <form>
+        <input type="number" id="amount" placeholder="Enter amount" required>
+        <button type="button" onclick="showPaymentForm()">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Payment Form Modal -->
+  <div id="paymentForm" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('paymentForm')">&times;</button>
+      <h2>Payment Details</h2>
+      <form>
+        <select id="paymentMethod" required>
+          <option value="" disabled selected>Select Payment Method</option>
+          <option value="creditCard">Credit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="bankTransfer">Bank Transfer</option>
+        </select>
+        <button type="submit">Submit Payment</button>
+      </form>
+    </div>
+  </div>
 
 <script>
     $(document).ready(function() {
@@ -154,6 +185,30 @@ include '../_head.php';
         // Trigger filtering on dropdown change
         $('.filter').change(filterTransactions);
     });
+
+    function showAmountForm() {
+      document.getElementById('amountForm').style.display = 'flex';
+    }
+
+    // Show the Payment Form after Amount Form
+    function showPaymentForm() {
+      const amount = document.getElementById('amount').value;
+      if (!amount || amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
+      // Close the Amount Form
+      closeModal('amountForm');
+
+      // Show the Payment Form
+      document.getElementById('paymentForm').style.display = 'flex';
+    }
+
+    // Close the specified modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
 </script>
 <?php
 include '../_foot.php';

@@ -70,6 +70,10 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
         ');
         $stm->execute([$tokenId, $otp_num, $userId]);
 
+        $stmt = $_db->prepare('
+        UPDATE FROM member SET last_email_sent = ? WHERE member_id = ?');
+        $stmt->execute([$currentTime, $userId]);
+
         // Send Email
         $m = get_mail();
         $m->addAddress($email, 'User');
