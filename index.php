@@ -51,8 +51,6 @@ $_title = 'Home';
 
 include '_head.php';
 ?>
-<p>a</p>
-
 
 <style>
 * {box-sizing: border-box}
