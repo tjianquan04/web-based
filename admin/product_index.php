@@ -110,16 +110,9 @@ if (isset($_POST['batchDlt']) && isset($_POST['selectedIDs']) && !empty($_POST['
         $updateCatStock->execute([$newStockQuantity, $category_id]);
     }
 } else {
-    echo "No products selected for deletion.";
     error_log("No products selected for deletion.");
 }
 
-
-
-
-echo "Item Count: " . $p->item_count;
-echo "Limit: " . $p->limit;
-echo "Page Count: " . $p->page_count;
 
 // ----------------------------------------------------------------------------
 
