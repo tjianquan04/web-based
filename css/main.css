@@ -183,7 +183,7 @@ ul {
     font-size: 13px;
     position: absolute;
     top: 25px;
-    height: 45px;
+    height: 25px;
     right: 10px;
     display: block;
     box-sizing: border-box;
@@ -192,6 +192,8 @@ ul {
     text-decoration: none;
     border: none;
     transform: translateY(-50%);
+    background-color: rgb(0,0,0,0);
+    padding-bottom: 50px;
 }
 
 
