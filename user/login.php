@@ -6,7 +6,7 @@ require '../_base.php';
 
 // Start the session
 $_title = 'Login | Boost.do';
-include '../_head.php';
+//include '../_head.php';
 
 // Login processing
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

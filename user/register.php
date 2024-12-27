@@ -37,8 +37,8 @@ if (is_post()) {
         $user_id = getNextUserId();
 
         // Insert the user into the database
-        $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, register_date, status, profile_photo) VALUES (?, ?, ?, ? ,?, ?, ?, ?)");
-        $stmt->execute([$user_id, $name, $email, '-', SHA1($password), $currentDateTime, 'Inactive', 'unknown.jpg']);
+        $stmt = $_db->prepare("INSERT INTO member (member_id, name, email, contact, password, register_date, status, profile_photo, last_email_sent) VALUES (?, ?, ?, ? ,?, ?, ?, ?,?)");
+        $stmt->execute([$user_id, $name, $email, '-', SHA1($password), $currentDateTime, 'Inactive', 'unknown.jpg',$currentDateTime]);
 
         // Generate and insert token
         $token_id = SHA1(uniqid() . rand());
@@ -59,8 +59,9 @@ if (is_post()) {
             <p>Dear $name,</p>
             <h1 style='color: green'>Activate Boots.Do Account</h1>
             <p>
-               Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
-               </p>         
+               Your OTP number is </p><strong>$otp_num</strong><br> 
+               <p>Please activate account using the OTP number.</p>
+               <p>This OTP code will expire in 5 minutes.</p>           
             <p>From, Boots.Do Admin</p>
         ";
         $m->send();

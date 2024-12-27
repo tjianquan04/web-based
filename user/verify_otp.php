@@ -1,12 +1,14 @@
 <?php
 require '../_base.php';
 
+$cooldownTime = 5 * 60; //5 minutes
+
 if (is_post()) {
     $_db->query('DELETE FROM register_token WHERE expire < NOW()');
 
     $tokenId = req('token_id');
     $submit_otp     = req('otp');
-
+    
     //Get OTP and Member id 
     $stmt = $_db->prepare('SELECT otp_number, member_id FROM register_token WHERE token_id = ?');
     $stmt->execute([$tokenId]);
@@ -14,6 +16,7 @@ if (is_post()) {
 
     $userId = $getData->member_id;
     $validOTP = $getData->otp_number;
+
 
     if(empty($submit_otp)){
         $_err['otp_number'] = 'OTP code is required.';
@@ -41,11 +44,20 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     $oldTokenId = $_GET['token_id'];
 
     // Regenerate Token and OTP
-    $stmt = $_db->prepare('SELECT member_id, email FROM register_token JOIN member USING(member_id) WHERE token_id = ?');
+    $stmt = $_db->prepare('SELECT member_id, email,last_email_sent FROM register_token JOIN member USING(member_id) WHERE token_id = ?');
     $stmt->execute([$oldTokenId]);
     $user = $stmt->fetch();
 
-    if ($user) {
+    $currentTime = time();
+    $lastEmailSentTime = $user->last_email_sent ? strtotime($user->last_email_sent) : 0;
+
+    if ($currentTime - $lastEmailSentTime < $cooldownTime) {
+                // Cooldown still active
+        $remainingTime = $cooldownTime - ($currentTime - $lastEmailSentTime);
+        $_err['cooldown_error'] = "You can request for OTP numbers again in " . gmdate("i:s", $remainingTime) . ".";
+     }
+
+    if (empty($_err)) {
         $userId = $user->member_id;
         $email = $user->email;
         $tokenId = SHA1(uniqid() . rand());
@@ -67,8 +79,9 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
            <p>Dear $user->name,</p>
             <h1 style='color: green'>Activate Boots.Do Account</h1>
             <p>
-               Your OTP number is </p><strong>$otp_num</strong><br> <p>Please activate account using the OTP number.
-               </p>         
+               Your OTP code is </p><strong>$otp_num</strong><br> 
+               <p>Please activate account using the OTP number. </p>             
+               <p>This OTP code will expire in 5 minutes.</p>         
             <p>From, Boots.Do Admin</p>
         ";
         $m->send();
@@ -94,6 +107,7 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
                 <label for="otp"><i class="fa fa-lock"></i> OTP Code : </label>
                 <input type="text" name="otp" placeholder="Enter your OTP" required />
                 <?php err('otp_number'); ?>
+                <?= err('cooldown_error') ?>
                 </div>
 
                 <button type="submit" class="form-btn">Submit</button><br>

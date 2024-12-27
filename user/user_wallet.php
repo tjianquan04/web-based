@@ -89,7 +89,7 @@ include '../_head.php';
                                     <td> <?= $transaction->trans_type === 'Top Up' ? '+' : '-' ?> RM <?= $transaction->trans_amount ?></td>
                                     <td><?= $transaction->trans_type ?></td>
                                     <td><?= $transaction->trans_status ?></td>
-                                    <td><?= $transaction->order_id ? $transaction->order_id :  $transaction->top_up_id ?></td>
+                                    <td><?= $transaction->reference?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -137,7 +137,7 @@ include '../_head.php';
                                 <td>RM ${transaction.trans_amount}</td>
                                 <td>${transaction.trans_type}</td>
                                 <td>${transaction.trans_status}</td>
-                                <td>${transaction.order_id || transaction.top_up_id}</td>
+                                <td>${transaction.reference}</td>
                             </tr>
                         `);
                         });
