@@ -36,10 +36,71 @@ $p = new SimplePager(
 );
 
 $_categories = $p->result;
+if (isset($_POST['batchDlt']) && isset($_POST['selectedIDs']) && !empty($_POST['selectedIDs'])) {
+    $selectedIDs = $_POST['selectedIDs']; // Array of selected category IDs
 
-echo "Item Count: " . $p->item_count;
-echo "Limit: " . $p->limit;
-echo "Page Count: " . $p->page_count;
+    // Loop through selected category IDs for deletion
+    foreach ($selectedIDs as $categoryID) {
+
+        // Update category status to 'Discontinued'
+        $update_category_stm = $_db->prepare('UPDATE category SET status = "Discontinued", dateDeleted = NOW(), currentStock = 0, StockAlert = false WHERE category_id = ?');
+        $update_category_stm->execute([$categoryID]);
+
+        // Fetch associated category photo and delete it
+        $categoryStm = $_db->prepare('SELECT category_photo FROM category WHERE category_id = ?');
+        $categoryStm->execute([$categoryID]);
+        $category = $categoryStm->fetch(PDO::FETCH_OBJ);
+
+        if ($category && isset($category->category_photo)) {
+            $photo_path = '../image/' . $category->category_photo;
+            if (file_exists($photo_path)) {
+                unlink($photo_path);
+            }
+        }
+
+        // Get all product photos associated with this category
+        $galleryStm = $_db->prepare('SELECT product_id FROM product WHERE category_id = ?');
+        $galleryStm->execute([$categoryID]);
+        $products = $galleryStm->fetchAll(PDO::FETCH_OBJ);
+
+        // Loop through each product to delete associated photos
+        foreach ($products as $product) {
+            $productId = $product->product_id;
+
+            $productPhotosStm = $_db->prepare('SELECT product_photo_id FROM product_photo WHERE product_id = ?');
+            $productPhotosStm->execute([$productId]);
+            $photos = $productPhotosStm->fetchAll(PDO::FETCH_OBJ);
+
+            // Delete associated product photos
+            foreach ($photos as $photo) {
+                $photo_path = '../product_gallery/' . $photo->product_photo_id;
+                if (file_exists($photo_path)) {
+                    unlink($photo_path);
+                }
+
+                // Delete photo from the database
+                $deletePhotosStm = $_db->prepare('DELETE FROM product_photo WHERE product_photo_id = ?');
+                $deletePhotosStm->execute([$photo->product_photo_id]);
+            }
+
+            // Update product status to 'Discontinued'
+            $updateProductStm = $_db->prepare('UPDATE product SET status = "Discontinued", stock_quantity = 0, dateDeleted = NOW() WHERE product_id = ?');
+            $updateProductStm->execute([$productId]);
+        }
+
+        // Update category status after deleting photos
+        $stmt = $_db->prepare('UPDATE category SET status = ?, currentStock = 0, dateDeleted = NOW() WHERE category_id = ?');
+        $stmt->execute(['Discontinued', $categoryID]);
+
+        // Update all products associated with this category to 'Discontinued'
+        $updateProductsStm = $_db->prepare('UPDATE product SET status = ?, stock_quantity = 0, dateDeleted = NOW() WHERE category_id = ?');
+        $updateProductsStm->execute(['Discontinued', $categoryID]);
+    }
+} else {
+    error_log("No categories selected for deletion.");
+}
+
+
 // ---
 
 // ----------------------------------------------------------------------------
@@ -50,6 +111,7 @@ $_title = 'Category Management';
 
 
 <link rel="stylesheet" href="/css/product.css">
+<script src="../js/admin_head.js"></script>
 
 
 <div class="container">
@@ -66,11 +128,12 @@ $_title = 'Category Management';
     </div>
 
     <p><?= count($_categories) ?> record(s)</p>
+    <form action="viewCategory.php" method="POST">
 
     <table>
         <thead>
             <tr>
-                <th>#</th>
+            <th><input type="checkbox" id="selectAll" />SelectAll</th>
                 <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category ID
                     <?php if ($sort == 'category_id'): ?>
                         <?php if ($dir == 'asc'): ?>
@@ -120,11 +183,11 @@ $_title = 'Category Management';
             </tr>
         </thead>
         <tbody>
-            <?php $numofcategories = 1; ?>
             <?php foreach ($_categories as $_category): ?>
-                <!-- <tr onclick="showCategoryDetails('<?= $_category->category_id ?>', '<?= $_category->category_name ?>', '<?= $_category->sub_category ?>', '<?= $_category->category_photo ?>')"> -->
-                <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'">
-                    <td><?= $numofcategories++ ?></td>
+                
+                <!-- <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'"> -->
+                <td><input type="checkbox" name="selectedIDs[]" value="<?= $_category->category_id ?>" /></td>
+
                     <td><?= $_category->category_id ?>
                     </td>
                     <td class="description-cell"><?= $_category->category_name ?>
@@ -142,6 +205,8 @@ $_title = 'Category Management';
 
                     </td>
                     <td>
+                    <a href='category_details.php?category_id=<?= $_category->category_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
+
                         <a href='category_update.php?category_id=<?= $_category->category_id ?>' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
                         <!-- <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete' onclick='return confirm("Are you sure you want to delete this Category?")'> -->
                         <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete'>
@@ -156,6 +221,12 @@ $_title = 'Category Management';
             <?php endforeach ?>
         </tbody>
     </table>
+    With rows :
+        <button type="submit" name="batchDlt" id="batchDlt" class="btn btn-delete" style="width: 140px; font-family:'Times New Roman', Times, serif;" onclick="return confirmDelete();">
+            <i class="fa-solid fa-xmark"></i> Batch Delete
+        </button>
+
+                    </form>
 
     <a href="category_insert.php" class="btn btn-add" ><i class="fa-solid fa-plus"></i>Add New Category</a>
     <a href="deletedCategory.php" class="btn btn-trash"><i class="fa-solid fa-trash-can"></i>Trash</a>
@@ -164,3 +235,22 @@ $_title = 'Category Management';
         <?= generateDynamicPagination($p, $sort, $dir, $search); ?>
     </div>
 </div>
+
+
+<script>
+    // Select all checkboxes logic
+    document.getElementById("selectAll").addEventListener("click", function() {
+        let checkboxes = document.querySelectorAll('input[name="selectedIDs[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    // Function to prevent submission if no rows are selected
+    function confirmDelete() {
+        let checkboxes = document.querySelectorAll('input[name="selectedIDs[]"]:checked');
+        if (checkboxes.length === 0) {
+            alert("Please select at least one category to delete.");
+            return false;
+        }
+        return confirm('Are you sure you want to delete the selected categories?');
+    }
+</script>

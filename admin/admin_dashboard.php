@@ -60,11 +60,8 @@ if (isset($_GET['chartData'])) {
 
                 <!-- Only Product Manager can see this section -->
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
-                    <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
-                    <ul id="product-menu" class="submenu">
-                        <li><a href="product_index.php">Add Product</a></li>
-                        <li><a href="#">Manage Inventory</a></li>
-                    </ul>
+                    <a href="product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
+                    <a href="viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
                 <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>

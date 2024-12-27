@@ -2,6 +2,9 @@
 // Get the current page name dynamically
 $current_page = basename($_SERVER['PHP_SELF']);
 
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
+$dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
+
 
 
 
@@ -25,32 +28,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </head>
 <div id="info"><?= temp('info') ?></div>
 <style>
-    .dropdown-content {
-        display: none;
-        margin-top: 25px;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-    }
 
-    .dropdown-content a {
-        float: none;
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        text-align: left;
-    }
-
-    .dropdown-content a:hover {
-        background-color: #ddd;
-    }
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
 </style>
 
 <body>
@@ -63,15 +41,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="container-right1">
                     <ul>
                         <div class="dropdown">
-                        <li class="right">
-                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
-                                <i class="ico ico-user"></i>
-                            </a>
-                            <div class="dropdown-content">
-                                    <a href="#">My Account</a>
+                            <li class="right">
+                                <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
+                                    <i class="ico ico-user"></i>
+                                </a>
+                                <div class="dropdown-content">
+                                    <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <a href="#">Log Out</a>
+                                    <!-- Logout Link -->
+                                    <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+
+                                    <!-- Hidden Logout Form -->
+                                    <form id="logout-form" action="" method="POST" style="display:none;">
+                                        <input type="hidden" name="logout">
+                                    </form>
+
+                                    <?php
+                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                                        // Call the logout function and redirect the user
+                                        logout('/user/login.php'); // Replace with the URL you want the user redirected to
+                                    }
+                                    ?>
                                 </div>
                             </li>
                         </div>

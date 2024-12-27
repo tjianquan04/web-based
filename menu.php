@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/menu.css">
+
 <link rel="stylesheet" href="/css/category.css">
 
 <?php
@@ -13,6 +13,15 @@ $dir = req('dir', 'asc');           // Sorting direction
 $minPrice = req('minPrice', 0);     // Min price
 $maxPrice = req('maxPrice', 10000); // Max price
 
+$allowedSortFields = ['description', 'unit_price']; // Define allowed sort fields for security
+$allowedSortDirections = ['asc', 'desc'];
+
+if (!in_array($sort, $allowedSortFields)) {
+    $sort = 'description'; // Default sort field
+}
+if (!in_array($dir, $allowedSortDirections)) {
+    $dir = 'asc'; // Default sort direction
+}
 
 $params = [];
 $query = "
@@ -25,7 +34,6 @@ $query = "
 
 // Add filters dynamically
 if ($category) {
-
     $query .= " AND p.category_name LIKE ?";
     $params[] = '%' . $name . '%';
 }
@@ -39,8 +47,9 @@ if ($name) {
     $params[] = '%' . $name . '%';
 }
 if (isset($_GET['newAdded'])) {
-    $query .= " AND p.dateAdded <= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)";
+    $query .= " AND p.dateAdded >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)";
 }
+
 if (isset($_GET['limited'])) {
     $query .= " AND p.status = 'LimitedEdition'
                 AND p.invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)";
@@ -105,6 +114,27 @@ include '_head.php';
             <?php endif ?>
         </a>
     <?php endforeach; ?>
+    <h4>Sort By</h4>
+<div class="wrapper">
+    <form method="GET" action="menu.php" id="sortForm">
+        <input type="hidden" name="category_id" value="<?= htmlspecialchars($category_id) ?>">
+        <input type="hidden" name="minPrice" value="<?= htmlspecialchars($minPrice) ?>">
+        <input type="hidden" name="maxPrice" value="<?= htmlspecialchars($maxPrice) ?>">
+        <label>
+            <input type="radio" name="sort" value="description" <?= $sort === 'description' && $dir === 'asc'? 'checked' : '' ?> data-dir="asc" > A-Z
+        </label><br><br>
+        <label>
+            <input type="radio" name="sort" value="description" <?= $sort === 'description' && $dir === 'desc'? 'checked' : '' ?>data-dir="desc"> Z-A
+        </label><br><br>
+        <label>
+            <input type="radio" name="sort" value="unit_price" <?= $sort === 'unit_price' && $dir === 'asc' ? 'checked' : '' ?> data-dir="asc"> Lower to Higher Price
+        </label><br><br>
+        <label>
+            <input type="radio" name="sort" value="unit_price" <?= $sort === 'unit_price' && $dir === 'desc' ? 'checked' : '' ?> data-dir="desc"> Higher to Lower Price
+        </label><br><br>
+        <input type="hidden" name="dir" id="sortDir" value="<?= htmlspecialchars($dir) ?>">
+    </form>
+</div>
     <h4>Price Range</h4>
     <div class="wrapper">
     <div class="price-input">
@@ -255,6 +285,22 @@ rangeInput.forEach(input => {
 function applyPriceFilter(minPrice, maxPrice) {
     window.location.href = `menu.php?minPrice=${minPrice}&maxPrice=${maxPrice}`;
 }
+
+
+document.querySelectorAll('input[name="sort"]').forEach((input) => {
+    input.addEventListener('change', (e) => {
+        const selectedSort = e.target.value;
+        const selectedDir = e.target.dataset.dir ; // Default to ascending
+
+        // Update the hidden "dir" input field in the form
+        document.getElementById('sortDir').value = selectedDir;
+
+        // Submit the form with updated sorting options
+        document.getElementById('sortForm').submit();
+    });
+});
+
+
 
 </script>
 
