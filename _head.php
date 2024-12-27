@@ -2,9 +2,6 @@
 // Get the current page name dynamically
 $current_page = basename($_SERVER['PHP_SELF']);
 
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -38,15 +35,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="container-right1">
                     <ul>
                         <div class="dropdown">
-                        <li class="right">
-                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
-                                <i class="ico ico-user"></i>
-                            </a>
-                            <div class="dropdown-content">
-                                    <a href="#">My Account</a>
+                            <li class="right">
+                                <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
+                                    <i class="ico ico-user"></i>
+                                </a>
+                                <div class="dropdown-content">
+                                    <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <a href="#">Log Out</a>
+                                    <a href="#" onclick="logoutFunction(event);" class="btn btn-logout">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+
+                                    <form id="logoutForm" action="" method="POST" style="display:none;">
+                                        <button type="submit" name="logout"></button>
+                                    </form>
+
+                                    <?php
+                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                                        // Call the logout function to handle session and redirection
+                                        logout('login.php');
+                                    }
+                                    ?>
+
+
                                 </div>
                             </li>
                         </div>
@@ -105,3 +117,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </header>
+
+<script>
+function logoutFunction(event) {
+    // Prevent the default action of the link (which is to reload the page)
+    event.preventDefault();
+
+    // Submit the hidden form to trigger the POST request
+    document.getElementById('logoutForm').submit();
+}
+</script>

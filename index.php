@@ -18,6 +18,10 @@ require '_base.php';
 //     exit;
 // }
 
+$member = $_SESSION['user'];
+authMember($member);
+$member_id =  $member->member_id;
+
 $updateStatusStm = $_db->prepare("
     UPDATE product 
     SET status = 'Inactive' 
@@ -25,8 +29,6 @@ $updateStatusStm = $_db->prepare("
     AND invalidDate = CURDATE()
 ");
 $updateStatusStm->execute();
-
-$member_id="M000001";
 
 // // Check if the product is already in the wishlist for the logged-in user
 // $member_id = $_SESSION['member_id'];  // Assuming the user is logged in

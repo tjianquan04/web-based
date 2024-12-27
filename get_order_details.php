@@ -13,7 +13,10 @@ function getAfterFirstTwoDigit($contact)
     return substr($str, 2);
 }
 
-$id = "M000001";
+$member = $_SESSION['user'];
+authMember($member);
+$id =  $member->member_id;
+
 $stm = $_db->prepare(
     'SELECT *
     FROM member
@@ -33,7 +36,8 @@ if (is_post()) {
         on orderitem.product_id = product.product_id
         INNER JOIN product_photo
         on product_photo.product_id = product.product_id
-        where orderitem.order_id = ?'
+        where orderitem.order_id = ?
+        AND product_photo.default_photo = 1'
     );
     $stm1->execute([$orderId]);
     $orderItem_arr = $stm1->fetchAll();
@@ -133,7 +137,7 @@ include '_head.php';
             <?php foreach ($orderItem_arr as $item_arr): ?>
                 <tr>
                     <td class="item_info">
-                        <label class="upload"><img src="/photos/<?= $item_arr->photo ?>"></label>
+                        <label class="upload"><img src="/product_gallery/<?= $item_arr->product_photo_id ?>"></label>
                         <?= $item_arr->description ?>
                     </td>
                     <td class="item_qtyPrice">

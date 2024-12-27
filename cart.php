@@ -6,16 +6,18 @@ function getSubtotal($qty, $price)
     return $qty * $price;
 }
 
-//change to get current id
-$id = "M000001";
+$member = $_SESSION['user'];
+authMember($member);
+$id =  $member-> member_id;
 $stm = $_db->prepare(
-    'SELECT cartitem.cartItem_id, product_photo.photo, product.description, product.unit_price, cartItem.quantity
+    'SELECT *
      from cartitem
      INNER JOIN product 
      on  cartitem.product_id = product.product_id
      INNER JOIN product_photo
      on product_photo.product_id = product.product_id
-     where cartitem.member_id = ?'
+     where cartitem.member_id = ?
+     AND product_photo.default_photo = 1'
 );
 $stm->execute([$id]);
 $arr = $stm->fetchAll();
@@ -74,7 +76,7 @@ if (count($arr) == 0) {
                     </td>
                     <td class="item_desc">
                         <label class="upload">
-                            <img src="/photos/<?= $cartItem->photo ?>">
+                            <img src="/product_gallery/<?= $cartItem->product_photo_id ?>">
                         </label>
                         <?= $cartItem->description ?>
                     </td>
@@ -114,6 +116,8 @@ if (count($arr) == 0) {
         </table>
     </form>
 <?php } ?>
+<br><br><br><br>
+
 
 <?php
 include '_foot.php';
