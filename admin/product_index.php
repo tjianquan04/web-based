@@ -136,6 +136,7 @@ $_title = 'Product | Index';
 
 <div class="container">
     <a href="javascript:history.back()" class="back-button">&larr;</a>
+    <h2>Product Management</h2>
     <div class="search-bar-container">
         <form action="product_index.php" method="GET">
             <input type="text" name="search" placeholder="Search by keyword..." value="<?= htmlspecialchars($search) ?>" />

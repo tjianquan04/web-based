@@ -116,6 +116,7 @@ $_title = 'Category Management';
 
 <div class="container">
     <a href="viewCategory.php" class="back-button">&larr;</a>
+    <h2>Category Management</h2>
     <div class="search-bar-container">
         <form action="viewCategory.php" method="GET">
             <input type="text" name="search" placeholder="Search by keyword..." value="<?= htmlspecialchars($search) ?>" />
