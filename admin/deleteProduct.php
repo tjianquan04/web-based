@@ -16,11 +16,11 @@ $product_id = $_GET['product_id'];
     error_log("Attempting to delete product with ID: $product_id");
 
     // Fetch required data before deleting the product
-    $stm = $_db->prepare('
-        SELECT p.category_id, p.stock_quantity, c.currentStock 
-        FROM product p 
-        JOIN category c ON p.category_id = c.category_id 
-        WHERE p.product_id = ?'
+    $stm = $_db->prepare(
+        'SELECT p.category_id, p.stock_quantity, c.currentStock, c.minStock, c.StockAlert, c.category_photo
+         FROM product p 
+         JOIN category c ON p.category_id = c.category_id 
+         WHERE p.product_id = ?'
     );
     $stm->execute([$product_id]);
     $product_data = $stm->fetch();
@@ -38,8 +38,10 @@ $product_id = $_GET['product_id'];
     // Get product details
     $category_id = $product_data->category_id;
     $stock_quantity = $product_data->stock_quantity;
-    $currentStock = $product_data->currentStock;
-
+    $currentStock = $product_data->currentStock ?? 0;
+    $minStock = $product_data->minStock ?? 0;
+    $StockAlert = $product_data->StockAlert;
+    $category_photo = $product_data->category_photo;
     // Delete associated photos
     foreach ($gallery as $photo) {  
         $photo_path = '../product_gallery/' . $photo->product_photo_id;
@@ -63,6 +65,24 @@ $product_id = $_GET['product_id'];
             WHERE category_id = ?'
         );
         $updateCatStock->execute([$newStockQuantity, $category_id]);
+
+           // Check stock alert status
+           $stock_alert = ($newStockQuantity < $minStock);
+           $updateStockAlertStm = $_db->prepare('UPDATE category SET StockAlert = ? WHERE category_id = ?');
+           $updateStockAlertStm->execute([$stock_alert, $category_id]);
+
+           // Optionally notify Product Manager if stock alert is triggered
+           if ($stock_alert) {
+               $adminQuery = $_db->prepare('SELECT email FROM admin WHERE role = ?');
+               $adminQuery->execute(['Product Manager']);
+               $admin = $adminQuery->fetch(PDO::FETCH_OBJ);
+
+               if ($admin) {
+                   sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+               } else {
+                   error_log("No Product Manager found for stock alert notification.");
+               }
+           }
 
         temp('info', 'Product have been updated to discontinued.');
         redirect('product_index.php');

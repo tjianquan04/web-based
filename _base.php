@@ -658,25 +658,6 @@ function batchDelete($ids) {
     }
 }
 
-function batchDeleteProduct($ids) {
-    try {
-        global $_db;
-        
-        // Create placeholders for ID IN clause
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        
-        // Construct SQL query
-        $sql = "DELETE FROM product WHERE product_id IN ($placeholders)";
-        
-        // Execute the query
-        $stmt = $_db->prepare($sql);
-        $stmt->execute($ids);
-
-        return "Batch delete completed successfully.";
-    } catch (PDOException $e) {
-        return "Error: " . $e->getMessage();
-    }
-}
 
 
 

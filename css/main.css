@@ -1,5 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap");
+
+
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --orange: hsl(27, 97%, 40%);
+    --pale-orange: hsl(25, 100%, 94%);
+    --very-dark-blue: hsl(220, 13%, 13%);
+    --dark-grayish-blue: hsl(219, 9%, 45%);
+    --grayish-blue: hsl(220, 14%, 75%);
+    --light-grayish-blue: hsl(223, 64%, 98%);
+    --white: hsl(0, 0%, 100%);
+    --black: hsl(0, 0%, 0%);
+    --black-with-opacity: hsla(0, 0%, 0%, 0.75);
+    --white-light: rgba(255, 255, 255, 0.5);
+    --alice-blue: #f8f9fa;
+    --carribean-green: #40c9a2;
+    --gray: #ededed;
+  }
+
+body{
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    min-width: 100vw;
+    position: relative;
+}
+
+a {
+    text-decoration: none;
+    color: var(--dark-grayish-blue);
+
+    
+  }
+  
+
 header {
     background-color: rgb(230, 230, 230);
+    text-decoration: none;
+    color: var(--dark-grayish-blue);
 }
 
 .header-container {
@@ -7,6 +50,44 @@ header {
     margin-left: 12%;
     margin-right: 12%;
     overflow: hidden;
+}
+
+
+  
+  .logo img {
+    height: 22px;
+  }
+  
+  .avatar img {
+    height: 50px;
+    width: 50px;
+  }
+
+  .dropdown-content {
+    display: none;
+    margin-top: 25px;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
 .container-left {
@@ -127,11 +208,11 @@ footer ul{
 footer {
     background-image:
     linear-gradient(to bottom, rgba(255, 255, 255, 0.833), rgba(8, 1, 1, 0.73)),
-    url("/image/lining_logo.png");
+    url("/image/footer.png");
 
     background-size: cover;
     color: white;
-    padding: 20px;
+    padding: 80px;
 }
 
 footer p{
@@ -157,62 +238,8 @@ footer .container{
     padding: 2em;
 }
 
-.footer1 {
-    position: relative;
-    background-image:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.52), rgba(255, 255, 255, 0.73)),
-    url("/image/lining_logo.png");
 
-    background-size: cover;
-}
 
-.footer1::before{
-    content: '';
-    background: rgba(0, 0, 0, 0.8);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-.footer1 .container{
-    position: relative;
-}
-
-.footer1 .footer-top .container,
-.footer1 .col2,
-.footer1 .footer-bottom .container{
-    display: flex;
-    justify-content: space-between;
-    gap: 2em;
-
-}
-
-.footer1 .footer-bottom .container{
-    padding: 1em 2em;
-    align-items: center;
-
-}
-
-.footer1 .menu li{
-    margin-bottom: 0.6em;
-
-}
-
-.footer1 .footer-bottom .container{
-    padding: 1em 2em;
-    align-items: center;
-}
-
-.footer1 .menu li{
-    margin-bottom: 0.6em;
-}
-
-.footer1 .menu a:hover{
-    text-decoration: underline;
-}
 
 .brand{
     display: block;

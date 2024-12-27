@@ -2,6 +2,13 @@
 // Get the current page name dynamically
 $current_page = basename($_SERVER['PHP_SELF']);
 
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
+$dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
+$dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -22,32 +29,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </head>
 <div id="info"><?= temp('info') ?></div>
 <style>
-    .dropdown-content {
-        display: none;
-        margin-top: 25px;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-    }
 
-    .dropdown-content a {
-        float: none;
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        text-align: left;
-    }
-
-    .dropdown-content a:hover {
-        background-color: #ddd;
-    }
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
 </style>
 
 <body>
@@ -68,22 +50,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <a href="#" onclick="logoutFunction(event);" class="btn btn-logout">
+                                    <!-- Logout Link -->
+                                    <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
                                         <i class="fas fa-sign-out-alt"></i> Logout
                                     </a>
 
-                                    <form id="logoutForm" action="" method="POST" style="display:none;">
-                                        <button type="submit" name="logout"></button>
+                                    <!-- Hidden Logout Form -->
+                                    <form id="logout-form" action="" method="POST" style="display:none;">
+                                        <input type="hidden" name="logout">
                                     </form>
 
                                     <?php
                                     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                        // Call the logout function to handle session and redirection
-                                        logout('login.php');
+                                        // Call the logout function and redirect the user
+                                        logout('/user/login.php'); // Replace with the URL you want the user redirected to
                                     }
                                     ?>
-
-
                                 </div>
                             </li>
                         </div>
@@ -125,6 +107,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <input class="search-input" type="text" placeholder="Search" name="name" id="search-input" autocapitalize="off" value="<?= isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
                                     <input type="hidden" name="sort" value="<?= $sort ?>">
                                     <input type="hidden" name="dir" value="<?= $dir ?>">
+                                    <input type="hidden" name="page" value="<?= $page ?>">
                                     <button type="submit" class="search-btn">
                                         <i class="ico ico-search"></i>
                                     </button>
@@ -142,13 +125,3 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </header>
-
-<script>
-function logoutFunction(event) {
-    // Prevent the default action of the link (which is to reload the page)
-    event.preventDefault();
-
-    // Submit the hidden form to trigger the POST request
-    document.getElementById('logoutForm').submit();
-}
-</script>

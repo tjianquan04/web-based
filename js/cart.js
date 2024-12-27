@@ -3,7 +3,7 @@ const minus = document.querySelector(".minus");
 const plus = document.querySelector(".plus");
 const cartIcon = document.querySelector(".cart-icon");
 const cartContainer = document.querySelector(".cart-container");
-const addToCartBtn = document.querySelector(".add-to-cart");
+//const addToCartBtn = document.querySelector(".add-to-cart");
 const cartItems = document.querySelector(".cart-items");
 const checkout = document.querySelector(".checkout");
 const cartCount = document.querySelector(".cart-count");
@@ -11,13 +11,20 @@ const cartCount = document.querySelector(".cart-count");
 let count = 0;
 let totalCartQty = 0;
 
+
 const updateCount = (newCount) => {
   count = newCount;
   countEl.textContent = count;
+
+  if (count === 1) {
+    $('.minus').prop('disabled', true);
+  } else {
+    $('.minus').prop('disabled', false);
+  }
 };
 
 minus.addEventListener("click", () => {
-  if (count > 0) {
+  if (count > 1) {
     updateCount(count - 1);
   }
 });

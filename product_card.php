@@ -35,9 +35,10 @@ include '_head.php';
 <script src="/js/menu.js" defer></script>
 <script src="/js/cart.js" defer></script>
 <script src="/js/slider.js" defer></script>
+<script src="/js/addtocart.js"></script>
 
 <div class="container">
-<a href="javascript:history.back()" class="back-button">&larr;</a>
+    <a href="javascript:history.back()" class="back-button">&larr;</a>
 
     <section class="main">
         <div class="default gallery">
@@ -63,12 +64,12 @@ include '_head.php';
 
         <div class="content">
             <h2><a href="/index.php">Boots.Do</a></h2>
-            <h3 class="product-name"><?= $product->description ?> 
+            <h3 class="product-name"><?= $product->description ?>
                 <div class="wishlist">
                     <!-- Check if the product is in the wishlist and set the appropriate icon class -->
-                    <i 
-                        class="wishlist-icon fa-sharp <?= $is_in_wishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart" 
-                        data-product-id="<?= $product->product_id ?>" 
+                    <i
+                        class="wishlist-icon fa-sharp <?= $is_in_wishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart"
+                        data-product-id="<?= $product->product_id ?>"
                         aria-label="Add to wishlist"></i>
                 </div>
             </h3>
@@ -78,10 +79,10 @@ include '_head.php';
                     <?= $product->category_name ?>
                 </a>
                 <br>
-                <?php if($subcategory) :?>
+                <?php if ($subcategory) : ?>
                     <a href="/menu.php?category_id=<?= $product->category_id ?>">
-                    <?= $subcategory['sub_category'] ?>
-                </a>
+                        <?= $subcategory['sub_category'] ?>
+                    </a>
                 <?php endif; ?>
             </p>
             <div class="price-info">
@@ -89,39 +90,39 @@ include '_head.php';
                     <span class="current-price">RM <?= $product->unit_price ?></span>
                 </div>
                 <div class="add-to-cart-container">
-    <!-- Counter with minus and plus buttons, always visible -->
-    <div class="counter">
-        <button class="minus" 
-            <?php if ($product->status == 'OutOfStock'): ?> 
-                disabled
-            <?php endif; ?>
-        >
-            <i class="fa-solid fa-minus"></i>
-        </button>
-        <span class="count">0</span>
-        <button class="plus" 
-            <?php if ($product->status == 'OutOfStock'): ?> 
-                disabled
-            <?php endif; ?>
-        >
-            <i class="fa-solid fa-plus"></i>
-        </button>
-    </div>
+                    <!-- Counter with minus and plus buttons, always visible -->
+                    <div class="counter">
+                        <button type="button" class="minus" data-product-id="<?= $product->product_id ?>" disabled
+                            <?php if ($product->status == 'OutOfStock'): ?>
+                            disabled
+                            <?php endif; ?>>
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
 
-    <!-- Add to cart button -->
-    <button class="add-to-cart" 
-        <?php if ($product->status == 'OutOfStock'): ?> 
-            disabled 
-        <?php endif; ?>
-    >
-        <span>
-            <i class="ico ico-shopping"></i>
-        </span>
-        <span>
-            <?php echo ($product->status == 'OutOfStock') ? 'Out of Stock' : 'Add to cart'; ?>
-        </span>
-    </button>
-</div>
+                        <span class="count" data-product-id="<?= $product->product_id ?>">1</span>
+
+                        <button type="button" class="plus" data-product-id="<?= $product->product_id ?>"
+                            <?php if ($product->status == 'OutOfStock'): ?>
+                            disabled
+                            <?php endif; ?>>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                
+
+                    <!-- Add to cart button -->
+                    <button type="button" class="add-to-cart" id="addToCart-btn" data-product-id="<?= $product->product_id ?>"
+                        <?php if ($product->status == 'OutOfStock'): ?>
+                        disabled
+                        <?php endif; ?>>
+                        <span>
+                            <i class="ico ico-shopping"></i>
+                        </span>
+                        <span>
+                            <?php echo ($product->status == 'OutOfStock') ? 'Out of Stock' : 'Add to cart'; ?>
+                        </span>
+                    </button>
+                </div>
 
             </div>
         </div>
@@ -133,37 +134,40 @@ include '_foot.php';
 ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Attach click event listeners to all wishlist icons
-    document.querySelectorAll('.wishlist-icon').forEach(icon => {
-        icon.addEventListener('click', () => {
-            const productId = icon.getAttribute('data-product-id');
-            const action = icon.classList.contains('fa-solid') ? 'remove' : 'add';
+    document.addEventListener('DOMContentLoaded', () => {
+        // Attach click event listeners to all wishlist icons
+        document.querySelectorAll('.wishlist-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                const productId = icon.getAttribute('data-product-id');
+                const action = icon.classList.contains('fa-solid') ? 'remove' : 'add';
 
-            // Send AJAX request to backend to add/remove from wishlist
-            fetch('/wishlist-action.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ product_id: productId, action: action })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    icon.classList.toggle('fa-regular');
-                    icon.classList.toggle('fa-solid');
-                    icon.classList.toggle('fa-heart-circle-check');
-                } else {
-                    console.error('Error: ', data.message);
-                    alert('There was an issue with adding/removing from wishlist: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('AJAX Error:', error);
-                alert('An error occurred.');
+                // Send AJAX request to backend to add/remove from wishlist
+                fetch('/wishlist-action.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            action: action
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            icon.classList.toggle('fa-regular');
+                            icon.classList.toggle('fa-solid');
+                            icon.classList.toggle('fa-heart-circle-check');
+                        } else {
+                            console.error('Error: ', data.message);
+                            alert('There was an issue with adding/removing from wishlist: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('AJAX Error:', error);
+                        alert('An error occurred.');
+                    });
             });
         });
     });
-});
 </script>

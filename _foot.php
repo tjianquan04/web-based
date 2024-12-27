@@ -13,7 +13,7 @@
         </a>
         <ul class="menu">
             <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
+            <li><a href="about_us.php">About</a></li>
             <li><a href="#">Home</a></li>
             <li><a href="#">Home</a></li>
             <li><a href="#">Home</a></li>
