@@ -501,7 +501,7 @@ include '_head.php';
                         </div>
                         <div class="orderRecord-voucher-shop">
                             <div class="orderRecord-voucher-shop-wrapper">
-                                <a href="index.php" class="orderRecord-voucher-shop-btn">Shop<br>Now</a>
+                                <a href="menu.php" class="orderRecord-voucher-shop-btn">Shop<br>Now</a>
                             </div>
                         </div>
                     </div>

@@ -3,23 +3,23 @@
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // Query products with 'LimitedEdition' status and dateAdded within 2 weeks from the current date
-$stm = $_db->prepare('
-    SELECT * FROM product 
-    WHERE status = "LimitedEdition" 
-    AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
-');
-$stm->execute();
-$limited = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('
+//     SELECT * FROM product 
+//     WHERE status = "LimitedEdition" 
+//     AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
+// ');
+// $stm->execute();
+// $limited = $stm->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-$stm = $_db->prepare('SELECT * FROM category WHERE StockAlert = 1');  // assuming StockAlert is an integer column
-$stm->execute();
-$alertItem = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('SELECT * FROM category WHERE StockAlert = 1');  // assuming StockAlert is an integer column
+// $stm->execute();
+// $alertItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-$stm = $_db->prepare('SELECT * FROM product WHERE status = "OutOfStock"');  // assuming StockAlert is an integer column
-$stm->execute();
-$oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('SELECT * FROM product WHERE status = "OutOfStock"');  // assuming StockAlert is an integer column
+// $stm->execute();
+// $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -33,9 +33,9 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/menu.css">
+    <!-- <link rel="stylesheet" href="/css/menu.css">
     <link rel="stylesheet" href="/css/category.css">
-    <link rel="stylesheet" href="/css/flash_msg.css">
+    <link rel="stylesheet" href="/css/flash_msg.css"> -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cms.cdn.91app.com.my/cms/common/iconFonts/v1.1.13/nine1/nine1.css">
