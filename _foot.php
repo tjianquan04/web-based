@@ -6,7 +6,6 @@
 </footer> -->
 
 
-
 <footer class="footer2">
     <div class="container">
         <a href="#" class="brand">
@@ -38,4 +37,5 @@
     </div>
 </footer>
 </body>
+
 </html>
