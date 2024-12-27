@@ -18,8 +18,9 @@ function getAfterFirstTwoDigit($contact)
     return substr($str, 2);
 }
 
-//change to get current id
-$id = "M000001";
+$member = $_SESSION['user'];
+authMember($member);
+$id =  $member->member_id;
 $stm = $_db->prepare(
     'SELECT *
      from member
@@ -60,7 +61,8 @@ if (is_post()) {
              on  cartitem.product_id = product.product_id
              INNER JOIN product_photo
              on product_photo.product_id = product.product_id
-             where cartItem_id = ?'
+             where cartItem_id = ?
+             AND product_photo.default_photo = 1'
         );
         $stm->execute([$s]);
         $arr[] = $stm->fetch();
@@ -292,7 +294,7 @@ include '_head.php';
             <tr>
                 <td class="checkout-productTable-product">
                     <label class="checkout-productTable-productphoto">
-                        <img src="/photos/<?= $product->photo ?>">
+                        <img src="/product_gallery/<?= $product->product_photo_id ?>">
                     </label>
                     <?= $product->description ?>
                 </td>
