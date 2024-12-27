@@ -18,6 +18,13 @@ require '_base.php';
 //     exit;
 // }
 
+$updateStatusStm = $_db->prepare("
+    UPDATE product 
+    SET status = 'Inactive' 
+    WHERE status LIKE 'LimitedEdition' 
+    AND invalidDate = CURDATE()
+");
+$updateStatusStm->execute();
 
 $member_id="M000001";
 
@@ -219,6 +226,9 @@ img{
   <img src="product_gallery\638514769327200002c.jpg" style="width:100%">
   <div class="text">Caption Three</div>
 </div>
+
+
+
 
 <a class="prev" onclick="plusSlides(-1)">❮</a>
 <a class="next" onclick="plusSlides(1)">❯</a>
