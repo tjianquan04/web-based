@@ -1,7 +1,4 @@
 <?php
-
-//use Stripe\Climate\Order;
-
 require '_base.php';
 
 $id = "M000001";
@@ -519,6 +516,3 @@ include '_head.php';
         <?php } ?>
     </div>
 </div>
-
-<?php
-include '_foot.php';
