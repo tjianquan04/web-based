@@ -49,13 +49,22 @@ $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
                                     <a href="/user/user_profile.php">My Account</a>
                                     <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <!-- Logout Form -->
-                                    <form action="" method="POST" style="display:inline;">
-                                        <button type="submit" name="logout" class="btn btn-logout">
-                                            <i class="fas fa-sign-out-alt"></i> Logout
-                                        </button>
+                                    <!-- Logout Link -->
+                                    <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+
+                                    <!-- Hidden Logout Form -->
+                                    <form id="logout-form" action="" method="POST" style="display:none;">
+                                        <input type="hidden" name="logout">
                                     </form>
 
+                                    <?php
+                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                                        // Call the logout function and redirect the user
+                                        logout('/user/login.php'); // Replace with the URL you want the user redirected to
+                                    }
+                                    ?>
                                 </div>
                             </li>
                         </div>
