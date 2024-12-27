@@ -133,6 +133,13 @@ if (isset($_POST['batchDlt']) && isset($_POST['selectedIDs']) && !empty($_POST['
 $_title = 'Product | Index';
 ?>
 
+<style>
+    .alert-stock {
+    color: #b30000; /* Dark red for text */
+    font-weight:bolder;
+}
+
+</style>
 
 <div class="container">
     <a href="javascript:history.back()" class="back-button">&larr;</a>
@@ -244,8 +251,7 @@ $_title = 'Product | Index';
                     </tr>
                 <?php else: ?>
                     <?php foreach ($_products as $product): ?>
-                        <!-- <tr onclick="window.location.href='product_details.php?product_id=<?= $product->product_id ?>'"> -->
-                        <td><input type="checkbox" name="selectedIDs[]" value="<?= $product->product_id ?>" /></td>
+                        <tr class="<?= $product->status == 'OutOfStock' ? 'alert-stock' : '' ?>">                        <td><input type="checkbox" name="selectedIDs[]" value="<?= $product->product_id ?>" /></td>
                         <td><?= $product->product_id ?></td>
                         <td><?= $product->description ?></td>
                         <td>

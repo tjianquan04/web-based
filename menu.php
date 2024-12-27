@@ -16,6 +16,8 @@ $maxPrice = req('maxPrice', 10000); // Max price
 $allowedSortFields = ['description', 'unit_price']; // Define allowed sort fields for security
 $allowedSortDirections = ['asc', 'desc'];
 
+
+
 if (!in_array($sort, $allowedSortFields)) {
     $sort = 'description'; // Default sort field
 }

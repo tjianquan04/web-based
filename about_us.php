@@ -8,7 +8,7 @@ $_title = 'About Me | Boost.do';
 
 <body>
 
-    <div class="container">
+    <div class="about-container">
         <section class="about-section">
             <h2>About Us</h2>
             <p>At Boots.Do, we specialize in top-quality badminton sports items. From rackets to shuttlecocks, apparel, and accessories, we are dedicated to providing players of all levels with the best gear to enhance their performance. Established in 2022, our mission is to support the global badminton community with products that combine durability, style, and functionality.</p>
@@ -39,3 +39,4 @@ $_title = 'About Me | Boost.do';
 </body>
 <?php
 include '_foot.php';
+?>
