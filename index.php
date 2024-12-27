@@ -22,6 +22,14 @@ $member = $_SESSION['user'];
 authMember($member);
 $member_id =  $member->member_id;
 
+$updateStatusStm = $_db->prepare("
+    UPDATE product 
+    SET status = 'Inactive' 
+    WHERE status LIKE 'LimitedEdition' 
+    AND invalidDate = CURDATE()
+");
+$updateStatusStm->execute();
+
 // // Check if the product is already in the wishlist for the logged-in user
 // $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
 
@@ -220,6 +228,9 @@ img{
   <img src="product_gallery\638514769327200002c.jpg" style="width:100%">
   <div class="text">Caption Three</div>
 </div>
+
+
+
 
 <a class="prev" onclick="plusSlides(-1)">❮</a>
 <a class="next" onclick="plusSlides(1)">❯</a>
