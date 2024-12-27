@@ -20,7 +20,7 @@ require '_base.php';
 
 $member = $_SESSION['user'];
 authMember($member);
-$id =  $member->member_id;
+$member_id =  $member->member_id;
 
 // // Check if the product is already in the wishlist for the logged-in user
 // $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
@@ -30,7 +30,7 @@ $wishlist_stm = $_db->prepare("
     FROM wishlist w
     JOIN product p ON w.product_id = p.product_id
     WHERE w.member_id = ? ");
-$wishlist_stm->execute([$id]);
+$wishlist_stm->execute([$member_id]);
 $wishlist_item = $wishlist_stm->fetchAll();
 
 $stm = $_db->prepare("SELECT * FROM product WHERE status LIKE 'LimitedEdition' AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)");
