@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/css/flash_msg.css">
 <link rel="stylesheet" href="/css/view_admin.css">
-<script src="../js/main.js"></script>
+<script src="/js/admin_head.js"></script>
 <?php
 include('_admin_head.php');
 

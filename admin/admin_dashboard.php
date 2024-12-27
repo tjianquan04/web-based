@@ -40,7 +40,7 @@ if (isset($_GET['chartData'])) {
     <link rel="stylesheet" href="/css/admin_dashboard.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
-    <script src="../js/main.js" async defer></script>
+    <script src="/js/admin_head.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
 </head>
@@ -62,8 +62,8 @@ if (isset($_GET['chartData'])) {
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('product-menu')"><i class="fas fa-cogs"></i> Product Management</a>
                     <ul id="product-menu" class="submenu">
-                        <li><a href="product_index.php">Product Management</a></li>
-                        <li><a href="viewCategory.php">Category Management</a></li>
+                        <li><a href="product_index.php">Add Product</a></li>
+                        <li><a href="#">Manage Inventory</a></li>
                     </ul>
                 <?php endif; ?>
 
