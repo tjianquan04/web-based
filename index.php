@@ -15,7 +15,7 @@ img {vertical-align: middle;}
 
 /* Slideshow container */
 .slideshow-container {
-  max-width: 1000px;
+  max-width: 1500px;
   position: relative;
   margin: auto;
 }
@@ -107,19 +107,18 @@ img{
   <h1>home</h1>    
     <a href ="/about_us.php">About Us</a> 
     <a href ="/user/user_profile.php">Profile</a>
-    <a href ="/menu.php">All Products</a>
 
     <div class="slideshow-container">
 
 <div class="mySlides fade">
   <div class="numbertext">1 / 3</div>
-  <img src="product_gallery\638514769327200002c.jpg" style="width:100%">
+  <img src="image/slideshow1.png" style="width:100%">
   <div class="text">Caption Text</div>
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">2 / 3</div>
-  <img src="image\slideshow.jpg" style="width:100%">
+  <img src="image/slideshow.jpg" style="width:100%">
   <div class="text">Caption Two</div>
 </div>
 

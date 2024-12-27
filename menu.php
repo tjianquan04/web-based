@@ -25,10 +25,12 @@ $query = "
 
 // Add filters dynamically
 if ($category) {
+
     $query .= " AND p.category_name LIKE ?";
-    $params[] = '%' . $category . '%';
+    $params[] = '%' . $name . '%';
 }
 if ($category_id) {
+    
     $query .= " AND p.category_id LIKE ?";
     $params[] = '%' . $category_id . '%';
 }

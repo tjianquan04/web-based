@@ -33,8 +33,7 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/menu.css">
-<link rel="stylesheet" href="/css/category.css">
+
     <link rel="stylesheet" href="/css/flash_msg.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -46,7 +45,7 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 <style>
     .dropdown-content {
         display: none;
-        margin-top: 35px;
+        margin-top: 30px;
         position: absolute;
         background-color: #f9f9f9;
         min-width: 160px;
@@ -83,7 +82,7 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
                     <ul>
                         <div class="dropdown">
                         <li class="right">
-                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer;">
+                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
                                 <i class="ico ico-user"></i>
                             </a>
                             <div class="dropdown-content">
