@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700;900&display=swap');
 
 
 
@@ -36,6 +36,18 @@ a {
     color: var(--dark-grayish-blue);
 
     
+  }
+
+  .back-button {
+    text-decoration: none;
+    font-size: 1.3em;
+    color:rgb(0, 0, 0);
+    margin-right: 10px;
+    transition: color 0.3s ease;
+  }
+  
+  .back-button:hover {
+    color:rgb(202, 97, 97);
   }
   
 

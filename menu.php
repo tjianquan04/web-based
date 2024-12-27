@@ -103,7 +103,9 @@ include '_head.php';
 ?>
 
 <div class="container">
-<a href="javascript:history.back()" class="back-button">&larr;</a>
+
+<a href="javascript:history.back()" class="back-button">
+<i class="fa-solid fa-arrow-left-long"></i></a>
 
 <div class="sidenav">
     <h4>Products Category</h4>

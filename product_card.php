@@ -38,7 +38,8 @@ include '_head.php';
 <script src="/js/addtocart.js"></script>
 
 <div class="container">
-    <a href="javascript:history.back()" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">
+<i class="fa-solid fa-arrow-left-long"></i></a>
 
     <section class="main">
         <div class="default gallery">
