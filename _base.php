@@ -1160,12 +1160,14 @@ function generateTopUpID() {
     // Get the current date in YYYYMMDD format
     $currentDate = date('Ymd');
     
+    do{
     // Generate a 6-digit random number
     $randomNumber = mt_rand(100000, 999999);
 
     // Concatenate "TOP", the date, and the random number
     $topUpID = "TOP" . $currentDate . $randomNumber;
-
+    }while(is_exists($topUpID,'transactions','reference'));
+    
     return $topUpID;
 }
 

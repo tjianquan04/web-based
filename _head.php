@@ -43,30 +43,37 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                     <ul>
                         <div class="dropdown">
                             <li class="right">
-                                <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
-                                    <i class="ico ico-user"></i>
-                                </a>
-                                <div class="dropdown-content">
-                                    <a href="/user/user_profile.php">My Account</a>
-                                    <a href="/order_record.php">My Purchases</a>
-                                    <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <!-- Logout Link -->
-                                    <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                <?php if (empty($_SESSION)) { ?>
+                                    <!-- If no session exists, show login link -->
+                                    <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
+                                        <i class="ico ico-user"></i>
                                     </a>
-
-                                    <!-- Hidden Logout Form -->
-                                    <form id="logout-form" action="" method="POST" style="display:none;">
-                                        <input type="hidden" name="logout">
-                                    </form>
-
-                                    <?php
-                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                        // Call the logout function and redirect the user
-                                        logout('/user/login.php'); // Replace with the URL you want the user redirected to
-                                    }
-                                    ?>
-                                </div>
+                                <?php } else { ?>
+                                    <!-- If session exists, show dropdown button -->
+                                    <div class="dropdown">
+                                        <button aria-label="User Options" style="background: none; border: none; cursor: pointer; font-size: 25px; color: inherit;">
+                                            <i class="ico ico-user"></i>
+                                        </button>
+                                        <div class="dropdown-content">
+                                            <a href="/user/user_profile.php">My Account</a>
+                                            <a href="/order_record.php">My Purchases</a>
+                                            <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
+                                            <!-- Logout Link -->
+                                            <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
+                                                <i class="fas fa-sign-out-alt"></i> Logout
+                                            </a>
+                                            <!-- Hidden Logout Form -->
+                                            <form id="logout-form" action="" method="POST" style="display:none;">
+                                                <input type="hidden" name="logout">
+                                            </form>
+                                            <?php
+                                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                                                logout('/user/login.php'); // Replace with the URL you want the user redirected to
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                <?php } ?>
                             </li>
                         </div>
                         <li class="right">
@@ -125,3 +132,25 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
             </div>
         </div>
     </header>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButton = document.querySelector('.dropdown button');
+    const dropdownContent = document.querySelector('.dropdown-content');
+    
+    if (dropdownButton) {
+        dropdownButton.addEventListener('click', () => {
+            // Toggle the "show" class on the dropdown content
+            dropdownContent.classList.toggle('show');
+        });
+    }
+    
+    // Optional: Close the dropdown if clicked outside
+    document.addEventListener('click', (event) => {
+        if (!dropdownButton.contains(event.target) && !dropdownContent.contains(event.target)) {
+            dropdownContent.classList.remove('show');
+        }
+    });
+});
+
+    </script>

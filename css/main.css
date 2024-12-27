@@ -76,7 +76,7 @@ header {
   }
 
   .dropdown-content {
-    display: none;
+    display: none; /* Initially hidden */
     margin-top: 25px;
     position: absolute;
     background-color: #f9f9f9;
@@ -98,9 +98,11 @@ header {
     background-color: #ddd;
 }
 
-.dropdown:hover .dropdown-content {
+/* Display dropdown content only when .show class is added */
+.dropdown-content.show {
     display: block;
 }
+
 
 .container-left {
     width: auto;

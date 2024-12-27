@@ -11,8 +11,8 @@ if (is_Post()) {
         $member_ids = is_array($member_ids) ? $member_ids : explode(',', $member_ids);
 
         // Prepare the query
-        $query = "DELETE FROM Member WHERE member_id = ?";
-        $stmt = $_db->prepare($query);
+        $prepareStmt = "UPDATE Member SET status = 'Inactive' WHERE member_id = ?";
+        $stmt = $_db->prepare($prepareStmt);
 
         $deleted_ids = [];
 

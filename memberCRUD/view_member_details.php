@@ -74,7 +74,7 @@ $addressArr = $addressStm->fetchAll();
                 </div>
             <?php endforeach; ?>
 
-    <button class="go-back" onclick="redirect('../admin/member_management.php')">Go Back</button>
+    <button class="go-back" onclick="history.back()">Go Back</button>
     </div>
 </body>
 

@@ -16,39 +16,13 @@ if (is_post()) {
         $postal_code = req('postal_code');
         $is_default = req('is_default') ?? 0;
 
-        // Validation
-        $_err = [];
-        if (empty($address_line)) {
-            $_err['address_line'] = 'Address is required.';
-        }
-        if (empty($state)) {
-            $_err['state'] = 'State is required.';
-        }
-        if (empty($postal_code) || !preg_match('/^\d{5}$/', $postal_code)) {
-            $_err['postal_code'] = 'Postal code must be exactly 5 digits.';
-        }
 
-        if (!$is_default && !$_err) {
-            // Check if another default exists
-            $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1 AND address_id != ?');
-            $stmt->execute([$member->member_id, $address_id]);
-            $existingDefault = $stmt->fetchColumn();
 
-            if ($is_default && $existingDefault) {
-                $_err['is_default'] = 'Only one default address is allowed.';
-            }
-        }
+        $stmt = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
+         $stmt->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
+        temp('info', 'Address updated successfully.');
 
-        if (!$_err) {
-            $stmt = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
-            $stmt->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
-            temp('info', 'Address updated successfully.');
-
-            $addressArr = getAllAddressbyMemberId($member->member_id);
-
-        }else{
-            temp('info', 'Address updated failed.');
-        }
+        $addressArr = getAllAddressbyMemberId($member->member_id);
     }
 
     if (isset($_POST['delete_address'])) {
@@ -67,36 +41,13 @@ if (is_post()) {
         $postal_code = req('postal_code');
         $is_default = req('is_default') ?? 0;
 
-        // Validation
-        $_err = [];
-        if (empty($address_line)) {
-            $_err['address_line'] = 'Address is required.';
-        }
-        if (empty($state)) {
-            $_err['state'] = 'State is required.';
-        }
-        if (empty($postal_code) || !preg_match('/^\d{5}$/', $postal_code)) {
-            $_err['postal_code'] = 'Postal code must be exactly 5 digits.';
-        }
 
-        if (!$is_default && !$_err) {
-            // Check if another default exists
-            $stmt = $_db->prepare('SELECT COUNT(*) FROM address WHERE member_id = ? AND is_default = 1');
-            $stmt->execute([$member->member_id]);
-            $existingDefault = $stmt->fetchColumn();
+        $stmt = $_db->prepare('INSERT INTO address (address_id, address_line, state, postal_code, is_default, member_id) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $member->member_id]);
+        temp('info', 'Address added successfully.');
 
-            if ($is_default && $existingDefault) {
-                $_err['is_default'] = 'Only one default address is allowed.';
-            }
-        }
-
-        if (!$_err) {
-            $stmt = $_db->prepare('INSERT INTO address (address_id, address_line, state, postal_code, is_default, member_id) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$address_id, $address_line, $state, $postal_code, $is_default, $member->member_id]);
-            temp('info', 'Address added successfully.');
-
-            $addressArr = getAllAddressbyMemberId($member->member_id);
-        }
+        $addressArr = getAllAddressbyMemberId($member->member_id);
+        
     }
 }
 
@@ -163,16 +114,15 @@ include '../_head.php';
         <input type="hidden" name="address_id" id="addressIdInput">
         <label for="addressLineInput"><strong>Address Line</strong></label>
         <input type="text" name="address_line" id="addressLineInput" value="<?= $address_line?>" placeholder="Enter address line">
-        <?= err('addressLineInput') ?>
+
         <label for="stateInput"><strong>State</strong></label>
         <?php html_select('stateInput', $_states, '', 'class="input-field"', ''.$address->state) ?>
-        <?= err('stateInput') ?>
+
         <label for="postalCodeInput"><strong>Postal Code</strong></label>
         <input type="text" name="postal_code" id="postalCodeInput" value="<?=$postal_code ?>" placeholder="Enter postal code">
-        <?= err('postalCodeInput') ?>
+
         <label><strong> Set as Default</strong> </label>
         <input type="checkbox" name="is_default" id="defaultCheckbox" value="1">
-        <?= err('defaultCheckbox') ?>
 
         <button type="submit" name="edit_address" class="submit-btn">Save</button>
         <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
@@ -190,93 +140,127 @@ include '../_head.php';
         <h2>Add New Address</h2>
         <label for="addAddressLineInput"><strong>Address Line</strong></label>
         <input type="text" name="address_line" id="addAddressLineInput" placeholder="Enter address line">
-        <?= err('addAddressLineInput') ?>
+
         <label for="addStateSelect"><strong>State:</strong></label>
         <?php html_select('add_state', $_states, '', 'class="input-field"') ?>
-        <?= err('add_state') ?>
+
         <label for="addPostalCodeInput"><strong>Postal Code</strong></label>
         <input type="text" name="postal_code" id="addPostalCodeInput" placeholder="Enter postal code">
-        <?= err('addPostalCodeInput') ?>
+
         <label><strong> Set as Default </strong></label>
         <input type="checkbox" name="is_default" id="addDefaultCheckbox" value="1">
-        <?= err('addDefaultCheckbox') ?>
+
         <button type="submit" name="add_address" class="submit-btn">Add</button>
         <button type="button" class="cancel-btn" id="addCancelBtn">Cancel</button>
     </form>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const overlay = document.getElementById('overlay');
-            const popupForm = document.getElementById('popupForm');
-            const cancelBtn = document.getElementById('cancelBtn');
+      document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('overlay');
+    const popupForm = document.getElementById('popupForm');
+    const cancelBtn = document.getElementById('cancelBtn');
 
-            const addOverlay = document.getElementById('addOverlay');
-            const addPopupForm = document.getElementById('addPopupForm');
-            const addCancelBtn = document.getElementById('addCancelBtn');
-            const addAddressButton = document.querySelector('.add-btn');
+    const addOverlay = document.getElementById('addOverlay');
+    const addPopupForm = document.getElementById('addPopupForm');
+    const addCancelBtn = document.getElementById('addCancelBtn');
+    const addAddressButton = document.querySelector('.add-btn');
 
-            // Edit Button Logic
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    // Get data from button attributes
-                    const addressId = button.dataset.addressId;
-                    const addressLine = button.dataset.addressLine;
-                    const state = button.dataset.state;
-                    const postalCode = button.dataset.postalCode;
-                    const isDefault = button.dataset.isDefault === '1';
+    let existingDefault = document.querySelector('.default-address') !== null; // Check if a default address exists
 
-                    // Populate form fields
-                    document.getElementById('addressIdInput').value = addressId;
-                    document.getElementById('addressLineInput').value = addressLine;
-                    document.getElementById('stateInput').value = state;
-                    document.getElementById('postalCodeInput').value = postalCode;
-                    document.getElementById('defaultCheckbox').checked = isDefault;
+    // Function to validate address input
+    function validateAddress(addressLine, state, postalCode, isDefault) {
+        if (!addressLine || addressLine.trim() === '') {
+            alert('Address is required.');
+            return false;
+        }
+        if (!state || state.trim() === '') {
+            alert('State is required.');
+            return false;
+        }
+        if (!postalCode || !/^\d{5}$/.test(postalCode)) {
+            alert('Postal code must be exactly 5 digits.');
+            return false;
+        }
+        if (isDefault && existingDefault) {
+            alert('Only one default address is allowed.');
+            return false;
+        }
+        return true;
+    }
 
-                    // Show popup
-                    overlay.style.display = 'block';
-                    popupForm.style.display = 'block';
-                });
-            });
+    // Edit Button Logic
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const addressId = button.dataset.addressId;
+            const addressLine = button.dataset.addressLine;
+            const state = button.dataset.state;
+            const postalCode = button.dataset.postalCode;
+            const isDefault = button.dataset.isDefault === '1';
 
-            // Add Address Button Logic
-            addAddressButton.addEventListener('click', () => {
-                addOverlay.style.display = 'block';
-                addPopupForm.style.display = 'block';
-            });
+            document.getElementById('addressIdInput').value = addressId;
+            document.getElementById('addressLineInput').value = addressLine;
+            document.getElementById('stateInput').value = state;
+            document.getElementById('postalCodeInput').value = postalCode;
+            document.getElementById('defaultCheckbox').checked = isDefault;
 
-            // Cancel Buttons
-            cancelBtn.addEventListener('click', () => {
-                overlay.style.display = 'none';
-                popupForm.style.display = 'none';
-            });
-
-            addCancelBtn.addEventListener('click', () => {
-                addOverlay.style.display = 'none';
-                addPopupForm.style.display = 'none';
-            });
-
-            // Close Popup on Overlay Click
-            overlay.addEventListener('click', () => {
-                overlay.style.display = 'none';
-                popupForm.style.display = 'none';
-            });
-
-            addOverlay.addEventListener('click', () => {
-                addOverlay.style.display = 'none';
-                addPopupForm.style.display = 'none';
-            });
-
+            overlay.style.display = 'block';
+            popupForm.style.display = 'block';
         });
+    });
+
+    // Add Address Button Logic
+    addAddressButton.addEventListener('click', () => {
+        addOverlay.style.display = 'block';
+        addPopupForm.style.display = 'block';
+    });
+
+    // Cancel Buttons
+    cancelBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        popupForm.style.display = 'none';
+    });
+
+    addCancelBtn.addEventListener('click', () => {
+        addOverlay.style.display = 'none';
+        addPopupForm.style.display = 'none';
+    });
+
+    // Close Popup on Overlay Click
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        popupForm.style.display = 'none';
+    });
+
+    addOverlay.addEventListener('click', () => {
+        addOverlay.style.display = 'none';
+        addPopupForm.style.display = 'none';
+    });
+
+    // Form Submission Logic
+    document.getElementById('popupForm').addEventListener('submit', (e) => {
+        const addressLine = document.getElementById('addressLineInput').value;
+        const state = document.getElementById('stateInput').value;
+        const postalCode = document.getElementById('postalCodeInput').value;
+        const isDefault = document.getElementById('defaultCheckbox').checked;
+
+        if (!validateAddress(addressLine, state, postalCode, isDefault)) {
+            e.preventDefault(); // Prevent form submission
+        }
+    });
+
+    document.getElementById('addPopupForm').addEventListener('submit', (e) => {
+        const addressLine = document.getElementById('addAddressLineInput').value;
+        const state = document.getElementById('addStateSelect').value;
+        const postalCode = document.getElementById('addPostalCodeInput').value;
+        const isDefault = document.getElementById('addDefaultCheckbox').checked;
+
+        if (!validateAddress(addressLine, state, postalCode, isDefault)) {
+            e.preventDefault(); // Prevent form submission
+        }
+    });
+});
 
 
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                if (confirm('Are you sure you want to delete this address?')) {
-                    document.getElementById('deleteAddressId').value = button.dataset.addressId;
-                    document.getElementById('deleteForm').submit();
-                }
-            });
-        });
     </script>
 </body>
 

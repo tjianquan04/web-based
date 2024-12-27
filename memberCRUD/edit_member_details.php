@@ -1,5 +1,5 @@
 <?php
-require '../_base.php';
+require '../admin/_admin_head.php';
 
 $memberId = req('id');
 
@@ -114,8 +114,8 @@ if (is_post() && (req('form_type') == 'member_details')) {
     }
 }
 
-include '../_head.php';
 ?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../js/main.js"></script>
 <link rel="stylesheet" href="../css/edit_member.css">
 
@@ -228,6 +228,10 @@ include '../_head.php';
     </div>
     <button class="go-back" data-get="../admin/member_management.php">Go Back</button>
 </body>
-
-<?php
-include '../_foot.php';
+<script>
+    $('[data-get]').on('click', e => {
+    e.preventDefault();
+    const url = e.target.dataset.get;
+    location.href = url || location.href;  // Use location.href to navigate
+});
+</script>

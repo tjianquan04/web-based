@@ -22,7 +22,7 @@ if (is_post()) {
     if (empty($password)) {
         $_err['password'] = 'Password is required.';
     } else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
-        $_err['password'] = 'Invalid password format. (eg. Aa*12345)';
+        $_err['password'] = 'Invalid password format. (eg. Aa1*XXXX)';
     }
 
     // Validate Confirm Password
