@@ -1,6 +1,14 @@
 <?php
 require '_base.php';
 
+$stm = $_db->prepare(
+    'UPDATE order_record
+     SET order_status = "delivered"
+     WHERE order_status = "shipping" 
+     AND TIMESTAMPDIFF(DAY, order_date, NOW()) > 3'
+);
+$result = $stm->execute();
+
 $_title = 'Home';
 
 include '_head.php';

@@ -3,23 +3,23 @@
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // Query products with 'LimitedEdition' status and dateAdded within 2 weeks from the current date
-$stm = $_db->prepare('
-    SELECT * FROM product 
-    WHERE status = "LimitedEdition" 
-    AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
-');
-$stm->execute();
-$limited = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('
+//     SELECT * FROM product 
+//     WHERE status = "LimitedEdition" 
+//     AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
+// ');
+// $stm->execute();
+// $limited = $stm->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-$stm = $_db->prepare('SELECT * FROM category WHERE StockAlert = 1');  // assuming StockAlert is an integer column
-$stm->execute();
-$alertItem = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('SELECT * FROM category WHERE StockAlert = 1');  // assuming StockAlert is an integer column
+// $stm->execute();
+// $alertItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-$stm = $_db->prepare('SELECT * FROM product WHERE status = "OutOfStock"');  // assuming StockAlert is an integer column
-$stm->execute();
-$oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
+// $stm = $_db->prepare('SELECT * FROM product WHERE status = "OutOfStock"');  // assuming StockAlert is an integer column
+// $stm->execute();
+// $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -87,11 +87,12 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
                             </a>
                             <div class="dropdown-content">
                                     <a href="#">My Account</a>
-                                    <a href="#">My Purchases</a>
+                                    <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
                                     <a href="#">Log Out</a>
                                 </div>
-                        </li></div>
+                            </li>
+                        </div>
                         <li class="right">
                             <a href="/cart.php"><i class="ico ico-shopping"></i></a>
                             <a href="/myWishlist.php"><i class="fa-solid fa-heart-circle-check"></i></a>
@@ -113,11 +114,11 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             <li class="left">
-                            <a href="menu.php">Boots Products</a>
+                                <a href="menu.php">Boots Products</a>
                             </li>
 
                             <li class="left">
-                            <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
+                                <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
                             </li>
 
 
