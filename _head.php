@@ -34,7 +34,7 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
     <title><?= $_title ?? 'Untitled' ?></title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/menu.css">
-<link rel="stylesheet" href="/css/category.css">
+    <link rel="stylesheet" href="/css/category.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -82,17 +82,18 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
                 <div class="container-right1">
                     <ul>
                         <div class="dropdown">
-                        <li class="right">
-                            <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer;">
-                                <i class="ico ico-user"></i>
-                            </a>
-                            <div class="dropdown-content">
+                            <li class="right">
+                                <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer;">
+                                    <i class="ico ico-user"></i>
+                                </a>
+                                <div class="dropdown-content">
                                     <a href="#">My Account</a>
-                                    <a href="#">My Purchases</a>
+                                    <a href="/order_record.php">My Purchases</a>
                                     <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
                                     <a href="#">Log Out</a>
                                 </div>
-                        </li></div>
+                            </li>
+                        </div>
                         <li class="right">
                             <a href="/cart.php"><i class="ico ico-shopping"></i></a>
                             <a href="/myWishlist.php"><i class="fa-solid fa-heart-circle-check"></i></a>
@@ -114,11 +115,11 @@ $oosItem = $stm->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             <li class="left">
-                            <a href="menu.php">Boots Products</a>
+                                <a href="menu.php">Boots Products</a>
                             </li>
 
                             <li class="left">
-                            <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
+                                <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
                             </li>
 
 

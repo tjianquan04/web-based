@@ -25,7 +25,7 @@ include '_head.php';
 ?>
 
 <link rel="stylesheet" href="/css/cart.css">
-<script src="/js/cart.js"></script>
+<script src="/js/shopping_cart.js"></script>
 
 <div class="cart-title">
     <h1>Boots.Do | Shopping Cart</h1>
