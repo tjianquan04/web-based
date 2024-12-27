@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/css/flash_msg.css">
 <link rel="stylesheet" href="/css/view_admin.css">
-<script src="../js/main.js"></script>
+<script src="/js/admin_head.js"></script>
 <?php
 include('_admin_head.php');
 
@@ -13,7 +13,9 @@ $admin = getAdminById($admin_id);
 ?>
 
 <div class="container">
+<button class="back-button" onclick="history.back()">&larr;</button>
     <h1>Admin Profile</h1>
+    
     
     <!-- Admin Photo -->
     <div class="admin-photo">
