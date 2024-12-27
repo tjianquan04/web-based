@@ -18,7 +18,7 @@ if (is_post()) {
     //$memberId = 'M000001'; //need replace
     $member = $_SESSION['user'];
     authMember($member);
-    $id =  $member->member_id;
+    $memberId =  $member->member_id;
 
     $paymentMethod = $_POST['payment_method'];
     $paymentStatus = 'completed';

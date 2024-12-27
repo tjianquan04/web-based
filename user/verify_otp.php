@@ -8,7 +8,7 @@ if (is_post()) {
 
     $tokenId = req('token_id');
     $submit_otp     = req('otp');
-    
+
     //Get OTP and Member id 
     $stmt = $_db->prepare('SELECT otp_number, member_id FROM register_token WHERE token_id = ?');
     $stmt->execute([$tokenId]);
@@ -18,9 +18,9 @@ if (is_post()) {
     $validOTP = $getData->otp_number;
 
 
-    if(empty($submit_otp)){
+    if (empty($submit_otp)) {
         $_err['otp_number'] = 'OTP code is required.';
-    }else if ($submit_otp !== $validOTP){
+    } else if ($submit_otp !== $validOTP) {
         $_err['otp_number'] = 'Invalid OTP code. Please try again !';
     }
 
@@ -34,10 +34,45 @@ if (is_post()) {
         $stm = $_db->prepare('DELETE FROM register_token WHERE token_id = ?');
         $stm->execute([$tokenId]);
 
+        //voucher
+        $allVoucherDesc = array("Free Shipping", "RM100 Off", "85% Off");
+        $allVoucherType = array(1, 2, 3);
+        $allVoucherMinSpend = array(99.99, 888.88, 499.99);
+        $allVoucherStatus = 1;
+        $allVoucherPhoto = array("truck.png", "boots.png", "boots.png");
+
+        foreach ($allVoucherDesc as $index => $voucherDesc) {
+            $voucherType = $allVoucherType[$index];
+            $voucherMinSpend = $allVoucherMinSpend[$index];
+            $voucherPhoto = $allVoucherPhoto[$index];
+
+            $stmz = $_db->prepare(
+                'SELECT voucher_id
+        FROM voucher
+        ORDER BY voucher_id DESC
+        LIMIT 1'
+            );
+            $stmz->execute();
+            $lastVoucherId = $stmz->fetchColumn();
+
+            if ($lastVoucherId) {
+                $outputInt = (intval(substr($lastVoucherId, 1))) + 1;
+                $newVoucherId = 'V' . str_pad($outputInt, 5, '0', STR_PAD_LEFT);
+            } else {
+                $newVoucherId = 'V00001';
+            }
+
+            $stmzz = $_db->prepare(
+                'INSERT INTO `voucher`(`voucher_id`, `voucher_desc`, `voucher_type`, `min_spend`, `voucher_status`, `voucher_photo`, `member_id`) 
+            VALUES (?,?,?,?,?,?,?)'
+            );
+            $stmzz->execute([$newVoucherId, $voucherDesc, $voucherType, $voucherMinSpend, $allVoucherStatus, $voucherPhoto, $userId]);
+        }
+        //end
         temp('info', 'Account successfully activated.');
         redirect('login.php');
         exit;
-    } 
+    }
 }
 
 if (isset($_GET['resend']) && isset($_GET['token_id'])) {
@@ -52,10 +87,10 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     $lastEmailSentTime = $user->last_email_sent ? strtotime($user->last_email_sent) : 0;
 
     if ($currentTime - $lastEmailSentTime < $cooldownTime) {
-                // Cooldown still active
+        // Cooldown still active
         $remainingTime = $cooldownTime - ($currentTime - $lastEmailSentTime);
         $_err['cooldown_error'] = "You can request for OTP numbers again in " . gmdate("i:s", $remainingTime) . ".";
-     }
+    }
 
     if (empty($_err)) {
         $userId = $user->member_id;
@@ -96,7 +131,8 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     }
 }
 ?>
- <link rel="stylesheet" href="/css/verify_otp.css">
+<link rel="stylesheet" href="/css/verify_otp.css">
+
 <body>
     <div class="send-otp-container">
         <div class="form-container">
@@ -106,12 +142,12 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
 
             <form method="post" class="form">
                 <input type="hidden" name="token_id" value="<?php echo htmlspecialchars($_GET['token_id'] ?? ''); ?>" />
-                
+
                 <div class="form-group">
-                <label for="otp"><i class="fa fa-lock"></i> OTP Code : </label>
-                <input type="text" name="otp" placeholder="Enter your OTP" required />
-                <?php err('otp_number'); ?>
-                <?= err('cooldown_error') ?>
+                    <label for="otp"><i class="fa fa-lock"></i> OTP Code : </label>
+                    <input type="text" name="otp" placeholder="Enter your OTP" required />
+                    <?php err('otp_number'); ?>
+                    <?= err('cooldown_error') ?>
                 </div>
 
                 <button type="submit" class="form-btn">Submit</button><br>
@@ -124,7 +160,7 @@ if (isset($_GET['resend']) && isset($_GET['token_id'])) {
     </div>
 
     <script>
-        document.getElementById('resendOtp').addEventListener('click', function () {
+        document.getElementById('resendOtp').addEventListener('click', function() {
             const tokenId = new URLSearchParams(window.location.search).get('token_id');
             if (tokenId) {
                 window.location.href = `?resend=1&token_id=${tokenId}`;
