@@ -21,6 +21,12 @@
 }
 
 
+.product-review-container {
+  width: 50%;
+  margin: auto;
+  background-color: red;
+}
+
 
 .container {
   max-width: 1120px;

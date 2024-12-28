@@ -129,6 +129,10 @@ include '_head.php';
     </section>
 </div>
 
+<div class="product-review-container">
+    halo
+</div>
+
 <?php
 include '_foot.php';
 ?>
