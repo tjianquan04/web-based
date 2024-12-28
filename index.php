@@ -47,8 +47,7 @@ $updateStatusStm = $_db->prepare("
 ");
 $updateStatusStm->execute();
 
-// // Check if the product is already in the wishlist for the logged-in user
-// $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
+
 
 
 $stm = $_db->prepare("SELECT * FROM product WHERE status LIKE 'LimitedEdition' AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)");
@@ -258,12 +257,8 @@ img{
 <section class="featured-products">
 <?php if (!empty($wishlist_item)): ?>
     <h2>Recommended For You</h2>
-    <!-- Code for displaying featured products -->
-<?php elseif (!empty($recommended_items)): ?>
-    <h2>Grabs Your Now</h2>
-    <!-- Code for displaying recommended products -->
 <?php else: ?>
-    <p>No items to display.</p>
+    <h2>Grabs Your Now</h2>
 <?php endif; ?>
 
 
