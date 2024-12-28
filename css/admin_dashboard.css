@@ -1,0 +1,142 @@
+.container {
+    margin-left: 280px;
+    padding: 20px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-right: 20px;
+}
+
+
+.dashboard-stats {
+    display: flex;
+    gap: 20px; /* Reduced space between the cards */
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Styling for each stat card */
+.stat-card {
+    background-color: #fff;
+    padding: 15px 20px; /* Adjusted padding to shrink space */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: calc(33.33% - 13px); /* Ensure each card takes up one-third of the container width with space in between */
+    box-sizing: border-box;
+}
+
+.stat-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .icon {
+    background-color: #27b243; /* Green background for the icon */
+    color: white;
+    border-radius: 50%;
+    padding: 15px;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px; /* Space between icon and text */
+}
+.stat-card .text{
+    margin-top: 10px;
+}
+
+.stat-card .text h3 {
+    font-size: 16px;
+    color: #555;
+}
+
+.stat-card .text .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px; /* Reduced margin top to tighten up spacing */
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Chart Controls */
+.chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Toggle metrics */
+.toggle-metrics button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.toggle-metrics button.active {
+    background-color: #27b243; /* Active green */
+    color: white;
+}
+
+/* Filter buttons */
+.filter-options button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.filter-options button.active {
+    background-color: #27b243;
+    color: white;
+}
+
+#yearDropdown {
+    margin-left: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+#yearPieDropdown {
+    margin-left: 1100px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+#yearDropdown:hover, #yearPieDropdown:hover {
+    border-color: #5a5a5a; /* Blue border when hovered */
+    background-color: #fbfbfb; /* Light blue background when hovered */
+}
+
+/* Selected state */
+#yearDropdown:focus, #yearPieDropdown:focus {
+    border-color: #606060; /* Dark blue border on focus */
+    background-color: #ffffff; /* Light blue background when selected */
+}
+
+/* Chart container */
+.chart-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 100%; 
+    height: 400px;
+}
