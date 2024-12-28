@@ -1,5 +1,5 @@
 <?php
-require '../_base.php';
+require '../admin/_admin_head.php';
 
 $memberId = req('id');
 
@@ -45,25 +45,26 @@ if (is_post() && (req('form_type') == 'member_details')) {
     //Handle photo upload
     if ($file && str_starts_with($file->type, 'image/')) {
         $photo_path = save_photo($file, '../photos');
-        $photo = $photo_path; 
+        $s->profile_photo = $photo_path; 
     }
-
+    
     if (!$_err) {
 
         if (empty($password)) {
             $stm = $_db->prepare('UPDATE member
                                   SET name = ?, email = ?, contact = ?, status = ?, profile_photo = ?
                                   WHERE member_id = ?');
-            $stm->execute([$name, $email, $contact, $status, $photo, $memberId]);
+            $stm->execute([$name, $email, $contact, $status, $s->profile_photo, $memberId]);
         } else if (!empty($password)) {
             $stm = $_db->prepare('UPDATE member
                                   SET name = ?, email = ?, contact = ?, password = SHA1(?) ,status = ?, profile_photo = ?
                                   WHERE member_id = ?');
-            $stm->execute([$name, $email, $contact, $password, $status, $photo, $memberId]);
+            $stm->execute([$name, $email, $contact, $password, $status, $s->profile_photo, $memberId]);
         }
 
         temp('info', $memberId . ' details updated');
-        redirect('../admin/member_management.php');
+        header('Location: ' . $_SERVER['REQUEST_URI']);
+        exit;
     }
 }else if (is_post() && (req('form_type') == 'address_update')){
 
@@ -110,12 +111,13 @@ if (is_post() && (req('form_type') == 'member_details')) {
         $updateAddressStm->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
 
         temp('info', 'Address updated successfully');
-        redirect('../admin/member_management.php');
+        header('Location: ' . $_SERVER['REQUEST_URI']);
+        exit;
     }
 }
 
-include '../_head.php';
 ?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../js/main.js"></script>
 <link rel="stylesheet" href="../css/edit_member.css">
 
@@ -128,10 +130,12 @@ include '../_head.php';
                 <input type="hidden" name="form_type" value="member_details">
 
                 <label class="upload member-photo" tabindex="0">
-                    <?= html_file('photo', 'image/*', 'hidden') ?>
+                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)" />
                     <img
+                        id="profile-photo-preview"
                         src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>"
-                        alt="Member Photo" title="Click to upload photo" />
+                        alt="Member Photo"
+                        title="Click to upload new photo" />
                 </label>
                 <?= err('photo') ?>
                 </label>
@@ -228,6 +232,24 @@ include '../_head.php';
     </div>
     <button class="go-back" data-get="../admin/member_management.php">Go Back</button>
 </body>
+<script>
+    $('[data-get]').on('click', e => {
+    e.preventDefault();
+    const url = e.target.dataset.get;
+    location.href = url || location.href;  // Use location.href to navigate
+});
 
-<?php
-include '../_foot.php';
+function previewImage(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var preview = document.getElementById('profile-photo-preview');
+            preview.src = e.target.result; 
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); 
+        }
+    }
+</script>

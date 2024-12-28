@@ -7,7 +7,7 @@ body {
 }
 
 /* General Layout */
-.container {
+.user-profile-container {
     display: flex;
     font-family: Arial, sans-serif;
     gap: 20px;
@@ -132,7 +132,7 @@ label.upload img:hover {
 }
 
 /* Button styling */
-button,
+
 .profile-form button {
     padding: 12px 20px;
     font-size: 14px;
@@ -145,7 +145,7 @@ button,
     margin-top: 20px;
 }
 
-button:hover,
+
 .profile-form button:hover {
     background-color: #e65230;
 }

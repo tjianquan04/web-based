@@ -1,6 +1,8 @@
+<script src="/js/admin_head.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <?php
-include '../_base.php';
-include '../_head.php';
+include '_admin_head.php';
 // Get the search input
 $searchTerm = req('search') ?? '';
 
@@ -38,7 +40,7 @@ $total_members = $_db->query("SELECT COUNT(*) FROM member")->fetchColumn();
 // ----------------------------------------------------------------------------
 
 ?>
-<script src="../js/main.js"></script>
+
 <link rel="stylesheet" href="../css/admin_management.css">
 
 <div class="container">
@@ -57,7 +59,7 @@ $total_members = $_db->query("SELECT COUNT(*) FROM member")->fetchColumn();
         <select class="form-control" name="batch-status" id="batch-status">
             <option value = '' disabled selected>Select-Status</option>
             <option value="Active">Active</option>
-            <option value="Iactive">Inactive</option>
+            <option value="Inactive">Inactive</option>
         </select>
         <button formaction="../memberCRUD/batch_update_status.php" id="batch-update">Update</button>
        </div>
@@ -226,6 +228,32 @@ $('#batch-update').on('click', function(e) {
         alert('Please select at least one member and a status to update.');
         e.preventDefault();
     }
+});
+
+// Confirmation message for delete actions
+$('[delete-confirm]').on('click', e => {
+    const text = e.target.dataset.confirm || 'Are you sure you want to delete this member?';
+    if (!confirm(text)) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }
+});
+
+// Initiate GET request
+$('[data-get]').on('click', e => {
+    e.preventDefault();
+    const url = e.target.dataset.get;
+    location.href = url || location.href;  // Use location.href to navigate
+});
+
+// Initiate POST request
+$('[data-post]').on('click', e => {
+    e.preventDefault();
+    const url = e.target.dataset.post;
+    const f = $('<form>').appendTo(document.body)[0];
+    f.method = 'POST';
+    f.action = url || location.href;
+    f.submit();
 });
 </script>
 </html>

@@ -4,6 +4,7 @@ require '../_base.php';
 $member = $_SESSION['user'];
 authMember($member);
 
+updateTransactionStatus();
 $transactions = getTransactionHistory($member->member_id);
 
 $transactionTypes = [
@@ -47,17 +48,10 @@ if (is_post()) {
         $trans_id = generateTransactionId();
 
         $stmt = $_db->prepare('INSERT INTO transactions (trans_id, trans_date, trans_amount, trans_type, trans_status, reference, member_id) VALUES (?, ?, ?, ?, ? , ?, ?)');
-        $stmt->execute([$trans_id, $currentDateTime, $topUpAmount, "Top Up", "Completed", $top_up_id, $member->member_id]);
+        $stmt->execute([$trans_id, $currentDateTime, $topUpAmount, "Top Up", "Pending", $top_up_id, $member->member_id]);
 
-        $updatedBalance = getWalletBalanceAfterTransaction($trans_id, $member->member_id);
-        if ($updatedBalance != null) {
-            updateWalletBalance($updatedBalance, $member->member_id);
-            temp('info', 'Top Up successful');
-            $updatedMember = getMemberbyId($member->member_id);
-            $_SESSION['user'] = $updatedMember;
-            $member =  $_SESSION['user'];
-            $transactions = getTransactionHistory($member->member_id);
-        }
+        temp('info', 'Transaction is processing');
+        
     } else {
         temp('info', 'Top-Up amount is required.');
     }
@@ -82,12 +76,14 @@ include '../_head.php';
 
         <!-- Profile Content -->
         <div class="content">
+            <div class="wallet-section">
             <!-- Wallet Amount -->
             <div class="wallet-amount">
                 <h3>Wallet Balance: RM <?= $member->wallet ?></h3>
             </div>
             <div class="reload-wallet">
                 <button id="topUpButton" onclick="openModal('amountForm')">Top Up</button>
+            </div>
             </div>
 
             <!-- Transaction History -->
@@ -151,7 +147,7 @@ include '../_head.php';
                 <button type="button" class="amount-button" data-amount="200">RM 200</button>
                 <button type="button" class="amount-button" data-amount="500">RM 500</button>
             </div>
-            <button type="button" onclick="showCardForm()">Continue</button>
+            <button type="button" class="continue-btn" onclick="showCardForm()">Continue</button>
         </form>
     </div>
 </div>
@@ -374,7 +370,7 @@ include '../_head.php';
             document.getElementById('amount').value = amount;
             document.getElementById('topUpAmountHidden').value = amount;
         });
-    });
+    }); 
 </script>
 <?php
 include '../_foot.php';

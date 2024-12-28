@@ -610,34 +610,6 @@ function countLowStockProducts()
     return $result['total'] ?? 0; // Return the count or 0 if no results
 }
 
-function batchUpdate($selected_ids, $role = null, $status = null) {
-    global $_db;
-
-    $query = "UPDATE admin SET ";
-    $params = [];
-    $setClauses = [];
-
-    if ($role) {
-        $setClauses[] = "`role` = :role";
-        $params[':role'] = $role;
-    }
-
-    if ($status) {
-        $setClauses[] = "`status` = :status";
-        $params[':status'] = $status;
-    }
-
-    $query .= implode(", ", $setClauses);
-    $query .= " WHERE `admin_id` IN (" . implode(", ", $selected_ids) . ")";
-
-    try {
-        $_db->prepare($query)->execute($params);
-        return "Batch update successful.";
-    } catch (Exception $e) {
-        return "Error updating records: " . $e->getMessage();
-    }
-}
-
 function batchDelete($ids) {
     try {
         global $_db;
@@ -657,6 +629,30 @@ function batchDelete($ids) {
         return "Error: " . $e->getMessage();
     }
 }
+
+function batchUpdate($ids, $role, $status) {
+    try {
+        global $_db;
+
+        // Create placeholders for ID IN clause
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        // Construct SQL query
+        $sql = "UPDATE admin 
+                SET role = ?, 
+                    status = ? 
+                WHERE admin_id IN ($placeholders)";
+
+        // Execute the query
+        $stmt = $_db->prepare($sql);
+        $stmt->execute(array_merge([$role, $status], $ids));
+
+        return "Batch update completed successfully.";
+    } catch (PDOException $e) {
+        return "Error: " . $e->getMessage();
+    }
+}
+
 
 
 
@@ -747,10 +743,10 @@ function authMember($member){
                 return;  
             } else {
                 $_err = 'Your account is inactive. Please contact support.';
-                redirect('login.php');
+                redirect('/user/login.php');
             }
     }
-    redirect('login.php');
+    // redirect('/user/login.php');
 }
 
 // Generate table headers <th>
@@ -810,7 +806,12 @@ function save_photos($tmp_name, $folder, $width = 200, $height = 200)
 }
 
 
-
+function get_existing_photo($memberId) {
+    global $_db;
+    $stm = $_db->prepare('SELECT profile_photo FROM member WHERE member_id = ?');
+    $stm->execute([$memberId]);
+    return $stm->fetchColumn(); // Returns the existing photo path
+}
 
 
 
@@ -1156,16 +1157,55 @@ function updateWalletBalance($walletBalance, $member_id){
 
 }
 
+function updateTransactionStatus() {
+    global $_db;
+
+    // Fetch all pending transactions
+    $stm = $_db->query(
+        'SELECT trans_id, trans_date,member_id, trans_status FROM transactions WHERE trans_status = "Pending"'
+    );
+
+    while ($transaction = $stm->fetch(PDO::FETCH_ASSOC)) {
+
+        $transDate = new DateTime($transaction['trans_date']);
+        $currentDate = new DateTime();
+        $interval = $transDate->diff($currentDate);
+
+        // If more than 5 minutes have passed and status is still pending
+        if ($interval->i >= 5 && $transaction['trans_status'] === 'Pending') {
+            // Update the status to completed
+            $updateStm = $_db->prepare(
+                'UPDATE transactions SET trans_status = "Completed" WHERE trans_id = ?'
+            );
+            $updateStm->execute([$transaction['trans_id']]);
+
+            $updatedBalance = getWalletBalanceAfterTransaction($transaction['trans_id'], $transaction['member_id']);
+            if ($updatedBalance != null) {
+            updateWalletBalance($updatedBalance, $transaction['member_id']);
+            }else{
+                $updateStm = $_db->prepare(
+                    'UPDATE transactions SET status = "Failed" WHERE trans_id = ?'
+                );
+                $updateStm->execute([$transaction['trans_id']]);
+            }
+        }
+    }
+}
+
+
+
 function generateTopUpID() {
     // Get the current date in YYYYMMDD format
     $currentDate = date('Ymd');
     
+    do{
     // Generate a 6-digit random number
     $randomNumber = mt_rand(100000, 999999);
 
     // Concatenate "TOP", the date, and the random number
     $topUpID = "TOP" . $currentDate . $randomNumber;
-
+    }while(is_exists($topUpID,'transactions','reference'));
+    
     return $topUpID;
 }
 
@@ -1173,13 +1213,16 @@ function generateTransactionId() {
     // Get the current date in YYYYMMDD format
     $currentDate = date('Ymd');
     
+    do{
     // Generate a 6-digit random number
     $randomNumber = mt_rand(100000, 999999);
 
     // Concatenate "TOP", the date, and the random number
-    $topUpID = "TST" . $currentDate . $randomNumber;
+    $transactionID = "TST" . $currentDate . $randomNumber;
 
-    return $topUpID;
+    }while(is_exists($transactionID,'transactions','trans_id'));
+
+    return $transactionID;
 }
 
 

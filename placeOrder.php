@@ -182,6 +182,10 @@ if (is_post()) {
         );
         $stm10->execute([$item->quantity, $item->product_id]);
     }
+    $trans_id = generateTransactionId();
+    $stmt = $_db->prepare('INSERT INTO transactions (trans_id, trans_date, trans_amount, trans_type, trans_status, reference, member_id) VALUES (?, ?, ?, ?, ? , ?, ?)');
+    $stmt->execute([$trans_id, $currentDateTime, $amount, "Purchase", "Pending", $newOrderRecordId, $memberId]);
+
     header('Location: order_record.php?section=.orderRecord-right-toship');
     exit;
 }

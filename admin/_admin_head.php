@@ -1,5 +1,10 @@
-
+<link rel="stylesheet" href="/css/admin_head.css"> <!--stylesheet -->
+<link rel="stylesheet" href="/css/flash_msg.css"> <!-- Additional styles -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+<script src="/js/admin_head.js"></script> <!-- Custom script -->
 <?php
+session_start(); // Start session before any output
 require '../_base.php';
 
 auth('Admin', 'Superadmin', 'Product Manager');
@@ -17,15 +22,11 @@ $outOfStockCount = countOutOfStockProducts();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Header</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/admin_head.js"></script>
-    <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
 <div id="info"><?= temp('info') ?></div>
-
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
@@ -35,30 +36,30 @@ $outOfStockCount = countOutOfStockProducts();
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
-                <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
                 <!-- Only Product Manager can see this section -->
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
-                    <a href="product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
-                    <a href="viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
+                    <a href="/admin/product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
+                    <a href="/admin/viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
                 <?php endif; ?>
                 <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="view_order.php">View Orders</a></li>
+                    <li><a href="/admin/view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="member_management.php">Manage Users</a></li>
+                    <li><a href="/admin/member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('admin-menu')"><i class="fas fa-users-cog"></i> Admin Management</a>
                     <ul id="admin-menu" class="submenu">
-                        <li><a href="admin_management.php">Manage Admins</a></li>
+                        <li><a href="/admin/admin_management.php">Manage Admins</a></li>
                     </ul>
                 <?php endif; ?>
 
@@ -80,7 +81,7 @@ $outOfStockCount = countOutOfStockProducts();
         ?>
 
         <main class="header-content">
-            <header class="header">
+            <div class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
                     <!-- Notification Icon -->
@@ -103,12 +104,12 @@ $outOfStockCount = countOutOfStockProducts();
                             <p class="current-date" id="currentDate"></p>
                         </div>
                         <div class="dropdown-content" id="profileDropdown">
-                            <a href="view_admin.php?id=<?= $_SESSION['user']->admin_id ?>">View Profile</a>
-                            <a href="edit_admin.php?id=<?= $_SESSION['user']->admin_id ?>">Edit Profile</a>
+                            <a href="/admin/view_admin.php?id=<?= $_SESSION['user']->admin_id ?>">View Profile</a>
+                            <a href="/admin/edit_admin.php?id=<?= $_SESSION['user']->admin_id ?>">Edit Profile</a>
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
         </main>
     </div>
 </body>

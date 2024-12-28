@@ -4,10 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
 $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
-$dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
-
-
-
+$page = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
 
 ?>
 
@@ -27,7 +24,6 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
-<div id="info"><?= temp('info') ?></div>
 <style>
 
 </style>
@@ -43,58 +39,68 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                     <ul>
                         <div class="dropdown">
                             <li class="right">
-                                <a href="/user/login.php" style="text-decoration: none; color: inherit; cursor: pointer; font-size:25px;">
-                                    <i class="ico ico-user"></i>
-                                </a>
-                                <div class="dropdown-content">
-                                    <a href="/user/user_profile.php">My Account</a>
-                                    <a href="/order_record.php">My Purchases</a>
-                                    <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
-                                    <!-- Logout Link -->
-                                    <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </a>
 
-                                    <!-- Hidden Logout Form -->
-                                    <form id="logout-form" action="" method="POST" style="display:none;">
-                                        <input type="hidden" name="logout">
-                                    </form>
+                                <div class="dropdown">
+                                    <button aria-label="User Options" style="background: none; border: none; cursor: pointer; font-size: 25px; color: inherit;">
+                                        <i class="ico ico-user"></i>
+                                    </button>
+                                    <div class="dropdown-content">
+                                        <?php if (empty($_SESSION['user'])) { ?> <!-- If the session is empty (user is not logged in) -->
+                                            <a href="/user/login.php">Log In</a>
+                                        <?php } else { ?>
+                                            <a href="/user/user_profile.php">My Account</a>
+                                            <a href="/order_record.php">My Purchases</a>
+                                            <a href="/myWishlist.php">My Wishlist <i class="fa-solid fa-heart-circle-check"></i></a>
 
-                                    <?php
-                                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                        // Call the logout function and redirect the user
-                                        logout('/user/login.php'); // Replace with the URL you want the user redirected to
-                                    }
-                                    ?>
+                                            <!-- Logout Link -->
+                                            <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
+                                                <i class="fas fa-sign-out-alt"></i> Logout
+                                            </a>
+
+                                            <!-- Hidden Logout Form -->
+                                            <form id="logout-form" action="" method="POST" style="display:none;">
+                                                <input type="hidden" name="logout">
+                                            </form>
+
+                                            <?php
+                                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                                                logout('index.php'); // Replace with the URL you want the user to be redirected to after logging out
+                                            }
+                                            ?>
+                                    </div>
+
                                 </div>
+                            <?php } ?>
                             </li>
                         </div>
                         <li class="right">
-                            <a href="/cart.php"><i class="ico ico-shopping"></i></a>
-                            <a href="/myWishlist.php"><i class="fa-solid fa-heart-circle-check"></i></a>
+                            <?php if (!empty($_SESSION['user'])) { ?>
+                                <a href="/cart.php"><i class="ico ico-shopping"></i></a>
+                            <?php } ?>
+
                         </li>
                     </ul>
                 </div>
                 <div class="container-right2">
                     <nav>
                         <ul>
-                            <div class="dropdown">
+                            <div class="dropdown-hover">
                                 <li class="left">
                                     What's HOT !
                                     <i class="ico ico-chevron-down"></i>
                                 </li>
-                                <div class="dropdown-content">
-                                    <a href="menu.php?newAdded=$newAdded">NEW In!</a>
-                                    <a href="menu.php?limited=$limited">Limited Time</a>
-                                    <a href="menu.php?alertItem=$alertItem">End Soon!</a>
+                                <div class="dropdown-hover-content">
+                                    <a href="/menu.php?newAdded=$newAdded">NEW In!</a>
+                                    <a href="/menu.php?limited=$limited">Limited Time</a>
+                                    <a href="/menu.php?alertItem=$alertItem">End Soon!</a>
                                 </div>
                             </div>
                             <li class="left">
-                                <a href="menu.php">Boots Products</a>
+                                <a href="/menu.php">Boots Products</a>
                             </li>
 
                             <li class="left">
-                                <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
+                                <a href="/menu.php?oosItem=$oosItem">Back Stock Soon!</a>
                             </li>
 
 
@@ -113,11 +119,6 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                                     </button>
                                 </form>
 
-
-                                <!-- <input class="search-input" type="search" placeholder="Search" name="search-input" id="search-input" autocapitalize="off">
-                                <a class="search-btn">
-                                    <i class="ico ico-search"></i> 
-                                </a>-->
                             </div>
                         </form>
                     </span>
@@ -125,3 +126,24 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
             </div>
         </div>
     </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownButton = document.querySelector('.dropdown button');
+            const dropdownContent = document.querySelector('.dropdown-content');
+
+            if (dropdownButton) {
+                dropdownButton.addEventListener('click', () => {
+                    // Toggle the "show" class on the dropdown content
+                    dropdownContent.classList.toggle('show');
+                });
+            }
+
+            // Optional: Close the dropdown if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!dropdownButton.contains(event.target) && !dropdownContent.contains(event.target)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+        });
+    </script>
