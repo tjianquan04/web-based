@@ -1,3 +1,5 @@
+
+
 <?php
 require '_base.php';
 
@@ -19,12 +21,21 @@ require '_base.php';
 // }
 
 
-
+$wishlist_item=[];
 if(!empty($_SESSION)){
   $member = $_SESSION['user'];
   authMember($member);
 
 $member_id =  $member->member_id;
+
+$wishlist_stm = $_db->prepare("
+    SELECT p.* 
+    FROM wishlist w
+    JOIN product p ON w.product_id = p.product_id
+    WHERE w.member_id = ? ");
+$wishlist_stm->execute([$member_id]);
+$wishlist_item = $wishlist_stm->fetchAll();
+
 }
 
 
@@ -36,16 +47,8 @@ $updateStatusStm = $_db->prepare("
 ");
 $updateStatusStm->execute();
 
-// // Check if the product is already in the wishlist for the logged-in user
-// $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
 
-$wishlist_stm = $_db->prepare("
-    SELECT p.* 
-    FROM wishlist w
-    JOIN product p ON w.product_id = p.product_id
-    WHERE w.member_id = ? ");
-$wishlist_stm->execute([$member_id]);
-$wishlist_item = $wishlist_stm->fetchAll();
+
 
 $stm = $_db->prepare("SELECT * FROM product WHERE status LIKE 'LimitedEdition' AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)");
 $stm->execute();
@@ -252,7 +255,12 @@ img{
 
 <!-- Featured Products -->
 <section class="featured-products">
-    <h2>Featured Products</h2>
+<?php if (!empty($wishlist_item)): ?>
+    <h2>Recommended For You</h2>
+<?php else: ?>
+    <h2>Grabs Your Now</h2>
+<?php endif; ?>
+
 
     <div class="product-grid">
       

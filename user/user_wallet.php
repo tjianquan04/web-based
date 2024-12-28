@@ -82,12 +82,14 @@ include '../_head.php';
 
         <!-- Profile Content -->
         <div class="content">
+            <div class="wallet-section">
             <!-- Wallet Amount -->
             <div class="wallet-amount">
                 <h3>Wallet Balance: RM <?= $member->wallet ?></h3>
             </div>
             <div class="reload-wallet">
                 <button id="topUpButton" onclick="openModal('amountForm')">Top Up</button>
+            </div>
             </div>
 
             <!-- Transaction History -->
@@ -151,7 +153,7 @@ include '../_head.php';
                 <button type="button" class="amount-button" data-amount="200">RM 200</button>
                 <button type="button" class="amount-button" data-amount="500">RM 500</button>
             </div>
-            <button type="button" onclick="showCardForm()">Continue</button>
+            <button type="button" class="continue-btn" onclick="showCardForm()">Continue</button>
         </form>
     </div>
 </div>
@@ -374,7 +376,7 @@ include '../_head.php';
             document.getElementById('amount').value = amount;
             document.getElementById('topUpAmountHidden').value = amount;
         });
-    });
+    }); 
 </script>
 <?php
 include '../_foot.php';

@@ -1,8 +1,9 @@
 <?php
 require '_base.php';
 
-// Example member_id for testing
-$member_id = "M000001";
+$member = $_SESSION['user'];
+authMember($member);
+$member_id =  $member-> member_id;
 
 // Fetch the product details and cover photo (marked with is_default = true) for each product in the wishlist
 $stm = $_db->prepare('
@@ -92,7 +93,8 @@ include '_head.php';
 </style>
 
 <div class="container">
-<a href="javascript:history.back()" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">
+<i class="fa-solid fa-arrow-left-long"></i></a>
 
     <section class="main">
         <h2>My Wishlist</h2>

@@ -1,6 +1,10 @@
 <?php
 require '_base.php';
 
+
+$member = $_SESSION['user'];
+$member_id =  $member-> member_id;
+
 // Get the product ID from the query string
 $product_id = req('product_id');
 
@@ -19,10 +23,9 @@ $subcategory_stm = $_db->prepare('SELECT sub_category FROM category WHERE catego
 $subcategory_stm->execute([$product->category_id]);  // Use $product->category_id
 $subcategory = $subcategory_stm->fetch(PDO::FETCH_ASSOC); // Fetch as an associative array
 
-// // Check if the product is already in the wishlist for the logged-in user
-// $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
+
 $wishlist_check_stm = $_db->prepare('SELECT 1 FROM wishlist WHERE member_id = ? AND product_id = ?');
-$wishlist_check_stm->execute(["M000001", $product_id]);
+$wishlist_check_stm->execute([$member_id, $product_id]);
 $is_in_wishlist = $wishlist_check_stm->fetchColumn(); // This returns 1 if the product is in the wishlist
 
 // Display the product details
@@ -38,7 +41,8 @@ include '_head.php';
 <script src="/js/addtocart.js"></script>
 
 <div class="container">
-    <a href="javascript:history.back()" class="back-button">&larr;</a>
+<a href="javascript:history.back()" class="back-button">
+<i class="fa-solid fa-arrow-left-long"></i></a>
 
     <section class="main">
         <div class="default gallery">
