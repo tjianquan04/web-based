@@ -76,16 +76,32 @@ header {
   }
 
   .dropdown-content {
+    margin-top: -10px;
+}
+
+.dropdown-hover-content {
+    margin-top: 35px;
+}
+
+.dropdown-hover-content, .dropdown-content {
     display: none; /* Initially hidden */
-    margin-top: 25px;
     position: absolute;
-    background-color: #f9f9f9;
+    background-color: rgba(249, 249, 249, 0.2); /* Light color with 90% opacity */
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    backdrop-filter: blur(10px); /* Optional: adds a blur effect to the background */
+
 }
 
-.dropdown-content a {
+
+
+
+.dropdown-hover:hover .dropdown-hover-content {
+    display: block;
+}
+
+.dropdown-content a, .dropdown-hover-content a {
     float: none;
     color: black;
     padding: 12px 16px;
@@ -94,9 +110,12 @@ header {
     text-align: left;
 }
 
-.dropdown-content a:hover {
-    background-color: #ddd;
+.dropdown-content a:hover, .dropdown-hover-content a:hover {
+    background-color: rgba(255, 255, 255, 0.872);
 }
+
+
+
 
 /* Display dropdown content only when .show class is added */
 .dropdown-content.show {

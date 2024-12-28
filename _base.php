@@ -747,10 +747,10 @@ function authMember($member){
                 return;  
             } else {
                 $_err = 'Your account is inactive. Please contact support.';
-                redirect('login.php');
+                redirect('/user/login.php');
             }
     }
-    redirect('login.php');
+    redirect('/user/login.php');
 }
 
 // Generate table headers <th>
