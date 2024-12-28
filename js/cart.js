@@ -89,20 +89,20 @@ const addItemToCart = (name, price, imageSrc) => {
   });
 };
 
-addToCartBtn.addEventListener("click", () => {
-  if (count === 0) return;
-  const productName = document.querySelector(".main .product-name").textContent;
-  const productPriceEl = document.querySelector(".main .current-price");
-  const productPrice = parseFloat(productPriceEl.textContent.replace("$", ""));
-  const productImg = document
-    .querySelector(".default.gallery .main-img img")
-    .getAttribute("src");
+// addToCartBtn.addEventListener("click", () => {
+//   if (count === 0) return;
+//   const productName = document.querySelector(".main .product-name").textContent;
+//   const productPriceEl = document.querySelector(".main .current-price");
+//   const productPrice = parseFloat(productPriceEl.textContent.replace("$", ""));
+//   const productImg = document
+//     .querySelector(".default.gallery .main-img img")
+//     .getAttribute("src");
 
-  addItemToCart(productName, productPrice, productImg);
-  cartContainer.classList.add("active");
+//   addItemToCart(productName, productPrice, productImg);
+//   cartContainer.classList.add("active");
 
-  updateCount(0);
-});
+//   updateCount(0);
+// });
 
 // remove item from cart
 

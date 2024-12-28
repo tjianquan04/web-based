@@ -3,6 +3,7 @@ require '_base.php';
 
 $productId = $_POST['productId'];
 $qty = $_POST['qty'];
+
 $member = $_SESSION['user'];
 authMember($member);
 $id =  $member->member_id;

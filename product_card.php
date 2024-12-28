@@ -125,8 +125,7 @@ include '_head.php';
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-
-
+                    
                     <!-- Add to cart button -->
                     <button type="button" class="add-to-cart" id="addToCart-btn" data-product-id="<?= $product->product_id ?> " data-member-id="<?= $member_id ?? '' ?>"
                         <?php if ($product->status == 'OutOfStock'): ?>

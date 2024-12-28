@@ -1,8 +1,8 @@
 $(() => {
     $('.add-to-cart').on('click', function () {
         const productId = $(this).data('product-id'); // Get product ID from data attribute
-        const $quantity = $(`.count[data-product-id="${productId}"]`); // Find the count element
-
+        const $quantity = $(".count").text(); // Find the count element
+        const $try = $('.try');
     
         const memberId = $(this).data('member-id'); // Get member ID from data attribute
 
@@ -11,9 +11,8 @@ $(() => {
             alert("Please log in to add items to the cart.");
             return;
         }
-        
 
-        let qty = parseInt($quantity.text());
+        let qty = parseInt($quantity);
         $.ajax({
             url: 'addToCart.php',
             type: 'POST',
