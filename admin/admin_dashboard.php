@@ -39,7 +39,7 @@ if (isset($_GET['chartData'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
-    <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
+    <link rel="stylesheet" href="/css/admin_head.css"> 
     <script src="/js/admin_head.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
@@ -56,28 +56,28 @@ if (isset($_GET['chartData'])) {
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
-                <a href="/admin/admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
                 <!-- Only Product Manager can see this section -->
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
-                    <a href="/admin/product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
-                    <a href="/admin/viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
+                    <a href="product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
+                    <a href="viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
                 <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="/admin/view_order.php">View Orders</a></li>
+                    <li><a href="view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="#">Manage Users</a></li>
+                <li><a href="member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('admin-menu')"><i class="fas fa-users-cog"></i> Admin Management</a>
                     <ul id="admin-menu" class="submenu">
-                        <li><a href="/admin/admin_management.php">Manage Admins</a></li>
+                        <li><a href="admin_management.php">Manage Admins</a></li>
                     </ul>
                 <?php endif; ?>
 

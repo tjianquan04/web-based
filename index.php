@@ -238,7 +238,7 @@ img{
   }
   
 </style>
-
+<div id="info"><?= temp('info') ?></div>
 
     <div class="slideshow-container">
 

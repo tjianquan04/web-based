@@ -51,32 +51,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-let slideIndex = 0;
-showSlides();
-
-function showSlides() {
-    let i;
-    let slides = document.getElementsByClassName("mySlides");
-
-    // Hide all slides
-    for (i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-    }
-
-    // Increment slide index
-    slideIndex++;
-
-    // Reset to the first slide if out of bounds
-    if (slideIndex > slides.length) {
-        slideIndex = 1;
-    }
-
-    // Display the current slide
-    slides[slideIndex - 1].style.display = "block";
-
-    // Set a timeout to move to the next slide
-    setTimeout(showSlides, 4000); // Change image every 2 seconds
-}
-
 
 

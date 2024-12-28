@@ -1,3 +1,6 @@
+<script src="/js/admin_head.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <?php
 include '_admin_head.php';
 require_once '../lib/SimplePager.php';
@@ -108,11 +111,15 @@ if (isset($_POST['batchDlt']) && isset($_POST['selectedIDs']) && !empty($_POST['
 $_title = 'Category Management';
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-
-<link rel="stylesheet" href="/css/product.css">
-<script src="../js/admin_head.js"></script>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
 
 <div class="container">
     <a href="viewCategory.php" class="back-button">&larr;</a>
@@ -131,63 +138,63 @@ $_title = 'Category Management';
     <p><?= count($_categories) ?> record(s)</p>
     <form action="viewCategory.php" method="POST">
 
-    <table>
-        <thead>
-            <tr>
-            <th><input type="checkbox" id="selectAll" />SelectAll</th>
-                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category ID
-                    <?php if ($sort == 'category_id'): ?>
-                        <?php if ($dir == 'asc'): ?>
-                            <i class="fas fa-arrow-up arrow-right"></i>
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" />SelectAll</th>
+                    <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category ID
+                        <?php if ($sort == 'category_id'): ?>
+                            <?php if ($dir == 'asc'): ?>
+                                <i class="fas fa-arrow-up arrow-right"></i>
+                            <?php else: ?>
+                                <i class="fas fa-arrow-down arrow-right"></i>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <i class="fas fa-arrow-down arrow-right"></i>
+                            <i class="fas fa-sort arrow-right"></i>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <i class="fas fa-sort arrow-right"></i>
-                    <?php endif; ?>
-                </th>
-                <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category Name
-                    <?php if ($sort == 'category_name'): ?>
-                        <?php if ($dir == 'asc'): ?>
-                            <i class="fas fa-arrow-up arrow-right"></i>
+                    </th>
+                    <th onclick="window.location.href='?sort=category_id&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Category Name
+                        <?php if ($sort == 'category_name'): ?>
+                            <?php if ($dir == 'asc'): ?>
+                                <i class="fas fa-arrow-up arrow-right"></i>
+                            <?php else: ?>
+                                <i class="fas fa-arrow-down arrow-right"></i>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <i class="fas fa-arrow-down arrow-right"></i>
+                            <i class="fas fa-sort arrow-right"></i>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <i class="fas fa-sort arrow-right"></i>
-                    <?php endif; ?>
-                </th>
-                <th>Subcategory</th>
-                <th onclick="window.location.href='?sort=currentStock&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Total Current Stock
-                    <?php if ($sort == 'currentStock'): ?>
-                        <?php if ($dir == 'asc'): ?>
-                            <i class="fas fa-arrow-up arrow-right"></i>
+                    </th>
+                    <th>Subcategory</th>
+                    <th onclick="window.location.href='?sort=currentStock&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Total Current Stock
+                        <?php if ($sort == 'currentStock'): ?>
+                            <?php if ($dir == 'asc'): ?>
+                                <i class="fas fa-arrow-up arrow-right"></i>
+                            <?php else: ?>
+                                <i class="fas fa-arrow-down arrow-right"></i>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <i class="fas fa-arrow-down arrow-right"></i>
+                            <i class="fas fa-sort arrow-right"></i>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <i class="fas fa-sort arrow-right"></i>
-                    <?php endif; ?>
-                </th>
-                <th onclick="window.location.href='?sort=Status&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Status
-                    <?php if ($sort == 'Status'): ?>
-                        <?php if ($dir == 'asc'): ?>
-                            <i class="fas fa-arrow-up arrow-right"></i>
+                    </th>
+                    <th onclick="window.location.href='?sort=Status&dir=<?= $dir === 'asc' ? 'desc' : 'asc' ?>&search=<?= urlencode($search) ?>'">Status
+                        <?php if ($sort == 'Status'): ?>
+                            <?php if ($dir == 'asc'): ?>
+                                <i class="fas fa-arrow-up arrow-right"></i>
+                            <?php else: ?>
+                                <i class="fas fa-arrow-down arrow-right"></i>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <i class="fas fa-arrow-down arrow-right"></i>
+                            <i class="fas fa-sort arrow-right"></i>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <i class="fas fa-sort arrow-right"></i>
-                    <?php endif; ?>
-                </th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($_categories as $_category): ?>
-                
-                <!-- <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'"> -->
-                <td><input type="checkbox" name="selectedIDs[]" value="<?= $_category->category_id ?>" /></td>
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($_categories as $_category): ?>
+
+                    <!-- <tr onclick="window.location.href='category_details.php?category_id=<?= $_category->category_id ?>'"> -->
+                    <td><input type="checkbox" name="selectedIDs[]" value="<?= $_category->category_id ?>" /></td>
 
                     <td><?= $_category->category_id ?>
                     </td>
@@ -206,7 +213,7 @@ $_title = 'Category Management';
 
                     </td>
                     <td>
-                    <a href='category_details.php?category_id=<?= $_category->category_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
+                        <a href='category_details.php?category_id=<?= $_category->category_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
 
                         <a href='category_update.php?category_id=<?= $_category->category_id ?>' class='btn btn-edit'><i class='fas fa-tools'></i>Edit</a>
                         <!-- <a href="category_delete.php?category_id=<?= $_category->category_id ?>" class='btn btn-delete' onclick='return confirm("Are you sure you want to delete this Category?")'> -->
@@ -218,24 +225,26 @@ $_title = 'Category Management';
 
 
                     </td>
-                </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-    With rows :
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+        With rows :
         <button type="submit" name="batchDlt" id="batchDlt" class="btn btn-delete" style="width: 140px; font-family:'Times New Roman', Times, serif;" onclick="return confirmDelete();">
             <i class="fa-solid fa-xmark"></i> Batch Delete
         </button>
 
-                    </form>
+    </form>
 
-    <a href="category_insert.php" class="btn btn-add" ><i class="fa-solid fa-plus"></i>Add New Category</a>
+    <a href="category_insert.php" class="btn btn-add"><i class="fa-solid fa-plus"></i>Add New Category</a>
     <a href="deletedCategory.php" class="btn btn-trash"><i class="fa-solid fa-trash-can"></i>Trash</a>
 
     <div class="pagination">
         <?= generateDynamicPagination($p, $sort, $dir, $search); ?>
     </div>
 </div>
+</body>
+</html>
 
 
 <script>

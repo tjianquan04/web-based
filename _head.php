@@ -96,7 +96,7 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                                 </div>
                             </div>
                             <li class="left">
-                                <a href="menu.php">Boots Products</a>
+                                <a href="/menu.php">Boots Products</a>
                             </li>
 
                             <li class="left">

@@ -1,5 +1,10 @@
-
+<link rel="stylesheet" href="/css/admin_head.css"> <!-- Example stylesheet -->
+<link rel="stylesheet" href="/css/flash_msg.css"> <!-- Additional styles -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+<script src="/js/admin_head.js"></script> <!-- Custom script -->
 <?php
+session_start(); // Start session before any output
 require '../_base.php';
 
 auth('Admin', 'Superadmin', 'Product Manager');
@@ -17,15 +22,12 @@ $outOfStockCount = countOutOfStockProducts();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Header</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/admin_head.js"></script>
     <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
 <div id="info"><?= temp('info') ?></div>
-
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
@@ -80,7 +82,7 @@ $outOfStockCount = countOutOfStockProducts();
         ?>
 
         <main class="header-content">
-            <header class="header">
+            <div class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
                     <!-- Notification Icon -->
@@ -108,7 +110,7 @@ $outOfStockCount = countOutOfStockProducts();
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
         </main>
     </div>
 </body>

@@ -10,9 +10,9 @@
     <div class="container">
         <h1>Boots.Do</h1>
         <ul class="menu">
-            <li><a href="index.php">Home</a></li>
-            <li><a href="about_us.php">About Us</a></li>
-            <li><a href="#">T&C Apply</a></li>
+            <li><a href="/index.php">Home</a></li>
+            <li><a href="/about_us.php">About Us</a></li>
+            <li><a href="/terms.php">T&C Apply</a></li>
             <li><a href="#">Shopping Guide</a></li>
 
         </ul>
