@@ -57,10 +57,10 @@ include '../_head.php';
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>
-            <a href="user_profile.php?id=<?= $member->member_id ?>">Profile</a>
-            <a href="user_address.php?id=<?= $member->member_id ?>">Addresses</a>
-            <a href="user_change_password.php?id=<?= $member->member_id ?>">Change Password</a>
-            <a href="user_wallet.php?id=<?= $member->member_id ?>">My Wallet</a>
+            <a href="user_profile.php">Profile</a>
+            <a href="user_address.php">Addresses</a>
+            <a href="user_change_password.php">Change Password</a>
+            <a href="user_wallet.php">My Wallet</a>
         </div>
 
         <!-- Address Details Section -->

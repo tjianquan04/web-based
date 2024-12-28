@@ -130,8 +130,9 @@ if (is_post() && (req('form_type') == 'member_details')) {
                 <input type="hidden" name="form_type" value="member_details">
 
                 <label class="upload member-photo" tabindex="0">
-                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" />
+                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)" />
                     <img
+                        id="profile-photo-preview"
                         src="<?= $s->profile_photo ? '../photos/' . $s->profile_photo : '../photos/unknown.jpg' ?>"
                         alt="Member Photo"
                         title="Click to upload new photo" />
@@ -237,4 +238,18 @@ if (is_post() && (req('form_type') == 'member_details')) {
     const url = e.target.dataset.get;
     location.href = url || location.href;  // Use location.href to navigate
 });
+
+function previewImage(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var preview = document.getElementById('profile-photo-preview');
+            preview.src = e.target.result; 
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); 
+        }
+    }
 </script>

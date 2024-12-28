@@ -80,8 +80,9 @@ include '../_head.php';
             <form class="profile-form" method="POST" enctype="multipart/form-data">
 
                 <label class="upload member-photo" tabindex="0">
-                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" />
+                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)"/>
                     <img
+                        id="profile-photo-preview"
                         src="<?= $member->profile_photo ? '../photos/' . $member->profile_photo : '../photos/unknown.jpg' ?>"
                         alt="Member Photo"
                         title="Click to upload new photo" />
@@ -112,7 +113,21 @@ include '../_head.php';
         </div>
     </div>
 </body>
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
 
+        reader.onload = function(e) {
+            var preview = document.getElementById('profile-photo-preview');
+            preview.src = e.target.result; // Change image source to the selected file
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); // Read the file as a data URL (base64)
+        }
+    }
+</script>
 <?php
 include '../_foot.php';
 ?>
