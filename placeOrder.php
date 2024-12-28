@@ -184,10 +184,7 @@ if (is_post()) {
     }
     $trans_id = generateTransactionId();
     $stmt = $_db->prepare('INSERT INTO transactions (trans_id, trans_date, trans_amount, trans_type, trans_status, reference, member_id) VALUES (?, ?, ?, ?, ? , ?, ?)');
-        $stmt->execute([$trans_id, $currentDateTime, $amount, "Purchase", "Completed", $newOrderRecordId, $memberId]);
-
-        $updatedBalance = getWalletBalanceAfterTransaction($trans_id, $memberId);
-        updateWalletBalance($updatedBalance, $memberId);
+    $stmt->execute([$trans_id, $currentDateTime, $amount, "Purchase", "Pending", $newOrderRecordId, $memberId]);
 
     header('Location: order_record.php?section=.orderRecord-right-toship');
     exit;

@@ -1161,6 +1161,43 @@ function updateWalletBalance($walletBalance, $member_id){
 
 }
 
+function updateTransactionStatus() {
+    global $_db;
+
+    // Fetch all pending transactions
+    $stm = $_db->query(
+        'SELECT trans_id, trans_date,member_id, trans_status FROM transactions WHERE trans_status = "Pending"'
+    );
+
+    while ($transaction = $stm->fetch(PDO::FETCH_ASSOC)) {
+
+        $transDate = new DateTime($transaction['trans_date']);
+        $currentDate = new DateTime();
+        $interval = $transDate->diff($currentDate);
+
+        // If more than 5 minutes have passed and status is still pending
+        if ($interval->i >= 5 && $transaction['trans_status'] === 'Pending') {
+            // Update the status to completed
+            $updateStm = $_db->prepare(
+                'UPDATE transactions SET trans_status = "Completed" WHERE trans_id = ?'
+            );
+            $updateStm->execute([$transaction['trans_id']]);
+
+            $updatedBalance = getWalletBalanceAfterTransaction($transaction['trans_id'], $transaction['member_id']);
+            if ($updatedBalance != null) {
+            updateWalletBalance($updatedBalance, $transaction['member_id']);
+            }else{
+                $updateStm = $_db->prepare(
+                    'UPDATE transactions SET status = "Failed" WHERE trans_id = ?'
+                );
+                $updateStm->execute([$transaction['trans_id']]);
+            }
+        }
+    }
+}
+
+
+
 function generateTopUpID() {
     // Get the current date in YYYYMMDD format
     $currentDate = date('Ymd');
