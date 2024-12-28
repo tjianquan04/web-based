@@ -376,7 +376,7 @@ include '../_head.php';
             document.getElementById('amount').value = amount;
             document.getElementById('topUpAmountHidden').value = amount;
         });
-    });
+    }); 
 </script>
 <?php
 include '../_foot.php';
