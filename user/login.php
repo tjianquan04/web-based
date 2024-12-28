@@ -2,9 +2,18 @@
 <link rel="stylesheet" href="/css/login.css">
 
 <?php
+
+ob_start(); // Start output buffering
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+include '../_head.php';
 require '../_base.php';
 
-// Start the session
+
+
 $_title = 'Login | Boost.do';
 //include '../_head.php';
 
@@ -75,6 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $rememberedEmail = $_COOKIE['remember_user_email'] ?? '';
 $rememberedPassword = $_COOKIE['remember_user_password'] ?? '';
 
+
+ob_end_flush(); // End output buffering
 ?>
 
 <!-- Background image element -->
@@ -142,4 +153,8 @@ $rememberedPassword = $_COOKIE['remember_user_password'] ?? '';
     <script src="/js/main.js"></script>
 </body>
 
-<?php include '../_foot.php'; ?>
+<?php
+include '../_foot.php';
+?>
+
+

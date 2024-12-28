@@ -7,7 +7,7 @@ body {
 }
 
 /* General Layout */
-.container {
+.user-profile-container {
     display: flex;
     font-family: Arial, sans-serif;
     gap: 20px;
