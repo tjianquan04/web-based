@@ -39,7 +39,7 @@ if (isset($_GET['chartData'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
-    <link rel="stylesheet" href="/css/admin_head.css"> 
+    <link rel="stylesheet" href="/css/admin_head.css">
     <script src="/js/admin_head.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
@@ -71,7 +71,7 @@ if (isset($_GET['chartData'])) {
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                <li><a href="member_management.php">Manage Users</a></li>
+                    <li><a href="member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>
@@ -326,6 +326,30 @@ if (isset($_GET['chartData'])) {
             fetchChartData('users', '2024'); // Default to 'users' metric
             fetchPieChartData('2024'); // Pie chart data
         };
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const currentDateElement = document.getElementById('currentDate');
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'long'
+            };
+            const currentDate = new Date().toLocaleDateString('en-US', options);
+            currentDateElement.textContent = currentDate;
+
+            //Dropdown interaction
+            const userProfile = document.getElementById('userProfile');
+            userProfile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userProfile.classList.toggle('active');
+            });
+
+            document.addEventListener('click', () => {
+                userProfile.classList.remove('active');
+            });
+        });
     </script>
 </body>
 

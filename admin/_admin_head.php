@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/admin_head.css"> <!-- Example stylesheet -->
+<link rel="stylesheet" href="/css/admin_head.css"> <!--stylesheet -->
 <link rel="stylesheet" href="/css/flash_msg.css"> <!-- Additional styles -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
@@ -25,7 +25,6 @@ $outOfStockCount = countOutOfStockProducts();
     <title>Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
 <div id="info"><?= temp('info') ?></div>
 <body>

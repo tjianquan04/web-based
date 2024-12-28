@@ -23,16 +23,30 @@ if (!empty($search)) {
 }
 
 // Process Batch Actions
-// Process Batch Delete
+// Process Batch Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $selected_ids = $_POST['selected'] ?? [];
-
-    if (!empty($selected_ids)) {
-        $message = batchDelete($selected_ids);
+    if (!empty($_POST['delete'])) {
+        // Process Batch Delete
+        $selected_ids = $_POST['selected'] ?? [];
+        if (!empty($selected_ids)) {
+            $message = batchDelete($selected_ids);
+        } else {
+            $message = "No selected admins for batch delete.";
+        }
     } else {
-        $message = "No selected admins for batch delete.";
+        // Process Batch Update
+        $selected_ids = $_POST['selected'] ?? [];
+        $new_role = req('role', '');
+        $new_status = req('status', '');
+
+        if (!empty($selected_ids)) {
+            batchUpdate($selected_ids, $new_role, $new_status);
+        } else {
+            $message = "No selected admins for batch update.";
+        }
     }
 }
+
 
 // Integrate search query into the final query
 $p = new SimplePager(
@@ -174,9 +188,8 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
             <div class="batch-actions-container">
                 <div class="batch-actions-left">
                     <a href="admin_add.php" class="btn btn-add">+ Add New Admin</a>
-                    <div class="batch-actions-container">
-                        <button type="submit" id="batchDeleteBtn" class="btn btn-delete" onclick='return confirm("Are you sure you want to delete the selected admins?");'> - Batch Delete</button>
-                    </div>
+                    <button type="button" id="batchUpdateBtn" class="btn btn-update">Batch Update</button>
+                    <button type="submit" id="batchDeleteBtn" class="btn btn-delete" name="delete" value="1" onclick='return confirm("Are you sure you want to delete the selected admins?");'> - Batch Delete</button>
                 </div>
                 <div class="pagination-container">
                     <div class="pagination">
@@ -184,28 +197,113 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('input[name="selected[]"]');
+            <!-- Batch Update Modal -->
+            <div id="batchUpdateModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Batch Update Selected</h2>
+                    <form id="batchUpdateForm">
+                        <label for="modalRole">Role:</label>
+                        <select id="modalRole" name="role">
+                            <option value="Admin">Admin</option>
+                            <option value="Product Manager">Product Manager</option>
+                        </select>
 
-            selectAllCheckbox.addEventListener('change', () => {
-                checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-            });
+                        <label for="modalStatus">Status:</label>
+                        <select id="modalStatus" name="status">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
 
-            document.getElementById('batchDeleteBtn').addEventListener('click', (event) => {
-                const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                        <button type="submit" class="btn btn-update">Update</button>
+                    </form>
+                </div>
+            </div>
 
-                if (selectedCount === 0) {
-                    event.preventDefault(); // Prevent form submission
-                    alert("No selected records for deletion.");
-                }
-            });
-        });
-    </script>
+            <!-- JavaScript for Modal -->
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const batchUpdateBtn = document.getElementById('batchUpdateBtn');
+                    const modal = document.getElementById('batchUpdateModal');
+                    const closeBtn = document.querySelector('.close-btn');
+                    const batchUpdateForm = document.getElementById('batchUpdateForm');
+                    const checkboxes = document.querySelectorAll('input[name="selected[]"]');
+
+                    // Batch Update
+                    batchUpdateBtn.addEventListener('click', () => {
+                        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+                        if (selectedCount === 0) {
+                            alert("No selected records for updating.");
+                            return;
+                        }
+
+                        modal.style.display = "block";
+                    });
+
+                    closeBtn.addEventListener('click', () => {
+                        modal.style.display = "none";
+                    });
+
+                    window.addEventListener('click', (event) => {
+                        if (event.target === modal) {
+                            modal.style.display = "none";
+                        }
+                    });
+
+                    batchUpdateForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+
+                        const role = document.getElementById('modalRole').value;
+                        const status = document.getElementById('modalStatus').value;
+
+                        const selectedIds = Array.from(checkboxes)
+                            .filter(cb => cb.checked)
+                            .map(cb => cb.value);
+
+                        fetch('batch_update.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    selectedIds,
+                                    role,
+                                    status
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Batch update successful.');
+                                    location.reload();
+                                } else {
+                                    alert('Batch update failed.');
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                        modal.style.display = "none";
+                    });
+
+                    // Select All Checkbox
+                    const selectAllCheckbox = document.getElementById('selectAll');
+                    selectAllCheckbox.addEventListener('change', () => {
+                        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+                    });
+
+                    // Batch Delete
+                    document.getElementById('batchDeleteBtn').addEventListener('click', (event) => {
+                        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+                        if (selectedCount === 0) {
+                            event.preventDefault(); // Prevent form submission
+                            alert("No selected records for deletion.");
+                        }
+                    });
+                });
+            </script>
 
 </body>
 

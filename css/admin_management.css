@@ -161,16 +161,25 @@ table a {
     background-color: #21a01f;
 }
 
-.btn-batch {
-    background-color: #e0a707; /* Match Add Admin button background color */
-    color: white; /* Match text color */
-    padding: 10px 20px; /* Match padding */
-    border-radius: 5px; /* Match border-radius */
-    border: 1px solid #ccc; /* Match border */
-    text-decoration: none; /* Match text decoration */
-    cursor: pointer; /* Match cursor */
-    margin-top: 20px; /* Match top margin */
+#batchUpdateBtn {
+    background-color: #eaaa29;
+    border: 1px solid #ccc;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 4px;
+    margin-top: 20px;
 }
+
+#batchUpdateBtn:hover {
+    background-color: #d28c00; /* Darker blue for hover */
+    border-color: #bbb;
+}
+
 
 #batchDeleteBtn {
     background-color: #dc3545;
@@ -183,17 +192,13 @@ table a {
     cursor: pointer;
     display: inline-block;
     border-radius: 4px;
+    margin-top: 20px;
 }
 
 #batchDeleteBtn:hover {
     background-color: #c82333; /* Darker red for hover */
     border-color: #bbb;
 }
-
-.btn-batch:hover {
-    background-color: #aa7917; /* Match hover color */
-}
-
 
 form {
     display: flex;
@@ -340,14 +345,11 @@ label i{
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 10% auto; /* 10% from top and centered */
+    background-color: #fff;
+    margin: 10% auto; /* 5% from top and centered */
     padding: 20px;
-    border: 1px solid #888;
-    border-radius: 10px;
-    width: 50%; /* Adjust modal width */
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease-in-out;
+    border-radius: 8px;
+    max-width: 500px; /* Reduced width */
 }
 
 .close {
@@ -360,55 +362,29 @@ label i{
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: black;
     text-decoration: none;
-}
-
-.modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.modal-content label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: bold;
-    color: #555;
-}
-
-.modal-content select,
-.modal-content input[type="radio"] {
-    margin: 5px 0 15px;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.modal-content button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#batchUpdateModal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#batchUpdateModal select {
     width: 100%;
-    text-align: center;
-}
-
-.modal-content button:hover {
-    background-color: #45a049;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 

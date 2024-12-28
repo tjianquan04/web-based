@@ -4,7 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default_sort_value';
 $dir = isset($_GET['dir']) ? $_GET['dir'] : 'default_dir_value';
-$dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
+$page = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
 
 ?>
 

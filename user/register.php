@@ -128,6 +128,7 @@ include '../_head.php';
         </div>
     </div>
     </main>
+    <script src="/js/main.js"></script>
 </body>
 
 <?php include '../_foot.php'; ?>
