@@ -4,6 +4,7 @@ require '../_base.php';
 $member = $_SESSION['user'];
 authMember($member);
 
+updateTransactionStatus();
 $transactions = getTransactionHistory($member->member_id);
 
 $transactionTypes = [
@@ -47,17 +48,10 @@ if (is_post()) {
         $trans_id = generateTransactionId();
 
         $stmt = $_db->prepare('INSERT INTO transactions (trans_id, trans_date, trans_amount, trans_type, trans_status, reference, member_id) VALUES (?, ?, ?, ?, ? , ?, ?)');
-        $stmt->execute([$trans_id, $currentDateTime, $topUpAmount, "Top Up", "Completed", $top_up_id, $member->member_id]);
+        $stmt->execute([$trans_id, $currentDateTime, $topUpAmount, "Top Up", "Pending", $top_up_id, $member->member_id]);
 
-        $updatedBalance = getWalletBalanceAfterTransaction($trans_id, $member->member_id);
-        if ($updatedBalance != null) {
-            updateWalletBalance($updatedBalance, $member->member_id);
-            temp('info', 'Top Up successful');
-            $updatedMember = getMemberbyId($member->member_id);
-            $_SESSION['user'] = $updatedMember;
-            $member =  $_SESSION['user'];
-            $transactions = getTransactionHistory($member->member_id);
-        }
+        temp('info', 'Transaction is processing');
+        
     } else {
         temp('info', 'Top-Up amount is required.');
     }
