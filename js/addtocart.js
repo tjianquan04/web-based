@@ -4,6 +4,15 @@ $(() => {
         const $quantity = $(`.count[data-product-id="${productId}"]`); // Find the count element
 
     
+        const memberId = $(this).data('member-id'); // Get member ID from data attribute
+
+        if (!memberId) {
+            // If memberId is empty, prompt the user to log in
+            alert("Please log in to add items to the cart.");
+            return;
+        }
+        
+
         let qty = parseInt($quantity.text());
         $.ajax({
             url: 'addToCart.php',

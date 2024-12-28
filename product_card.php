@@ -2,8 +2,17 @@
 require '_base.php';
 
 
-$member = $_SESSION['user'];
-$member_id =  $member-> member_id;
+$member_id = null;
+
+if (!empty($_SESSION) && isset($_SESSION['user'])) {
+    $member = $_SESSION['user'];
+
+    $member_id = $member->member_id;
+}
+
+
+
+
 
 // Get the product ID from the query string
 $product_id = req('product_id');
@@ -41,8 +50,8 @@ include '_head.php';
 <script src="/js/addtocart.js"></script>
 
 <div class="container">
-<a href="javascript:history.back()" class="back-button">
-<i class="fa-solid fa-arrow-left-long"></i></a>
+    <a href="javascript:history.back()" class="back-button">
+        <i class="fa-solid fa-arrow-left-long"></i></a>
 
     <section class="main">
         <div class="default gallery">
@@ -69,13 +78,17 @@ include '_head.php';
         <div class="content">
             <h2><a href="/index.php">Boots.Do</a></h2>
             <h3 class="product-name"><?= $product->description ?>
-                <div class="wishlist">
-                    <!-- Check if the product is in the wishlist and set the appropriate icon class -->
-                    <i
-                        class="wishlist-icon fa-sharp <?= $is_in_wishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart"
-                        data-product-id="<?= $product->product_id ?>"
-                        aria-label="Add to wishlist"></i>
-                </div>
+
+                <?php if ($member_id !== null): ?>
+                    <div class="wishlist">
+                        <!-- Check if the product is in the wishlist and set the appropriate icon class -->
+                        <i
+                            class="wishlist-icon fa-sharp <?= $is_in_wishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart"
+                            data-product-id="<?= $product->product_id ?>"
+                            aria-label="Add to wishlist"></i>
+                    </div>
+                <?php endif; ?>
+
             </h3>
 
             <p class="product-desc">
@@ -112,10 +125,10 @@ include '_head.php';
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                
+
 
                     <!-- Add to cart button -->
-                    <button type="button" class="add-to-cart" id="addToCart-btn" data-product-id="<?= $product->product_id ?>"
+                    <button type="button" class="add-to-cart" id="addToCart-btn" data-product-id="<?= $product->product_id ?> " data-member-id="<?= $member_id ?? '' ?>"
                         <?php if ($product->status == 'OutOfStock'): ?>
                         disabled
                         <?php endif; ?>>

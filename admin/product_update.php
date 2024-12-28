@@ -67,7 +67,7 @@ try {
     if ($status == 'LimitedEdition' && $invalid_date !== null) {
         $invalidDateValue = $invalid_date;  // Set to the provided invalid_date if conditions are met
     }
- 
+
 
 
 
@@ -94,11 +94,51 @@ try {
     $update_result = $stm->execute([$total_stock_quantity_in_category, $category_id]);
 
     // Update category stockAlert
+
+    $stock_alert = ($total_stock_quantity_in_category < $category->minStock) ? 1 : 0;
+    
     $stm = $_db->prepare('UPDATE category SET stockAlert = ? WHERE category_id = ?');
-    $stm->execute([($total_stock_quantity_in_category < $category->minStock), $category_id]);
+    $stm->execute([$stock_alert, $category_id]);
+
+    if ($stock_alert) {
+        // Retrieve the email address of the Product Manager from the database
+        $query = $_db->prepare('SELECT email FROM admin WHERE role = ?');
+        $query->execute(['Product Manager']);
+        $admin = $query->fetch();
+       
+
+        // Check if a Product Manager was found
+        if ($admin) {
+            error_log($admin->email);
+            // Send the email to the Product Manager
+            sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true,  "../image/".$category->category_photo);
+        } else {
+            temp('error', 'No Product Manager found to send email to.');
+        }
+    }
+
+
+    $checkStm = $_db->prepare('
+    SELECT m.member_id, m.email
+    FROM wishlist w
+    JOIN member m ON w.member_id = m.member_id
+    WHERE w.product_id = ?
+');
+    $checkStm->execute([$product_id]);
+    $member_wish = $checkStm->fetchAll(PDO::FETCH_ASSOC); // Fetch results as an associative array
+
 
     if ($updateProduct) {
         $_db->commit();
+    $email_info = "<br>Product Name: " . $product->description . "<br>Price: RM " . $unit_price . "<br>In-Stock quantity:  " . $stock_quantity . "<br>Status:  " . $status;
+
+        foreach ($member_wish as $member) {
+            // Send the email to the member
+            sendStockAlertEmail($member['email'], 'Product Update', 'The product in your wishlist has been updated <br>' . $email_info, true, null);
+        }
+
+
+
         $_SESSION['success'] = "Product updated successfully: The product ID $product_id has been updated.";
         header("Location: product_details.php?product_id=$product_id");
         exit;
@@ -109,7 +149,7 @@ try {
         header("Location: product_details.php?product_id=$product_id");
         exit;
     }
-}catch (Exception $e) {
+} catch (Exception $e) {
     $_db->rollBack();
     error_log("[ERROR] Product update failed: " . $e->getMessage());
     $_err['exception'] = 'An unexpected error occurred. Please try again later.';
@@ -117,5 +157,3 @@ try {
     header("Location: product_details.php?product_id=$product_id");
     exit;
 }
-
-?>

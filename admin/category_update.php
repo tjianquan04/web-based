@@ -99,10 +99,13 @@ if (is_post()) {
             $query->execute(['Product Manager']);
             $admin = $query->fetch();
 
+            $email_info = "<b>Category ID: <b> " . $category_id . "<br><b>Category Name: <b>" . $category_name; 
+
             // Check if a Product Manager was found
             if ($admin) {
                 // Send the email to the Product Manager
-                sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+
+                sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>' . $email_info, true,  "../image/".$category->category_photo);
             } else {
                 temp('error', 'No Product Manager found to send email to.');
             }

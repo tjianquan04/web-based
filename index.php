@@ -1,5 +1,4 @@
 
-
 <?php
 require '_base.php';
 
@@ -22,11 +21,15 @@ require '_base.php';
 
 
 $wishlist_item=[];
-if(!empty($_SESSION)){
+$member_id = null;
+if(!empty($_SESSION['user'])){
+
   $member = $_SESSION['user'];
   authMember($member);
+  $member_id =  $member->member_id;
 
-$member_id =  $member->member_id;
+}
+
 
 $wishlist_stm = $_db->prepare("
     SELECT p.* 
@@ -36,7 +39,6 @@ $wishlist_stm = $_db->prepare("
 $wishlist_stm->execute([$member_id]);
 $wishlist_item = $wishlist_stm->fetchAll();
 
-}
 
 
 $updateStatusStm = $_db->prepare("
@@ -47,12 +49,33 @@ $updateStatusStm = $_db->prepare("
 ");
 $updateStatusStm->execute();
 
-
+// // Check if the product is already in the wishlist for the logged-in user
+// $member_id = $_SESSION['member_id'];  // Assuming the user is logged in
 
 
 $stm = $_db->prepare("SELECT * FROM product WHERE status LIKE 'LimitedEdition' AND invalidDate >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)");
 $stm->execute();
 $feature_product = $stm->fetchAll();
+
+
+$stm = $_db->prepare(
+  "SELECT 
+      p.product_id, 
+      p.description,
+      p.unit_price,
+      COUNT(oi.product_id) AS frequency
+  FROM 
+      orderitem oi
+  JOIN 
+      product p ON oi.product_id = p.product_id
+  GROUP BY 
+      oi.product_id
+  ORDER BY 
+      frequency DESC
+  LIMIT 5"
+);
+$stm->execute();
+$topSales_product = $stm->fetchAll(PDO::FETCH_OBJ); 
 
 // Use wishlist items if available; otherwise, use featured products
 $product = !empty($wishlist_item) ? $wishlist_item : $feature_product;
@@ -172,10 +195,9 @@ img{
     text-align: center;
   }
   
-  .featured-products h2 {
-    margin-bottom: 20px;
+  h2{
+    font-family: 'Times New Roman', Times, serif;
   }
-  
   .product-grid {
     display: flex;
   flex-wrap: wrap; 
@@ -256,10 +278,11 @@ img{
 <!-- Featured Products -->
 <section class="featured-products">
 <?php if (!empty($wishlist_item)): ?>
-    <h2>Recommended For You</h2>
+    <h2>Recommended For You <i class="fa-regular fa-heart"></i></h2>
 <?php else: ?>
-    <h2>Grabs Your Now</h2>
+    <h2>Grab Yours Now</h2>
 <?php endif; ?>
+
 
 
     <div class="product-grid">
@@ -269,13 +292,27 @@ img{
                 <img src="/product_gallery/<?= htmlspecialchars($productPhotos[$p->product_id] ?? 'default.jpg') ?>" 
                      alt="<?= htmlspecialchars($p->description) ?>" class="category">
                 <h3><?= htmlspecialchars($p->description) ?></h3>
-                <p><?= htmlspecialchars($p->unit_price) ?></p>
+                <p>RM <?= htmlspecialchars($p->unit_price) ?></p>
                 <button>
                     <a href="product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
                 </button>
             </div>
         <?php endforeach; ?>
     </div>
+    <br><h2>Boots Top Sales</h2>
+    <div class="product-grid">
+      <?php foreach ($topSales_product as $p): ?>
+          <div class="product-card">
+              <img src="/product_gallery/<?= htmlspecialchars($productPhotos[$p->product_id] ?? 'default.jpg') ?>" 
+                   alt="<?= htmlspecialchars($p->description) ?>" class="category">
+              <h3><?= htmlspecialchars($p->description) ?></h3>
+              <p>RM <?= htmlspecialchars($p->unit_price) ?></p>
+              <button>
+                  <a href="product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
+              </button>
+          </div>
+      <?php endforeach; ?>
+  </div>
 </section>
 
 <?php

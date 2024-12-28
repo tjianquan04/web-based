@@ -35,30 +35,30 @@ $outOfStockCount = countOutOfStockProducts();
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
-                <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
                 <!-- Only Product Manager can see this section -->
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
-                    <a href="product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
-                    <a href="viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
+                    <a href="/admin/product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
+                    <a href="/admin/viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
                 <?php endif; ?>
                 <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="view_order.php">View Orders</a></li>
+                    <li><a href="/admin/view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="member_management.php">Manage Users</a></li>
+                    <li><a href="/admin/member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('admin-menu')"><i class="fas fa-users-cog"></i> Admin Management</a>
                     <ul id="admin-menu" class="submenu">
-                        <li><a href="admin_management.php">Manage Admins</a></li>
+                        <li><a href="/admin/admin_management.php">Manage Admins</a></li>
                     </ul>
                 <?php endif; ?>
 
