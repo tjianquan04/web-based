@@ -8,16 +8,13 @@
 
 <footer class="footer2">
     <div class="container">
-        <a href="#" class="brand">
-            Brand
-        </a>
+        <h1>Boots.Do</h1>
         <ul class="menu">
-            <li><a href="#">Home</a></li>
-            <li><a href="about_us.php">About</a></li>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Home</a></li>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about_us.php">About Us</a></li>
+            <li><a href="#">T&C Apply</a></li>
+            <li><a href="#">Shopping Guide</a></li>
+
         </ul>
         <ul class="media-icons">
             <li>
@@ -33,7 +30,7 @@
                     <i class="fa-brands fa-square-twitter"></i> </a>
             </li>
         </ul>
-        <p>derfreferferf</p>
+        <p>Born To Play, Born To Win</p>
     </div>
 </footer>
 </body>

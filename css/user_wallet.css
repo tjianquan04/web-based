@@ -59,32 +59,39 @@ body {
     gap: 20px; /* Add some space between the wallet and transaction table */
 }
 
-/* Wallet Amount */
-.wallet-amount {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    text-align: center; /* Center the wallet balance text */
-    background-color: #40be40;
-    padding: 15px;
+.wallet-section {
+    border: 1px solid #ccc;
     border-radius: 8px;
-    color: white;
+    padding: 20px;
+    margin-bottom: 20px; /* Adds space between wallet and transaction history */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 120px; /* Increases height slightly */
+    background-color: #40be40;
 }
 
-/* Top Up Button */
-#topUpButton {
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.wallet-amount h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color:#f4f4f4
+}
 
-  #topUpButton:hover {
+.reload-wallet #topUpButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reload-wallet #topUpButton:hover {
     background-color: #0056b3;
-  }
+}
 
   /* Modal Overlay */
   .modal {
@@ -174,7 +181,7 @@ body {
 button.continue-btn {
     width: 100%;
     height: 40px;
-    background-color: #007bff;
+    background-color: #40be40;
     color: white;
     font-size: 16px;
     border: none;
@@ -323,7 +330,7 @@ button.close-btn:hover {
 }
 
 .transaction-table th {
-    background-color: #f4f4f4;
+    background-color: #f4f4f4af;
     color: #555;
 }
 

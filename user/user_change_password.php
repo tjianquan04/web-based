@@ -44,7 +44,7 @@ include '../_head.php';
 <link rel="stylesheet" href="../css/user_profile.css">
 
 <body>
-<div class="container">
+<div class="user-profile-container">
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>

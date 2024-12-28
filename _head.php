@@ -45,34 +45,39 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                                         <i class="ico ico-user"></i>
                                     </button>
                                     <div class="dropdown-content">
-                                        <?php if (empty($_SESSION)) { ?> <!-- If session exists, show dropdown button -->
+                                        <?php if (empty($_SESSION['user'])) { ?> <!-- If the session is empty (user is not logged in) -->
                                             <a href="/user/login.php">Log In</a>
                                         <?php } else { ?>
                                             <a href="/user/user_profile.php">My Account</a>
                                             <a href="/order_record.php">My Purchases</a>
-                                            <a href="/myWishlist.php">My Wishlist<i class="fa-solid fa-heart-circle-check"></i></a>
+                                            <a href="/myWishlist.php">My Wishlist <i class="fa-solid fa-heart-circle-check"></i></a>
+
                                             <!-- Logout Link -->
                                             <a href="#" class="btn btn-logout" onclick="document.getElementById('logout-form').submit();">
                                                 <i class="fas fa-sign-out-alt"></i> Logout
                                             </a>
+
                                             <!-- Hidden Logout Form -->
                                             <form id="logout-form" action="" method="POST" style="display:none;">
                                                 <input type="hidden" name="logout">
                                             </form>
+
                                             <?php
                                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                                logout('/user/login.php'); // Replace with the URL you want the user redirected to
+                                                logout('index.php'); // Replace with the URL you want the user to be redirected to after logging out
                                             }
                                             ?>
                                     </div>
+
                                 </div>
                             <?php } ?>
                             </li>
                         </div>
                         <li class="right">
-                        <?php if (!empty($_SESSION)): ?>
-                            <a href="/cart.php"><i class="ico ico-shopping"></i></a>
-                            <?php endif; ?>
+                            <?php if (!empty($_SESSION['user'])) { ?>
+                                <a href="/cart.php"><i class="ico ico-shopping"></i></a>
+                            <?php } ?>
+
                         </li>
                     </ul>
                 </div>

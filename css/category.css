@@ -59,7 +59,7 @@ img.category {
   .sidenav .wrapper {
     width: 100%; /* Ensure it takes up the full width of the sidenav */
     padding: 6px 8px 6px 16px; /* Padding to ensure content isn't too close to the edges */
-    background-color: #f9f9f9; /* Light background for distinction */
+    background-color: transparent; /* Light background for distinction */
     margin-top: 15px; /* Add space between categories and price range filter */
     border-radius: 5px; /* Rounded corners for a more polished look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */

@@ -750,7 +750,7 @@ function authMember($member){
                 redirect('/user/login.php');
             }
     }
-    redirect('/user/login.php');
+    // redirect('/user/login.php');
 }
 
 // Generate table headers <th>
@@ -810,7 +810,12 @@ function save_photos($tmp_name, $folder, $width = 200, $height = 200)
 }
 
 
-
+function get_existing_photo($memberId) {
+    global $_db;
+    $stm = $_db->prepare('SELECT profile_photo FROM member WHERE member_id = ?');
+    $stm->execute([$memberId]);
+    return $stm->fetchColumn(); // Returns the existing photo path
+}
 
 
 
