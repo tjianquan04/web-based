@@ -12,15 +12,13 @@ if (!isset($data['action'], $data['product_id']) || empty($data['product_id'])) 
 $action = $data['action'];
 $product_id = $data['product_id'];
 
-// Get the member_id securely, e.g., from session
-// session_start();
-// $member_id = $_SESSION['member_id'] ?? null;
-// if (!$member_id) {
-//     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
-//     exit;
-// }
-
-$member_id="M000001";
+if(!empty($_SESSION)){
+    $member = $_SESSION['user'];
+    authMember($member);
+  
+  $member_id =  $member->member_id;
+  
+  }
 try {
     if ($action === 'add') {
         // Add product to wishlist

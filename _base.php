@@ -750,7 +750,7 @@ function authMember($member){
                 redirect('/user/login.php');
             }
     }
-    redirect('/user/login.php');
+    // redirect('/user/login.php');
 }
 
 // Generate table headers <th>

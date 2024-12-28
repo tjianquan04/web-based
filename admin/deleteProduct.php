@@ -17,7 +17,7 @@ $product_id = $_GET['product_id'];
 
     // Fetch required data before deleting the product
     $stm = $_db->prepare(
-        'SELECT p.category_id, p.stock_quantity, c.currentStock, c.minStock, c.StockAlert, c.category_photo
+        'SELECT p.category_id, p.stock_quantity, c.currentStock, c.minStock, c.StockAlert, c.category_photo, c.category_name
          FROM product p 
          JOIN category c ON p.category_id = c.category_id 
          WHERE p.product_id = ?'
@@ -42,6 +42,7 @@ $product_id = $_GET['product_id'];
     $minStock = $product_data->minStock ?? 0;
     $StockAlert = $product_data->StockAlert;
     $category_photo = $product_data->category_photo;
+    $category_name = $product_data->category_name;
     // Delete associated photos
     foreach ($gallery as $photo) {  
         $photo_path = '../product_gallery/' . $photo->product_photo_id;
@@ -77,8 +78,10 @@ $product_id = $_GET['product_id'];
                $adminQuery->execute(['Product Manager']);
                $admin = $adminQuery->fetch(PDO::FETCH_OBJ);
 
+               $email_info = "<b>Category ID: <b> " . $category_id . "<br><b>Category Name: <b>" . $category_name; 
+
                if ($admin) {
-                   sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold.', true, "../image/$category_photo");
+                   sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>'. $email_info, true, "../image/".$category->category_photo);
                } else {
                    error_log("No Product Manager found for stock alert notification.");
                }

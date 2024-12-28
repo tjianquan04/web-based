@@ -1,9 +1,15 @@
 <?php
 require '_base.php';
 
-$member = $_SESSION['user'];
-authMember($member);
-$member_id =  $member-> member_id;
+$wishlist_item=[];
+$member_id ="";
+if(!empty($_SESSION)){
+  $member = $_SESSION['user'];
+  authMember($member);
+
+$member_id =  $member->member_id;
+
+}
 
 // Fetch the product details and cover photo (marked with is_default = true) for each product in the wishlist
 $stm = $_db->prepare('
