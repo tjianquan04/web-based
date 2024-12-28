@@ -30,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selected_ids = $_POST['selected'] ?? [];
         if (!empty($selected_ids)) {
             $message = batchDelete($selected_ids);
+            temp('batchdeletesuccess', "Account batch deleted successfully");
+            temp('showSwal', true); // Set flag to show SweetAlert
         } else {
             $message = "No selected admins for batch delete.";
         }
@@ -41,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!empty($selected_ids)) {
             batchUpdate($selected_ids, $new_role, $new_status);
+            temp('BatchUpdateSuccess', "Account batch updated successfully");
+            temp('showSwal', true); // Set flag to show SweetAlert
         } else {
             $message = "No selected admins for batch update.";
         }
@@ -68,6 +72,7 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Management</title>
     <link rel="stylesheet" href="/css/admin_management.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body>
@@ -304,6 +309,25 @@ $total_admins = $_db->query("SELECT COUNT(*) FROM admin WHERE `role` != 'superad
                     });
                 });
             </script>
+            <?php if (temp('showSwal')): ?>
+                <script>
+                    swal("Congrats", "<?= temp('BatchUpdateSuccess'); ?>", "success")
+                        .then(function() {
+                            window.location.href = redirectUrl; // Redirect to the appropriate page
+                        });
+                </script>
+            <?php endif; ?>
+
+            <?php if (temp('showSwal')): ?>
+                <script>
+                    swal("Congrats", "<?= temp('batchdeletesuccess'); ?>", "success")
+                        .then(function() {
+                            window.location.href = redirectUrl; // Redirect to the appropriate page
+                        });
+                </script>
+            <?php endif; ?>
+
+
 
 </body>
 
