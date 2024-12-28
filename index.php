@@ -294,7 +294,7 @@ img{
                 <h3><?= htmlspecialchars($p->description) ?></h3>
                 <p>RM <?= htmlspecialchars($p->unit_price) ?></p>
                 <button>
-                    <a href="product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
+                    <a href="/product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
                 </button>
             </div>
         <?php endforeach; ?>
@@ -308,7 +308,7 @@ img{
               <h3><?= htmlspecialchars($p->description) ?></h3>
               <p>RM <?= htmlspecialchars($p->unit_price) ?></p>
               <button>
-                  <a href="product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
+                  <a href="/product_card.php?product_id=<?= htmlspecialchars($p->product_id) ?>">View</a>
               </button>
           </div>
       <?php endforeach; ?>

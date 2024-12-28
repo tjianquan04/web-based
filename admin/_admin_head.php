@@ -36,30 +36,30 @@ $outOfStockCount = countOutOfStockProducts();
             </div>
             <nav class="menu">
                 <!-- Top-Level Menu Items -->
-                <a href="http://localhost:8000/admin/admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
 
                 <!-- Only Product Manager can see this section -->
                 <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
                     <?php if ($admin_role === 'Product Manager' || $admin_role === 'Superadmin'): ?>
-                    <a href="http://localhost:8000/admin/product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
-                    <a href="http://localhost:8000/admin/viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
+                    <a href="/admin/product_index.php"><i class="fas fa-tachometer-alt"></i> Product Management</a>
+                    <a href="/admin/viewCategory.php"><i class="fas fa-tachometer-alt"></i> Category Management</a>
                 <?php endif; ?>
                 <?php endif; ?>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('order-menu')"><i class="fas fa-box"></i> Order Management</a>
                 <ul id="order-menu" class="submenu">
-                    <li><a href="http://localhost:8000/admin/view_order.php">View Orders</a></li>
+                    <li><a href="/admin/view_order.php">View Orders</a></li>
                 </ul>
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="http://localhost:8000/admin/member_management.php">Manage Users</a></li>
+                    <li><a href="/admin/member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>
                     <a href="javascript:void(0)" onclick="toggleMenu('admin-menu')"><i class="fas fa-users-cog"></i> Admin Management</a>
                     <ul id="admin-menu" class="submenu">
-                        <li><a href="http://localhost:8000/admin/admin_management.php">Manage Admins</a></li>
+                        <li><a href="/admin/admin_management.php">Manage Admins</a></li>
                     </ul>
                 <?php endif; ?>
 
@@ -85,7 +85,7 @@ $outOfStockCount = countOutOfStockProducts();
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
                     <!-- Notification Icon -->
-                    <a href="http://localhost:8000/admin/admin_notification.php" style="position: relative; text-decoration: none;">
+                    <a href="/admin/admin_notification.php" style="position: relative; text-decoration: none;">
                         <i class="fas fa-bell" id="notificationIcon"></i>
                         <?php if ($lowStockCount > 0 || $outOfStockCount > 0): ?>
                             <span id="notificationCount">
@@ -104,8 +104,8 @@ $outOfStockCount = countOutOfStockProducts();
                             <p class="current-date" id="currentDate"></p>
                         </div>
                         <div class="dropdown-content" id="profileDropdown">
-                            <a href="http://localhost:8000/admin/view_admin.php?id=<?= $_SESSION['user']->admin_id ?>">View Profile</a>
-                            <a href="http://localhost:8000/admin/edit_admin.php?id=<?= $_SESSION['user']->admin_id ?>">Edit Profile</a>
+                            <a href="/admin/view_admin.php?id=<?= $_SESSION['user']->admin_id ?>">View Profile</a>
+                            <a href="/admin/edit_admin.php?id=<?= $_SESSION['user']->admin_id ?>">Edit Profile</a>
                         </div>
                     </div>
                 </div>
