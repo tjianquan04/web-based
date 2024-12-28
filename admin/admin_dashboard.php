@@ -1,5 +1,5 @@
 <?php
-include_once '_admin_head.php';
+require '../_base.php';
 
 auth('Admin', 'Superadmin', 'Product Manager');
 
@@ -29,7 +29,6 @@ if (isset($_GET['chartData'])) {
     echo json_encode($data);
     exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,9 +39,12 @@ if (isset($_GET['chartData'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
     <link rel="stylesheet" href="/css/flash_msg.css">
-    <link rel="stylesheet" href="/css/admin_head.css">
+    <link rel="stylesheet" href="/css/admin_head.css"> 
+    <script src="/js/admin_head.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
 </head>
+<!-- Header Side -->
 <div id="info"><?= temp('info') ?></div>
 
 <body>
@@ -69,7 +71,7 @@ if (isset($_GET['chartData'])) {
 
                 <a href="javascript:void(0)" onclick="toggleMenu('user-menu')"><i class="fas fa-users"></i> User Management</a>
                 <ul id="user-menu" class="submenu">
-                    <li><a href="#">Manage Users</a></li>
+                <li><a href="member_management.php">Manage Users</a></li>
                 </ul>
 
                 <?php if ($admin_role === 'Superadmin'): ?>

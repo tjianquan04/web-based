@@ -25,11 +25,9 @@ $outOfStockCount = countOutOfStockProducts();
     <title>Admin</title>
     <link rel="stylesheet" href="/css/flash_msg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <link rel="stylesheet" href="/css/admin_head.css"> <!-- Link to the external CSS -->
 </head>
 <div id="info"><?= temp('info') ?></div>
-
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
