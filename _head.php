@@ -85,17 +85,17 @@ $dir = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
                                     <i class="ico ico-chevron-down"></i>
                                 </li>
                                 <div class="dropdown-hover-content">
-                                    <a href="menu.php?newAdded=$newAdded">NEW In!</a>
-                                    <a href="menu.php?limited=$limited">Limited Time</a>
-                                    <a href="menu.php?alertItem=$alertItem">End Soon!</a>
+                                    <a href="/menu.php?newAdded=$newAdded">NEW In!</a>
+                                    <a href="/menu.php?limited=$limited">Limited Time</a>
+                                    <a href="/menu.php?alertItem=$alertItem">End Soon!</a>
                                 </div>
                             </div>
                             <li class="left">
-                                <a href="menu.php">Boots Products</a>
+                                <a href="/menu.php">Boots Products</a>
                             </li>
 
                             <li class="left">
-                                <a href="menu.php?oosItem=$oosItem">Back Stock Soon!</a>
+                                <a href="/menu.php?oosItem=$oosItem">Back Stock Soon!</a>
                             </li>
 
 

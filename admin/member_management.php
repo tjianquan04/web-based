@@ -1,3 +1,6 @@
+<script src="/js/admin_head.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <?php
 include '_admin_head.php';
 // Get the search input
@@ -37,8 +40,7 @@ $total_members = $_db->query("SELECT COUNT(*) FROM member")->fetchColumn();
 // ----------------------------------------------------------------------------
 
 ?>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../js/main.js"></script>
+
 <link rel="stylesheet" href="../css/admin_management.css">
 
 <div class="container">

@@ -75,7 +75,6 @@ $rememberedPassword = $_COOKIE['remember_password'] ?? '';
 
 
 <body>
-    <div id="info"><?= temp('info') ?></div>
     <div class="login-container">
         <!-- Left Section: Form -->
         <div class="form-container">
