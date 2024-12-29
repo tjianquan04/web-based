@@ -26,6 +26,10 @@ if (is_post() && (req('form_type') == 'member_details')) {
         $_err['email'] = 'Email is required.';
     } else if (!preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
         $_err['email'] = 'Invalid email format.';
+    }else if ($email != $s->email){
+        if(is_exists($email,'member', 'email')){
+        $_err['email'] = $email.' has exists.';
+        }
     }
 
     // Validate Contact Number
@@ -175,9 +179,7 @@ if (is_post() && (req('form_type') == 'member_details')) {
                     <option value="Active" <?= $s->status == 'Active' ? 'selected' : '' ?>>Active</option>
                     <option value="Inactive" <?= $s->status == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
                 </select>
-
                 <br>
-
                 <button type="submit" class="save-btn">Save Changes</button>
             </form>
         </div>

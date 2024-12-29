@@ -21,6 +21,10 @@ if (is_post()) {
         $_err['email'] = 'Email is required.';
     } else if (!preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
         $_err['email'] = 'Invalid email format.';
+    }else if ($email != $member->email){
+        if(is_exists($email,'member', 'email')){
+        $_err['email'] = $email.' has exists.';
+        }
     }
 
     // Validate Contact Number
