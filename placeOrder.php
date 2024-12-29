@@ -13,7 +13,7 @@ if (is_post()) {
     $shippingFee = filter_var($_POST['shippingFee'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $discount = filter_var($_POST['discount'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $amount = filter_var($_POST['totalAmount'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $orderStatus = 'shipping';  //pending, shipping, completed, cancelled
+    $orderStatus = 'shipping'; 
     $currentDateTime = (new DateTime('now'))->format('Y-m-d H:i:s');
     //$memberId = 'M000001'; //need replace
     $member = $_SESSION['user'];
