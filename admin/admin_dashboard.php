@@ -102,7 +102,7 @@ if (isset($_GET['chartData'])) {
             <header class="header">
                 <h2>Welcome, <?= htmlspecialchars($_SESSION['user']->admin_name) ?></h2>
                 <div class="header-right">
-                    <a href="/admin_notification.php" style="position: relative; text-decoration: none;">
+                    <a href="/admin/admin_notification.php" style="position: relative; text-decoration: none;">
                         <i class="fas fa-bell" id="notificationIcon"></i>
                         <?php if ($lowStockCount > 0 || $outOfStockCount > 0): ?>
                             <span id="notificationCount">

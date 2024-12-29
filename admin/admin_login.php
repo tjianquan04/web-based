@@ -3,6 +3,8 @@
 <?php
 require '../_base.php';
 
+// Set the maximum login attempts
+define('MAX_LOGIN_ATTEMPTS', 3);
 
 // Process the form when it's submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,14 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($admin_id) || empty($password)) {
             $_err['login_error'] = 'Please enter both username and password.';
         } else {
-            // Validate admin credentials
+            // Check admin credentials
             $admin = validateAdmin($admin_id, $password);
 
             if ($admin) {
-                // Example: Check if admin's account is active (assuming status is 'Active')
+                // Check if admin's account is active
                 if ($admin->status !== 'Active') {
                     $_err['status_error'] = 'Your account is inactive. Please contact support.';
                 } else {
+                    // Reset login attempts on successful login
+                    $resetQuery = "UPDATE admin SET login_attempts = 0 WHERE admin_id = ?";
+                    $_db->prepare($resetQuery)->execute([$admin_id]);
+
                     // Handle "Remember Me" functionality
                     if (isset($_POST['remember'])) {
                         setcookie('remember_admin_id', $admin_id, time() + (30 * 24 * 60 * 60), "/"); // Save for 30 days
@@ -42,25 +48,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         setcookie('remember_password', '', time() - 3600, "/");
                     }
 
-
                     // Admin is valid and active, perform login
                     temp('info', 'Login Successful');
                     login($admin, 'admin_dashboard.php');
                     exit();
                 }
             } else {
-                $_err['login_error'] = 'Invalid username or password.';
+                // Fetch admin details to check login attempts
+                $query = "SELECT login_attempts FROM admin WHERE admin_id = ?";
+                $stmt = $_db->prepare($query);
+                $stmt->execute([$admin_id]);
+                $adminData = $stmt->fetch(PDO::FETCH_OBJ);
+
+                if ($adminData) {
+                    $newAttempts = $adminData->login_attempts + 1;
+
+                    // Increment login attempts
+                    $updateAttemptsQuery = "UPDATE admin SET login_attempts = ? WHERE admin_id = ?";
+                    $_db->prepare($updateAttemptsQuery)->execute([$newAttempts, $admin_id]);
+
+                    if ($newAttempts >= MAX_LOGIN_ATTEMPTS) {
+                        // Deactivate account after exceeding attempts
+                        $deactivateQuery = "UPDATE admin SET status = 'Inactive' WHERE admin_id = ?";
+                        $_db->prepare($deactivateQuery)->execute([$admin_id]);
+                        $_err['login_error'] = 'Your account has been deactivated due to multiple failed login attempts. Please contact support.';
+                    } else {
+                        $_err['login_error'] = 'Invalid username or password. ';
+                    }
+                } else {
+                    $_err['login_error'] = 'Invalid username or password.';
+                }
             }
         }
     }
 }
 
-
 // Prepopulate login form if "Remember Me" cookies exist
 $rememberedAdminId = $_COOKIE['remember_admin_id'] ?? '';
 $rememberedPassword = $_COOKIE['remember_password'] ?? '';
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
