@@ -5,6 +5,7 @@ if (is_post()) {
     $rateItemIds = $_POST['rate_items_id'];
     $starWords = $_POST['rate_words'];
     $comments = $_POST['comment'];
+    $ratingCurrentDateTime = (new DateTime('now'))->format('Y-m-d H:i:s');
 
     foreach ($rateItemIds as $index => $itemId) {
         $starWord = $starWords[$index];
@@ -27,10 +28,10 @@ if (is_post()) {
         }
 
         $stm2 = $_db->prepare(
-            'INSERT INTO `item_rating`(`rating_id`, `rating_star`, `comment`, `orderItem_id`)
+            'INSERT INTO `item_rating`(`rating_id`, `rating_star`, `comment`, `rating_date`,`orderItem_id`)
         VALUES (?,?,?,?)'
         );
-        $stm2->execute([$newRatingId, $starWord, $comment, $itemId]);
+        $stm2->execute([$newRatingId, $starWord, $comment, $ratingCurrentDateTime,$itemId]);
     }
 
     header('Location: order_record.php?section=.orderRecord-right-completed');

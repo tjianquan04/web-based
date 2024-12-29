@@ -81,7 +81,7 @@ $product_id = $_GET['product_id'];
                $email_info = "<b>Category ID: <b> " . $category_id . "<br><b>Category Name: <b>" . $category_name; 
 
                if ($admin) {
-                   sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>'. $email_info, true, "../image/".$category->category_photo);
+                   sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>'. $email_info, true, "../image/".$category_photo);
                } else {
                    error_log("No Product Manager found for stock alert notification.");
                }
