@@ -37,6 +37,20 @@ $wishlist_check_stm = $_db->prepare('SELECT 1 FROM wishlist WHERE member_id = ? 
 $wishlist_check_stm->execute([$member_id, $product_id]);
 $is_in_wishlist = $wishlist_check_stm->fetchColumn(); // This returns 1 if the product is in the wishlist
 
+$rating_stm = $_db->prepare(
+    'SELECT *
+    FROM item_rating
+    INNER JOIN orderitem
+    on item_rating.orderItem_id = orderitem.orderItem_id
+    INNER JOIN order_record
+    on orderItem.order_id = order_record.order_id
+    INNER JOIN member
+    on order_record.member_id = member.member_id
+    WHERE orderitem.product_id = ?'
+);
+$rating_stm->execute([$product_id]);
+$arr_ratings = $rating_stm->fetchAll();
+
 // Display the product details
 $_title = $product->description;
 include '_head.php';
@@ -125,7 +139,7 @@ include '_head.php';
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    
+
                     <!-- Add to cart button -->
                     <button type="button" class="add-to-cart" id="addToCart-btn" data-product-id="<?= $product->product_id ?> " data-member-id="<?= $member_id ?? '' ?>"
                         <?php if ($product->status == 'OutOfStock'): ?>
@@ -146,7 +160,66 @@ include '_head.php';
 </div>
 
 <div class="product-review-container">
-    halo
+    <table class="product-review-table">
+        <tr>
+            <td colspan="2" class="product-review-title">Product Ratings</td>
+        </tr>
+        <?php foreach ($arr_ratings as $rating):
+        ?>
+            <tr>
+                <td colspan="2" class="product-review-hrline">
+                    <hr>
+                </td>
+            </tr>
+            <tr class="product-review-row">
+                <td class="product-review-memberPhoto">
+                    <label class="reviewmemberPhoto"><img src="/photos/<?= $rating->profile_photo ?>"></label>
+                </td>
+                <td>
+                    <?= $rating->name ?><br>
+                    <?php if (($rating->rating_star) == "Amazing") { ?>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    <?php } else if (($rating->rating_star) == "Good") { ?>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                    <?php } else if (($rating->rating_star) == "Fair") { ?>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                    <?php } else if (($rating->rating_star) == "Poor") { ?>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                    <?php } else { ?>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                    <?php } ?>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <span style="font-size: 15px; color: rgb(100,100,100);"><?= $rating->rating_date ?></span><br><br>
+                    <span style="font-size: 15px; color: rgb(100,100,100);">Quality:</span> <?= $rating->rating_star ?><br><br>
+                    <?= $rating->comment ?>
+                </td>
+            </tr>
+        <?php endforeach ?>
+    </table>
 </div>
 
 <?php

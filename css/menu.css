@@ -24,8 +24,37 @@
 .product-review-container {
   width: 50%;
   margin: auto;
-  background-color: red;
+  background-color: rgb(245,245,245);
 }
+
+label.reviewmemberPhoto img {
+  width: 40px;
+  height: 40px;
+  float: left;
+  border-radius: 20px;
+}
+
+.product-review-table {
+  width: 100%;
+  padding: 20px;
+}
+
+.product-review-title {
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+
+.product-review-hrline {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.product-review-memberPhoto {
+  width: 55px;
+}
+
+
 
 
 .container {
