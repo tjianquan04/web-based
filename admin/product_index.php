@@ -269,9 +269,12 @@ $_title = 'Product | Index';
                         <td>
                             <a href='product_details.php?product_id=<?= $product->product_id ?>' class='btn btn-view'><i class='fas fa-tools'></i>View</a>
 
-                            <a href="deleteProduct.php?product_id=<?= $product->product_id ?>" class='btn btn-delete'>
-                                <i class="fa-solid fa-xmark"></i>Delete
-                            </a>
+                            <a href="deleteProduct.php?product_id=<?= htmlspecialchars($product->product_id) ?>" 
+   class="btn btn-delete" 
+   onclick="return confirm('Are you sure you want to delete this product? This action cannot be undone.');">
+   <i class="fa-solid fa-xmark"></i> Delete
+</a>
+
                         </td>
                         </tr>
                     <?php endforeach; ?>
