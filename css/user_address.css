@@ -7,7 +7,7 @@ body {
 }
 
 /* General Layout */
-.container {
+.address-container {
     display: flex;
     font-family: Arial, sans-serif;
     gap: 20px;

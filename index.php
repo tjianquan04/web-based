@@ -4,13 +4,13 @@
 <?php
 require '_base.php';
 
-// $stm = $_db->prepare(
-//     'UPDATE order_record
-//      SET order_status = "delivered"
-//      WHERE order_status = "shipping" 
-//      AND TIMESTAMPDIFF(DAY, order_date, NOW()) > 3'
-// );
-// $result = $stm->execute();
+$stm = $_db->prepare(
+    'UPDATE order_record
+     SET order_status = "delivered"
+     WHERE order_status = "shipping" 
+     AND TIMESTAMPDIFF(DAY, order_date, NOW()) > 3'
+);
+$result = $stm->execute();
 
 
 // Get the member_id securely, e.g., from session

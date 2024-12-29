@@ -77,7 +77,8 @@ include '_head.php';
 
     <div class="orderRecord-left">
         <div class="orderRecord-member">
-            <?= $member->name ?> <br>
+            <label class="memberPhoto"><img src="/photos/<?= $member->profile_photo ?>"></label>
+            <?= $member->name ?><br>
         </div>
         <div class="orderRecord-purchase active1" data-target=".orderRecord-purchase-content">
             <i class="fa-solid fa-list"></i>&nbsp;&nbsp;&nbsp;My purchase

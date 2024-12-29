@@ -69,7 +69,8 @@ include '_head.php';
 
     <div class="orderDetails-left">
         <div class="orderDetails-member">
-            <?= $member->name ?> <br>
+            <label class="memberPhoto"><img src="/photos/<?= $member->profile_photo ?>"></label>
+            <?= $member->name ?><br>
         </div>
         <a href="order_record.php?section=.orderRecord-right-<?= $option ?>" class="orderDetails-purchase-btn">
             <div class="orderDetails-purchase active2" data-target=".orderRecord-purchase-content">
