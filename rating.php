@@ -29,7 +29,7 @@ if (is_post()) {
 
         $stm2 = $_db->prepare(
             'INSERT INTO `item_rating`(`rating_id`, `rating_star`, `comment`, `rating_date`,`orderItem_id`)
-        VALUES (?,?,?,?)'
+        VALUES (?,?,?,?,?)'
         );
         $stm2->execute([$newRatingId, $starWord, $comment, $ratingCurrentDateTime,$itemId]);
     }
