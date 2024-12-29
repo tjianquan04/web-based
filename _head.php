@@ -31,6 +31,10 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
 <body>
     <header>
         <div class="header-container">
+            <?php if (!empty($_SESSION['user'])) { ?>
+            <div id="info"><?= temp('info') ?></div>
+            <?php } ?>
+            
             <div class="container-left">
                 <a href="/index.php"><img class="logo-img" src="/image/logo.png"></a>
             </div>
@@ -64,7 +68,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'default_page_value';
 
                                             <?php
                                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-                                                logout('index.php'); // Replace with the URL you want the user to be redirected to after logging out
+                                                logout('/index.php'); // Replace with the URL you want the user to be redirected to after logging out
                                             }
                                             ?>
                                     </div>

@@ -95,9 +95,6 @@ $_title = 'Home';
 include '_head.php';
 ?>
 
-
-<div id="info"><?= temp('info') ?></div>
-
     <div class="slideshow-container">
 
 <div class="mySlides fade">
