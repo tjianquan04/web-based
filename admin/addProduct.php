@@ -159,8 +159,9 @@ if (is_post()) {
                  <strong>Category Name:</strong> {$category_name}<br>
                  <strong>Minimum Stock Required:</strong> {$minStock}";
 
+                 
                     // Specify the photo path (ensure the file exists)
-                    $photoPath = "../image/" . $category_photo;
+                    $photoPath = "../image/" .$category_photo;
 
                     // Send the stock alert email
                     sendStockAlertEmail(
@@ -168,7 +169,7 @@ if (is_post()) {
                         $emailSubject,
                         $emailMessage,
                         true,
-                        $photoPath
+                        "../image/" .$category_photo
                     );
                     
                 } else {

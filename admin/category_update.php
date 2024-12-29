@@ -105,7 +105,7 @@ if (is_post()) {
             if ($admin) {
                 // Send the email to the Product Manager
 
-                sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>' . $email_info, true,  "../image/".$category->category_photo);
+                sendStockAlertEmail($admin->email, 'Low Stock Alert', 'Current stock is below the minimum threshold. <br>' . $email_info, true,  "../image/".$category_photo);
             } else {
                 temp('error', 'No Product Manager found to send email to.');
             }
@@ -160,16 +160,19 @@ $_title = 'Category | Update';
 
 
 
+<!-- Category Active Checkbox -->
+<label>Category Status: </label>
+<?php if ($status === "Active"): ?>
+    <input type="radio" name="status" value="Active" checked> Active
+    <br><br>
+    <input type="radio" name="status" value="Inactive"> Inactive
+<?php elseif ($status === "Inactive"): ?>
+    <input type="radio" name="status" value="Active"> Active
+    <br><br>
+    <input type="radio" name="status" value="Inactive" checked> Inactive
+<?php endif; ?>
 
-        <!-- Category Active Checkbox -->
-        <label>Category Status: </label>
-            <?php if ($status == 1): ?>
-                <input type="radio"  name="status" value="Active" checked>Active
-                <br><br><input type="radio"   name="Inactive" value="0">Inactive
-            <?php else: ?>
-                <input type="radio" name="status" value="Active">Active
-                <br><br><input type="radio"  name="status" value="Inactive" checked>Inactive
-            <?php endif; ?>
+
         
 
 
