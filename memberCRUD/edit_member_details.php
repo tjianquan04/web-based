@@ -45,9 +45,9 @@ if (is_post() && (req('form_type') == 'member_details')) {
     //Handle photo upload
     if ($file && str_starts_with($file->type, 'image/')) {
         $photo_path = save_photo($file, '../photos');
-        $s->profile_photo = $photo_path; 
+        $s->profile_photo = $photo_path;
     }
-    
+
     if (!$_err) {
 
         if (empty($password)) {
@@ -62,35 +62,34 @@ if (is_post() && (req('form_type') == 'member_details')) {
             $stm->execute([$name, $email, $contact, $password, $status, $s->profile_photo, $memberId]);
         }
 
-        temp('info', $memberId . ' details updated');
-        header('Location: ' . $_SERVER['REQUEST_URI']);
-        exit;
+        temp('UpdateSuccess', "$memberId details updated");
+        temp('showSwal', true); // Set flag to show SweetAlert
     }
-}else if (is_post() && (req('form_type') == 'address_update')){
+} else if (is_post() && (req('form_type') == 'address_update')) {
 
     $address_id    = req('address_id');
-    $address_line  = req('address_line_'.$address_id);
-    $state        = req('state_'.$address_id);
-    $postal_code   = req('postal_code_'.$address_id);
-    $is_default   = req('is_default_'.$address_id);   
+    $address_line  = req('address_line_' . $address_id);
+    $state        = req('state_' . $address_id);
+    $postal_code   = req('postal_code_' . $address_id);
+    $is_default   = req('is_default_' . $address_id);
 
     // Validate Address Line
     if (empty($address_line)) {
-        $_err['address_line_'.$address_id] = 'Address is required.';
+        $_err['address_line_' . $address_id] = 'Address is required.';
     }
 
     // Validate State
     if (empty($state)) {
-        $_err['state_'.$address_id] = 'State is required.';
+        $_err['state_' . $address_id] = 'State is required.';
     } else if (!preg_match('/^[a-zA-Z\s]+$/', $state)) {
-        $_err['state_'.$address_id] = 'State must contain only letters.';
+        $_err['state_' . $address_id] = 'State must contain only letters.';
     }
 
     // Validate Postal Code
     if (empty($postal_code)) {
-        $_err['postal_code_'.$address_id] = 'Postal code is required.';
+        $_err['postal_code_' . $address_id] = 'Postal code is required.';
     } else if (!preg_match('/^\d{5}$/', $postal_code)) {
-        $_err['postal_code_'.$address_id] = 'Postal code must be exactly 5 digits.';
+        $_err['postal_code_' . $address_id] = 'Postal code must be exactly 5 digits.';
     }
 
     if ($is_default == 1) {
@@ -109,15 +108,14 @@ if (is_post() && (req('form_type') == 'member_details')) {
         // Update the selected address
         $updateAddressStm = $_db->prepare('UPDATE address SET address_line = ?, state = ?, postal_code = ?, is_default = ? WHERE address_id = ?');
         $updateAddressStm->execute([$address_line, $state, $postal_code, $is_default, $address_id]);
-
-        temp('info', 'Address updated successfully');
-        header('Location: ' . $_SERVER['REQUEST_URI']);
-        exit;
+        temp('UpdateSuccess', "$memberId . ' details updated'");
+        temp('showSwal', true); // Set flag to show SweetAlert
     }
 }
 
 ?>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
 <script src="../js/main.js"></script>
 <link rel="stylesheet" href="../css/edit_member.css">
 
@@ -139,10 +137,10 @@ if (is_post() && (req('form_type') == 'member_details')) {
                 </label>
                 <?= err('photo') ?>
                 </label>
-                <br> 
+                <br>
 
                 <h4>Member ID: <?= $s->member_id ?></h4><br>
-            
+
 
                 <label for="name">Name:</label>
                 <?php html_text('name', 'Enter Name', $s->name, 'class="input-field" maxlength="100" '); ?>
@@ -165,7 +163,7 @@ if (is_post() && (req('form_type') == 'member_details')) {
                 <br>
 
                 <label for="wallet">Wallet :</label>
-                <?php html_text('wallet', '', 'RM'.$s->wallet, 'class="input-field" readonly'); ?>
+                <?php html_text('wallet', '', 'RM' . $s->wallet, 'class="input-field" readonly'); ?>
                 <br>
 
                 <label for="registerDate">Registered Date :</label>
@@ -174,10 +172,10 @@ if (is_post() && (req('form_type') == 'member_details')) {
 
                 <label for="status">Status:</label>
                 <select id="status" name="status" class="input-field">
-                <option value="Active" <?= $s->status == 'Active' ? 'selected' : '' ?>>Active</option>
-                <option value="Inactive" <?= $s->status == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
+                    <option value="Active" <?= $s->status == 'Active' ? 'selected' : '' ?>>Active</option>
+                    <option value="Inactive" <?= $s->status == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
                 </select>
-            
+
                 <br>
 
                 <button type="submit" class="save-btn">Save Changes</button>
@@ -194,23 +192,23 @@ if (is_post() && (req('form_type') == 'member_details')) {
             <?php else: ?>
 
                 <?php foreach ($addressArr as $address): ?>
-                    <form method="post" class= "address-form">
+                    <form method="post" class="address-form">
                         <input type="hidden" name="form_type" value="address_update">
                         <input type="hidden" name="address_id" value="<?= $address->address_id ?>">
 
                         <label for="address_line_<?= $address->address_id ?>">Address:</label>
-                        <?php html_text('address_line_'.$address->address_id, '', $address->address_line, '" class="input-field"'); ?>
-                        <?= err('address_line_'.$address->address_id) ?>
+                        <?php html_text('address_line_' . $address->address_id, '', $address->address_line, '" class="input-field"'); ?>
+                        <?= err('address_line_' . $address->address_id) ?>
                         <br>
 
                         <label for="state_<?= $address->address_id ?>">State:</label>
-                        <?php html_select('state_'.$address->address_id, $_states,'', 'class="input-field"', $address->state) ?>
-                        <?= err('state_'.$address->address_id) ?>
+                        <?php html_select('state_' . $address->address_id, $_states, '', 'class="input-field"', $address->state) ?>
+                        <?= err('state_' . $address->address_id) ?>
                         <br>
 
                         <label for="postal_code_<?= $address->address_id ?>">Postal Code:</label>
-                        <?php html_text('postal_code_'.$address->address_id, '', $address->postal_code, '" class="input-field" '); ?>
-                        <?= err('postal_code_'.$address->address_id) ?>
+                        <?php html_text('postal_code_' . $address->address_id, '', $address->postal_code, '" class="input-field" '); ?>
+                        <?= err('postal_code_' . $address->address_id) ?>
                         <br>
 
                         <label for="is_default_<?= $address->address_id ?>">Is Default:</label>
@@ -218,7 +216,7 @@ if (is_post() && (req('form_type') == 'member_details')) {
                             <option value="1" <?= $address->is_default == 1 ? 'selected' : '' ?>>TRUE</option>
                             <option value="0" <?= $address->is_default == 0 ? 'selected' : '' ?>>FALSE</option>
                         </select>
-                        <?= err('is_default_'.$address->address_id) ?>
+                        <?= err('is_default_' . $address->address_id) ?>
                         <br>
 
                         <button type="submit" class="save-btn">Save Changes</button>
@@ -231,25 +229,35 @@ if (is_post() && (req('form_type') == 'member_details')) {
         </div>
     </div>
     <button class="go-back" data-get="../admin/member_management.php">Go Back</button>
+    <?php if (temp('showSwal')): ?>
+        <script>
+            // Display swal() popup with the success message and redirect after user confirms
+            swal("Congrats", "<?= temp('UpdateSuccess'); ?>", "success")
+                .then(function() {
+                    window.location.href = redirectUrl; // Redirect to the appropriate page
+                });
+        </script>
+    <?php endif; ?>
 </body>
+
 <script>
     $('[data-get]').on('click', e => {
-    e.preventDefault();
-    const url = e.target.dataset.get;
-    location.href = url || location.href;  // Use location.href to navigate
-});
+        e.preventDefault();
+        const url = e.target.dataset.get;
+        location.href = url || location.href; // Use location.href to navigate
+    });
 
-function previewImage(event) {
+    function previewImage(event) {
         var file = event.target.files[0];
         var reader = new FileReader();
 
         reader.onload = function(e) {
             var preview = document.getElementById('profile-photo-preview');
-            preview.src = e.target.result; 
+            preview.src = e.target.result;
         };
 
         if (file) {
-            reader.readAsDataURL(file); 
+            reader.readAsDataURL(file);
         }
     }
 </script>

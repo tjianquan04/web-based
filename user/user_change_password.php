@@ -18,7 +18,9 @@ if (is_post()) {
     if(empty( $new_password)){
         $_err['new_password'] = 'New password is required.';
     }else if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $new_password)){
-        $_err['new_password'] = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, one special symbol, and be at least 8 characters.';
+        $_err['new_password'] = 'Invalid password format.(eg. Aa1*XXXX )';
+    }else if ($current_password == $new_password){
+        $_err['new_password'] = 'New password cannot be same.';
     }
 
     if(empty( $confirm_password)){
@@ -34,13 +36,15 @@ if (is_post()) {
             $stm->execute([$new_password, $member->member_id]);
         
 
-        temp('info','User password updated');
+            temp('UpdateSuccess', "User password has updated");
+            temp('showSwal', true); // Set flag to show SweetAlert
     }
 }
 
 include '../_head.php';
 ?>
 <script src="../js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert/dist/sweetalert.min.js"></script>
 <link rel="stylesheet" href="../css/user_profile.css">
 
 <body>
@@ -78,6 +82,15 @@ include '../_head.php';
             </form>
         </div>
     </div>
+    <?php if (temp('showSwal')): ?>
+        <script>
+            // Display swal() popup with the success message and redirect after user confirms
+            swal("Congrats", "<?= temp('UpdateSuccess'); ?>", "success")
+                .then(function() {
+                    window.location.href = redirectUrl; // Redirect to the appropriate page
+                });
+        </script>
+    <?php endif; ?>
 </body>
 
 <?php

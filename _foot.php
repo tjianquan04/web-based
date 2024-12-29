@@ -13,7 +13,7 @@
             <li><a href="/index.php">Home</a></li>
             <li><a href="/about_us.php">About Us</a></li>
             <li><a href="/terms.php">T&C Apply</a></li>
-            <li><a href="#">Shopping Guide</a></li>
+            <li><a href="/shopping-guide.php">Shopping Guide</a></li>
 
         </ul>
         <ul class="media-icons">

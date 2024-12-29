@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/index.css">
+
 
 <?php
 require '_base.php';
@@ -93,171 +95,27 @@ $_title = 'Home';
 include '_head.php';
 ?>
 
-<style>
-* {box-sizing: border-box}
-.mySlides {display: none}
-img {vertical-align: middle;}
 
-/* Slideshow container */
-.slideshow-container {
-  max-width: 1500px;
-  position: relative;
-  margin: auto;
-}
-img{
-  padding-top: 15px;
-    width: 300px;
-    height: 300px;
-}
-
-/* Next & previous buttons */
-.prev, .next {
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  width: auto;
-  padding: 16px;
-  margin-top: -22px;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  transition: 0.6s ease;
-  border-radius: 0 3px 3px 0;
-  user-select: none;
-}
-
-/* Position the "next button" to the right */
-.next {
-  right: 0;
-  border-radius: 3px 0 0 3px;
-}
-
-/* On hover, add a black background color with a little bit see-through */
-.prev:hover, .next:hover {
-  background-color: rgba(0,0,0,0.8);
-}
-
-/* Caption text */
-.text {
-  color: #f2f2f2;
-  font-size: 15px;
-  padding: 8px 12px;
-  position: absolute;
-  bottom: 8px;
-  width: 100%;
-  text-align: center;
-}
-
-/* Number text (1/3 etc) */
-.numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
-}
-
-/* The dots/bullets/indicators */
-.dot {
-  cursor: pointer;
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.6s ease;
-}
-
-.active, .dot:hover {
-  background-color: #717171;
-}
-
-/* Fading animation */
-.fade {
-  animation-name: fade;
-  animation-duration: 1.5s;
-}
-
-@keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
-}
-
-/* On smaller screens, decrease text size */
-@media only screen and (max-width: 300px) {
-  .prev, .next,.text {font-size: 11px}
-}
-
-  /* Featured Products */
-  .featured-products {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  h2{
-    font-family: 'Times New Roman', Times, serif;
-  }
-  .product-grid {
-    display: flex;
-  flex-wrap: wrap; 
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .product-card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    text-align: center;
-    width: 200px;
-  }
-  
-  .product-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-
-  .product-card a{
-  text-decoration: none;
-  color: #f2f2f2;
-}
-  .product-card button {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .product-card button:hover {
-    background-color: #555;
-  }
-  
-</style>
 <div id="info"><?= temp('info') ?></div>
 
     <div class="slideshow-container">
 
 <div class="mySlides fade">
   <div class="numbertext">1 / 3</div>
-  <img src="image/slideshow1.png" style="width:100%">
-  <div class="text">Caption Text</div>
+  <img src="image/slideshow1.png" style="width:100%" class="slidesshow">
+ 
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">2 / 3</div>
-  <img src="image/slideshow.jpg" style="width:100%">
-  <div class="text">Caption Two</div>
+  <img src="image/slideshow.jpg" style="width:100%" class="slidesshow">
+  
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">3 / 3</div>
-  <img src="product_gallery\638514769327200002c.jpg" style="width:100%">
-  <div class="text">Caption Three</div>
+  <img src="image\slideshow3.webp" style="width:100%" class="slidesshow">
+  
 </div>
 
 
@@ -278,17 +136,17 @@ img{
 <!-- Featured Products -->
 <section class="featured-products">
 <?php if (!empty($wishlist_item)): ?>
-    <h2>Recommended For You <i class="fa-regular fa-heart"></i></h2>
+    <h2 class="productTitle">Recommended For You <i class="fa-regular fa-heart"></i></h2>
 <?php else: ?>
-    <h2>Grab Yours Now</h2>
+    <h2 class="productTitle">Grab Yours Now</h2>
 <?php endif; ?>
 
 
 
-    <div class="product-grid">
+    <div class="productGrid">
       
         <?php foreach ($product as $p): ?>
-            <div class="product-card">
+            <div class="productCard">
                 <img src="/product_gallery/<?= htmlspecialchars($productPhotos[$p->product_id] ?? 'default.jpg') ?>" 
                      alt="<?= htmlspecialchars($p->description) ?>" class="category">
                 <h3><?= htmlspecialchars($p->description) ?></h3>
@@ -299,10 +157,10 @@ img{
             </div>
         <?php endforeach; ?>
     </div>
-    <br><h2>Boots Top Sales</h2>
-    <div class="product-grid">
+    <br><h2 class="productTitle">Boots Top Sales</h2>
+    <div class="productGrid">
       <?php foreach ($topSales_product as $p): ?>
-          <div class="product-card">
+          <div class="productCard">
               <img src="/product_gallery/<?= htmlspecialchars($productPhotos[$p->product_id] ?? 'default.jpg') ?>" 
                    alt="<?= htmlspecialchars($p->description) ?>" class="category">
               <h3><?= htmlspecialchars($p->description) ?></h3>
