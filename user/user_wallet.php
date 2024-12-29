@@ -50,6 +50,7 @@ if (is_post()) {
         $stmt = $_db->prepare('INSERT INTO transactions (trans_id, trans_date, trans_amount, trans_type, trans_status, reference, member_id) VALUES (?, ?, ?, ?, ? , ?, ?)');
         $stmt->execute([$trans_id, $currentDateTime, $topUpAmount, "Top Up", "Pending", $top_up_id, $member->member_id]);
 
+        $transactions = getTransactionHistory($member->member_id);
         temp('info', 'Transaction is processing');
         
     } else {
@@ -64,7 +65,7 @@ include '../_head.php';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <body>
-    <div class="container">
+    <div class="wallet-container">
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>My Account</h2>

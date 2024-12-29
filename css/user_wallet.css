@@ -7,7 +7,7 @@ body {
 }
 
 /* General Layout */
-.container {
+.wallet-container {
     display: flex;
     font-family: Arial, sans-serif;
     gap: 20px;
@@ -343,18 +343,3 @@ button.close-btn:hover {
     background-color: #f9f9f9;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column; /* Stack sidebar and content for small screens */
-    }
-
-    .sidebar {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .content {
-        width: 100%;
-    }
-}

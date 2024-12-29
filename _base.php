@@ -245,10 +245,6 @@ function validCurrentPassword($password, $member_id)
     $stmt->execute([$member_id]);
     $s = $stmt->fetch();
 
-    echo ('1. database : ' . $s->password);
-    echo ('2. current : ' . SHA1($password));
-
-
     if (strcmp(SHA1($password), ($s->password)) == 0) {
         return true;
     }
